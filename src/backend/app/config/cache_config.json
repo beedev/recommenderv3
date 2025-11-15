@@ -1,0 +1,22 @@
+{
+  "$schema": "cache_config.schema.json",
+  "version": "1.0",
+  "description": "Cache configuration for Redis session storage and other caching mechanisms",
+
+  "redis_session": {
+    "default_ttl_seconds": 3600,
+    "description": "Session TTL: 1 hour (3600 seconds)"
+  },
+
+  "product_cache": {
+    "enabled": true,
+    "ttl_seconds": 86400,
+    "description": "Product data cache: 24 hours"
+  },
+
+  "config_cache": {
+    "enabled": true,
+    "ttl_seconds": 300,
+    "description": "Configuration cache: 5 minutes"
+  }
+}

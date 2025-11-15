@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Viewer - ESAB Recommender V2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+            background: #6c757d;
+        }
+
+        button.secondary:hover:not(:disabled) {
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #495057;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .stats {
+            padding: 15px 30px;
+            background: #e7f3ff;
+            border-bottom: 1px solid #bee5eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stats-info {
+            font-size: 14px;
+            color: #004085;
+        }
+
+        .stats-info strong {
+            font-weight: 600;
+        }
+
+        .log-display {
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .log-display::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .log-display::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .log-display::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 5px;
+        }
+
+        .log-display::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .log-entry {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border-left: 4px solid #6c757d;
+            background: #f8f9fa;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .log-entry:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .log-entry.debug {
+            border-left-color: #6c757d;
+            background: #f8f9fa;
+        }
+
+        .log-entry.info {
+            border-left-color: #007bff;
+            background: #e7f3ff;
+        }
+
+        .log-entry.warning {
+            border-left-color: #ffc107;
+            background: #fff8e1;
+        }
+
+        .log-entry.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .log-timestamp {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .log-level {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .log-level.debug { background: #6c757d; color: white; }
+        .log-level.info { background: #007bff; color: white; }
+        .log-level.warning { background: #ffc107; color: #000; }
+        .log-level.error { background: #dc3545; color: white; }
+
+        .log-message {
+            margin: 8px 0;
+            color: #212529;
+            word-wrap: break-word;
+        }
+
+        .log-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 8px;
+        }
+
+        .log-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .error-message {
+            padding: 20px;
+            margin: 20px;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 6px;
+            color: #721c24;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .pagination {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .controls {
+                padding: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .button-row button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Log Viewer</h1>
+            <p>ESAB Recommender V2 - Debug & Monitor Logs</p>
+        </div>
+
+        <div class="controls">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="source">Log Source *</label>
+                    <select id="source" required>
+                        <option value="application">Application Logs</option>
+                        <option value="session">Session Archives</option>
+                        <option value="agents">Agent Traces</option>
+                        <option value="performance">Performance Metrics</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="level">Log Level</label>
+                    <select id="level">
+                        <option value="">All Levels</option>
+                        <option value="error">Error</option>
+                        <option value="warning">Warning</option>
+                        <option value="info">Info</option>
+                        <option value="debug">Debug</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="limit">Limit</label>
+                    <select id="limit">
+                        <option value="50">50</option>
+                        <option value="100" selected>100</option>
+                        <option value="500">500</option>
+                        <option value="1000">1000</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="sessionId">Session ID (Optional)</label>
+                    <input type="text" id="sessionId" placeholder="e.g., abc-123-def-456">
+                </div>
+
+                <div class="form-group">
+                    <label for="correlationId">Correlation ID (Optional)</label>
+                    <input type="text" id="correlationId" placeholder="e.g., cor-xyz-789">
+                </div>
+
+                <div class="form-group">
+                    <label for="userId">User ID (Optional)</label>
+                    <input type="text" id="userId" placeholder="e.g., user-001">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="startTime">Start Time (Optional)</label>
+                    <input type="datetime-local" id="startTime">
+                </div>
+
+                <div class="form-group">
+                    <label for="endTime">End Time (Optional)</label>
+                    <input type="datetime-local" id="endTime">
+                </div>
+            </div>
+
+            <div class="button-row">
+                <button id="fetchButton" onclick="fetchLogs()">🔍 Fetch Logs</button>
+                <button class="secondary" onclick="clearFilters()">🔄 Clear Filters</button>
+                <button class="secondary" onclick="exportLogs()" id="exportButton" disabled>📥 Export JSON</button>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="autoRefresh">
+                    Auto-refresh (30s)
+                </label>
+            </div>
+        </div>
+
+        <div class="stats" id="stats" style="display: none;">
+            <div class="stats-info">
+                <strong>Total:</strong> <span id="totalCount">0</span> logs |
+                <strong>Showing:</strong> <span id="shownCount">0</span> logs |
+                <strong>Source:</strong> <span id="sourceLabel">-</span>
+            </div>
+            <div class="stats-info" id="filtersDisplay"></div>
+        </div>
+
+        <div class="log-display" id="logDisplay">
+            <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <h3>No logs loaded</h3>
+                <p>Select a log source and click "Fetch Logs" to view logs</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentLogs = [];
+        let currentOffset = 0;
+        let autoRefreshInterval = null;
+
+        // Get API base URL
+        function getApiBase() {
+            // Try to detect from current location
+            const protocol = window.location.protocol;
+            const hostname = window.location.hostname;
+            const port = window.location.port;
+
+            // If on localhost with port 8000 (direct backend access)
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                return `${protocol}//${hostname}:8000`;
+            }
+
+            // Otherwise use same origin
+            return window.location.origin;
+        }
+
+        const API_BASE = getApiBase();
+
+        // Fetch logs from API
+        async function fetchLogs(offset = 0) {
+            const source = document.getElementById('source').value;
+            const level = document.getElementById('level').value;
+            const limit = document.getElementById('limit').value;
+            const sessionId = document.getElementById('sessionId').value.trim();
+            const correlationId = document.getElementById('correlationId').value.trim();
+            const userId = document.getElementById('userId').value.trim();
+            const startTime = document.getElementById('startTime').value;
+            const endTime = document.getElementById('endTime').value;
+
+            // Validate agent logs require session_id
+            if (source === 'agents' && !sessionId) {
+                showError('Agent logs require a Session ID. Please enter a Session ID.');
+                return;
+            }
+
+            // Build query params
+            const params = new URLSearchParams({
+                source: source,
+                limit: limit,
+                offset: offset
+            });
+
+            if (level) params.append('level', level);
+            if (sessionId) params.append('session_id', sessionId);
+            if (correlationId) params.append('correlation_id', correlationId);
+            if (userId) params.append('user_id', userId);
+            if (startTime) params.append('start_time', new Date(startTime).toISOString());
+            if (endTime) params.append('end_time', new Date(endTime).toISOString());
+
+            // Show loading
+            showLoading();
+            disableButtons(true);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/logs?${params}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || data.detail || 'Failed to fetch logs');
+                }
+
+                if (data.success) {
+                    currentLogs = data.logs;
+                    currentOffset = offset;
+                    displayLogs(data);
+                    document.getElementById('exportButton').disabled = currentLogs.length === 0;
+                } else {
+                    throw new Error(data.error || 'Unknown error');
+                }
+
+            } catch (error) {
+                showError(`Error fetching logs: ${error.message}`);
+                console.error('Fetch error:', error);
+            } finally {
+                disableButtons(false);
+            }
+        }
+
+        // Display logs in UI
+        function displayLogs(data) {
+            const display = document.getElementById('logDisplay');
+            const stats = document.getElementById('stats');
+
+            // Update stats
+            document.getElementById('totalCount').textContent = data.total;
+            document.getElementById('shownCount').textContent = data.logs.length;
+            document.getElementById('sourceLabel').textContent = data.source;
+
+            // Show applied filters
+            const filters = [];
+            if (data.filters_applied) {
+                for (const [key, value] of Object.entries(data.filters_applied)) {
+                    if (value && key !== 'source' && key !== 'limit' && key !== 'offset') {
+                        filters.push(`${key}: ${value}`);
+                    }
+                }
+            }
+            document.getElementById('filtersDisplay').textContent = filters.length > 0 ? filters.join(' | ') : 'No filters';
+
+            stats.style.display = 'flex';
+
+            // Display logs
+            if (data.logs.length === 0) {
+                display.innerHTML = `
+                    <div class="empty-state">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <h3>No logs found</h3>
+                        <p>Try adjusting your filters or time range</p>
+                    </div>
+                `;
+                return;
+            }
+
+            display.innerHTML = data.logs.map(log => renderLogEntry(log, data.source)).join('');
+        }
+
+        // Render individual log entry
+        function renderLogEntry(log, source) {
+            const level = (log.level || 'info').toLowerCase();
+            const timestamp = log.timestamp || log.archived_at || log.created_at || 'N/A';
+
+            // Build meta info based on log source
+            let metaItems = [];
+            if (log.session_id) metaItems.push(`<span>📝 Session: ${log.session_id}</span>`);
+            if (log.correlation_id) metaItems.push(`<span>🔗 Correlation: ${log.correlation_id}</span>`);
+            if (log.user_id) metaItems.push(`<span>👤 User: ${log.user_id}</span>`);
+            if (log.duration_ms) metaItems.push(`<span>⏱️ Duration: ${log.duration_ms}ms</span>`);
+            if (log.type) metaItems.push(`<span>🏷️ Type: ${log.type}</span>`);
+            if (log.agent) metaItems.push(`<span>🤖 Agent: ${log.agent}</span>`);
+            if (log.endpoint) metaItems.push(`<span>🌐 Endpoint: ${log.endpoint}</span>`);
+            if (log.method) metaItems.push(`<span>📡 Method: ${log.method}</span>`);
+
+            // Get message or details
+            let message = log.message || log.error_log || '';
+            if (!message && log.details) {
+                message = JSON.stringify(log.details, null, 2);
+            }
+            if (!message && log.final_state) {
+                message = `Session: ${log.final_state} ${log.finalized ? '(Finalized)' : '(Not finalized)'}`;
+            }
+
+            return `
+                <div class="log-entry ${level}">
+                    <div class="log-header">
+                        <span class="log-timestamp">${timestamp}</span>
+                        <span class="log-level ${level}">${level}</span>
+                    </div>
+                    ${message ? `<div class="log-message">${escapeHtml(message)}</div>` : ''}
+                    ${metaItems.length > 0 ? `<div class="log-meta">${metaItems.join('')}</div>` : ''}
+                </div>
+            `;
+        }
+
+        // Show loading state
+        function showLoading() {
+            const display = document.getElementById('logDisplay');
+            display.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading logs...</p>
+                </div>
+            `;
+        }
+
+        // Show error message
+        function showError(message) {
+            const display = document.getElementById('logDisplay');
+            display.innerHTML = `
+                <div class="error-message">
+                    <strong>⚠️ Error:</strong> ${escapeHtml(message)}
+                </div>
+            `;
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Disable/enable buttons
+        function disableButtons(disabled) {
+            document.getElementById('fetchButton').disabled = disabled;
+            document.getElementById('fetchButton').textContent = disabled ? '⏳ Loading...' : '🔍 Fetch Logs';
+        }
+
+        // Clear filters
+        function clearFilters() {
+            document.getElementById('level').value = '';
+            document.getElementById('sessionId').value = '';
+            document.getElementById('correlationId').value = '';
+            document.getElementById('userId').value = '';
+            document.getElementById('startTime').value = '';
+            document.getElementById('endTime').value = '';
+            document.getElementById('limit').value = '100';
+            currentOffset = 0;
+        }
+
+        // Export logs as JSON
+        function exportLogs() {
+            if (currentLogs.length === 0) {
+                alert('No logs to export');
+                return;
+            }
+
+            const dataStr = JSON.stringify(currentLogs, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `logs_${new Date().toISOString()}.json`;
+            link.click();
+
+            URL.revokeObjectURL(url);
+        }
+
+        // Auto-refresh toggle
+        document.getElementById('autoRefresh').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                // Start auto-refresh every 30 seconds
+                autoRefreshInterval = setInterval(() => {
+                    console.log('Auto-refreshing logs...');
+                    fetchLogs(currentOffset);
+                }, 30000);
+            } else {
+                // Stop auto-refresh
+                if (autoRefreshInterval) {
+                    clearInterval(autoRefreshInterval);
+                    autoRefreshInterval = null;
+                }
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Enter to fetch
+            if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) {
+                const activeElement = document.activeElement;
+                if (activeElement.tagName === 'INPUT' || activeElement.tagName === 'SELECT') {
+                    fetchLogs();
+                }
+            }
+
+            // Ctrl+R to refresh (prevent browser refresh)
+            if (e.key === 'r' && e.ctrlKey) {
+                e.preventDefault();
+                fetchLogs(currentOffset);
+            }
+
+            // Ctrl+E to export
+            if (e.key === 'e' && e.ctrlKey && currentLogs.length > 0) {
+                e.preventDefault();
+                exportLogs();
+            }
+        });
+
+        // Save/restore filters in localStorage
+        window.addEventListener('beforeunload', () => {
+            const filters = {
+                source: document.getElementById('source').value,
+                level: document.getElementById('level').value,
+                limit: document.getElementById('limit').value
+            };
+            localStorage.setItem('logViewerFilters', JSON.stringify(filters));
+        });
+
+        // Restore filters on load
+        window.addEventListener('load', () => {
+            const saved = localStorage.getItem('logViewerFilters');
+            if (saved) {
+                try {
+                    const filters = JSON.parse(saved);
+                    if (filters.source) document.getElementById('source').value = filters.source;
+                    if (filters.level) document.getElementById('level').value = filters.level;
+                    if (filters.limit) document.getElementById('limit').value = filters.limit;
+                } catch (e) {
+                    console.error('Failed to restore filters:', e);
+                }
+            }
+        });
+
+        console.log('Log Viewer initialized. API Base:', API_BASE);
+        console.log('Keyboard shortcuts: Enter=Fetch, Ctrl+R=Refresh, Ctrl+E=Export');
+    </script>
+</body>
+</html>

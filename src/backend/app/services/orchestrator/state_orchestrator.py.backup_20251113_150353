@@ -1,0 +1,3852 @@
+import sys
+from pathlib import Path
+
+# Get the project root directory (works in both local and Docker)
+current_file = Path(__file__).resolve()
+try:
+    if current_file.parents[5].name == "ayna-pod-services-ai" or \
+       current_file.parents[5].name == "ayna-pod-recommender":
+        project_root = current_file.parents[5]
+        src_root = project_root / "src"
+    else:
+        project_root = current_file.parents[5]
+        src_root = project_root / "src"
+except IndexError:
+    src_root = current_file.parents[3]
+
+if str(src_root) not in sys.path:
+    sys.path.insert(0, str(src_root))
+# ============================================================================
+
+import logging
+import json
+import os
+import re
+from typing import Dict, Any, Optional, List, Tuple
+from datetime import datetime, date
+from dataclasses import dataclass
+from functools import lru_cache
+from langsmith import traceable
+
+from app.models.conversation import (
+    ConversationState,
+    ConfiguratorState,
+    ComponentApplicability,
+    SelectedProduct
+)
+from app.services.intent.parameter_extractor import ParameterExtractor
+from app.services.neo4j.product_search import Neo4jProductSearch, ProductResult, SearchResults
+from app.services.response.message_generator import MessageGenerator
+from app.services.ranker.product_ranker import ProductRanker
+
+
+logger = logging.getLogger(__name__)
+
+
+# ============================================================================
+# 🆕 GIN MANAGER - From Document 6
+# ============================================================================
+class GINManager:
+    """Manages GIN storage and validation for backend compatibility"""
+
+    def __init__(self):
+        self.config = {
+            'power_source_gin_number': None,
+            'feeder_gin_no': None,
+            'cooler_gin_no': None,
+            'interconn_gin_no': None,
+            'torch_gin_no': None,
+            'pwr_access_gin_no': [],
+            'feeder_access_gin_no': []
+        }
+        self.selection_history = []
+
+    def add_component(self, component_type: str, gin: str, product_name: str = None):
+        """Store GIN immediately after selection"""
+        gin = str(gin)
+
+        key_map = {
+            'PowerSource': 'power_source_gin_number',
+            'Feeder': 'feeder_gin_no',
+            'Cooler': 'cooler_gin_no',
+            'Interconnector': 'interconn_gin_no',
+            'Torch': 'torch_gin_no',
+            'PowerSourceAccessories': 'pwr_access_gin_no',
+            'FeederAccessories': 'feeder_access_gin_no',
+            'FeederConditionalAccessories': 'feeder_access_gin_no',
+            'InterconnectorAccessories': 'feeder_access_gin_no',
+            'Remotes': 'feeder_access_gin_no',
+            'RemoteAccessories': 'feeder_access_gin_no',
+            'RemoteConditionalAccessories': 'feeder_access_gin_no',
+            'Connectivity': 'feeder_access_gin_no',
+            'FeederWears': 'feeder_access_gin_no',
+            'Accessories': 'feeder_access_gin_no'
+        }
+
+        key = key_map.get(component_type)
+        if not key:
+            logger.warning(f"Unknown component type for GIN: {component_type}")
+            return
+
+        if isinstance(self.config[key], list):
+            if gin not in self.config[key]:
+                self.config[key].append(gin)
+        else:
+            self.config[key] = gin
+
+        self.selection_history.append({
+            'timestamp': datetime.utcnow().isoformat(),
+            'component_type': component_type,
+            'gin': gin,
+            'product_name': product_name
+        })
+        logger.info(f"✅ GIN stored: {component_type} = {gin}")
+
+    def get_output_format(self) -> Dict:
+        """Return GIN config in backend-compatible format"""
+        return {k: v for k, v in self.config.items()
+                if v and (not isinstance(v, list) or len(v) > 0)}
+
+    def validate_mandatory(self, applicability: Dict[str, str]) -> Tuple[bool, List[str]]:
+        """Check mandatory components based on applicability"""
+        mandatory = []
+
+        # PowerSource is always mandatory
+        if not self.config['power_source_gin_number']:
+            mandatory.append('power_source_gin_number')
+
+        # Check other components based on applicability
+        component_map = {
+            'Feeder': 'feeder_gin_no',
+            'Cooler': 'cooler_gin_no',
+            'Interconnector': 'interconn_gin_no',
+            'Torch': 'torch_gin_no'
+        }
+
+        for component, key in component_map.items():
+            if applicability.get(component) == "Y" and not self.config[key]:
+                mandatory.append(key)
+
+        return len(mandatory) == 0, mandatory
+
+
+# ============================================================================
+# 🆕 CONVERSATION MANAGER - From Document 6
+# ============================================================================
+@dataclass
+class ConversationMessage:
+    role: str
+    content: str
+    intent: Optional[str] = None
+    timestamp: str = None
+
+    def __post_init__(self):
+        if not self.timestamp:
+            self.timestamp = datetime.utcnow().isoformat()
+
+
+class ConversationManager:
+    """Manage conversation history for analytics and context"""
+
+    def __init__(self):
+        self.history: List[ConversationMessage] = []
+
+    def add_message(self, role: str, content: str, intent: str = None):
+        """Add a message to conversation history"""
+        msg = ConversationMessage(role=role, content=content, intent=intent)
+        self.history.append(msg)
+
+    def get_recent(self, n: int = 5) -> List[Dict]:
+        """Get recent conversation context"""
+        recent = self.history[-n:] if self.history else []
+        return [
+            {
+                'role': msg.role,
+                'content': msg.content,
+                'intent': msg.intent,
+                'timestamp': msg.timestamp
+            }
+            for msg in recent
+        ]
+
+    def get_summary(self) -> Dict:
+        """Get conversation analytics"""
+        if not self.history:
+            return {'total_messages': 0, 'user_messages': 0}
+
+        user_msgs = [m for m in self.history if m.role == 'user']
+        return {
+            'total_messages': len(self.history),
+            'user_messages': len(user_msgs),
+            'intents_detected': [m.intent for m in user_msgs if m.intent]
+        }
+
+
+# ============================================================================
+# MAIN ORCHESTRATOR - Document 5 Enhanced with Document 6 Features
+# ============================================================================
+class StateByStateOrchestrator:
+    """
+    Selection-aware orchestrator with compound request handling and accessory categories
+    
+    Features from Document 5:
+    - Detects multi-component requests (e.g., "Aristo 500ix with RobustFeed U6")
+    - Auto-selects exact matches ONLY for specific product names
+    - Shows disambiguation list for vague names (e.g., "aristo" → show all Aristo products)
+    - Validates dependencies (PowerSource required first)
+    - Supports 9 accessory categories with applicability rules
+    - 3-tier fuzzy matching (exact → contains → word-by-word)
+    
+    Enhancements from Document 6:
+    - GIN management with backend-compatible format
+    - Conversation history tracking and analytics
+    - Proactive search after selection
+    - Q&A support for user questions
+    - Centralized next state logic
+    """
+
+    # ============================================================================
+    # SEARCH RESULT LIMITS
+    # ============================================================================
+    DEFAULT_SEARCH_LIMIT = 10  # Number of products to show in regular searches
+    PROACTIVE_SEARCH_LIMIT = 10  # Number of products to show in proactive searches
+
+    def __init__(
+        self,
+        parameter_extractor: ParameterExtractor,
+        message_generator: MessageGenerator,
+        component_applicability_config: Dict[str, Any],
+        search_orchestrator,  # Mandatory: Phase 1 pluggable search system
+        state_processor_registry,  # Mandatory: Phase 2 modular state processors
+        ranker: Optional[ProductRanker] = None
+    ):
+        """
+        Initialize orchestrator with modular architecture components.
+
+        Args:
+            parameter_extractor: LLM-based parameter extraction
+            message_generator: Response generation
+            component_applicability_config: Component applicability rules
+            search_orchestrator: Pluggable search orchestrator (mandatory)
+            state_processor_registry: State processor registry (mandatory)
+            ranker: Product ranking (optional)
+
+        Raises:
+            ValueError: If search_orchestrator or state_processor_registry is None
+        """
+        if search_orchestrator is None:
+            raise ValueError("search_orchestrator is required for modular architecture")
+        if state_processor_registry is None:
+            raise ValueError("state_processor_registry is required for modular architecture")
+
+        self.parameter_extractor = parameter_extractor
+        self.message_generator = message_generator
+        self.applicability_config = component_applicability_config
+        self.search_orchestrator = search_orchestrator
+        self.state_processor_registry = state_processor_registry
+        self.ranker = ranker or ProductRanker()
+
+        # Initialize managers
+        self.gin_manager = GINManager()
+        self.conversation_manager = ConversationManager()
+
+        logger.info(
+            "✅ State-by-State Orchestrator initialized with MODULAR architecture "
+            "(Pluggable Search + State Processors)"
+        )
+
+    # =========================================================================
+    # HELPER METHODS
+    # =========================================================================
+
+    def _convert_search_dict_to_results(self, search_dict: Dict[str, Any]) -> SearchResults:
+        """
+        Convert SearchOrchestrator dict to SearchResults object.
+
+        SearchOrchestrator returns a dict with:
+        - products: List[Dict] - product dicts
+        - total_count: int
+        - metadata: {...}
+        - zero_results_message: Optional[str]
+
+        SearchResults expects:
+        - products: List[ProductResult] - ProductResult objects
+        - total_count: int
+        - filters_applied: Dict[str, Any]
+        - compatibility_validated: bool
+        - offset, limit, has_more
+        """
+        # Convert product dicts to ProductResult objects
+        products = [
+            ProductResult(
+                gin=p.get("gin", ""),
+                name=p.get("name", ""),
+                category=p.get("category", ""),
+                description=p.get("description", ""),
+                specifications=p.get("specifications", {})
+            )
+            for p in search_dict.get("products", [])
+        ]
+
+        # Extract metadata
+        metadata = search_dict.get("metadata", {})
+
+        return SearchResults(
+            products=products,
+            total_count=search_dict.get("total_count", len(products)),
+            filters_applied=metadata.get("filters_applied", {}),
+            compatibility_validated=metadata.get("compatibility_validated", False),
+            offset=search_dict.get("offset", 0),
+            limit=search_dict.get("limit", 10),
+            has_more=search_dict.get("has_more", False)
+        )
+
+    # =========================================================================
+    # COMPOUND REQUEST DETECTION & PROCESSING - From Document 5 (UNCHANGED)
+    # =========================================================================
+
+    def _detect_compound_request(
+        self,
+        master_parameters: Dict[str, Any],
+        response_json: Optional[Dict[str, Any]] = None
+    ) -> bool:
+        """
+        Detect if user specified multiple NEW components (not already selected)
+
+        Args:
+            master_parameters: LLM-extracted parameters from current message
+            response_json: Already-selected components in conversation state
+
+        Returns True if:
+        - 2+ UNSELECTED components specified (true compound request)
+        - OR downstream components WITHOUT PowerSource selected (needs validation)
+
+        Returns False if:
+        - Only PowerSource specified → use normal flow (allows disambiguation)
+        - Component is already selected → use sequential flow for next component
+        - No components specified
+
+        Example:
+        - User already selected PowerSource: "Aristo 500ix"
+        - User types: "Robustfeed"
+        - LLM extracts both into master_parameters due to context awareness
+        - But PowerSource is already in response_json → excluded from detection
+        - Result: Returns False → uses S2 sequential flow with compatibility filtering
+        """
+        # Determine which components are already selected
+        selected_components = set()
+        if response_json:
+            # Map ResponseJSON keys to master_parameters keys
+            component_mapping = {
+                "PowerSource": "power_source",
+                "Feeder": "feeder",
+                "Cooler": "cooler",
+                "Interconnector": "interconnector",
+                "Torch": "torch",
+                "Accessories": "accessories"
+            }
+
+            for response_key, master_key in component_mapping.items():
+                # Use getattr for Pydantic model (response_json is ResponseJSON object, not dict)
+                component_value = getattr(response_json, response_key, None)
+                # Consider selected if it's not None, not empty, and not "skipped"
+                if component_value and component_value != "skipped":
+                    selected_components.add(master_key)
+                    logger.debug(f"   Component already selected: {master_key} = {component_value}")
+
+        # Only count UNSELECTED components with data
+        unselected_components_with_data = []
+        downstream_components = []
+
+        for component in ["power_source", "feeder", "cooler", "interconnector", "torch", "accessories"]:
+            # Skip if component is already selected
+            if component in selected_components:
+                logger.debug(f"   Skipping already-selected component: {component}")
+                continue
+
+            component_dict = master_parameters.get(component, {})
+
+            # Check if component has specific data
+            has_product_name = bool(component_dict.get("product_name"))
+            has_technical_specs = any(
+                component_dict.get(key)
+                for key in ["process", "material", "current_output", "cooling_type",
+                           "application", "thickness", "voltage", "duty_cycle"]
+            )
+
+            if has_product_name or has_technical_specs:
+                unselected_components_with_data.append(component)
+
+                # Track downstream components separately
+                if component != "power_source":
+                    downstream_components.append(component)
+
+        # Compound request conditions (only for UNSELECTED components):
+        # 1. Multiple unselected components (2+) - e.g., "Aristo with RobustFeed" (neither selected yet)
+        # 2. Downstream components WITHOUT PowerSource selected - e.g., "RobustFeed" (no PowerSource selected yet)
+        has_power_source_selected = "power_source" in selected_components
+        has_power_source_in_request = "power_source" in unselected_components_with_data
+        has_downstream_only = len(downstream_components) > 0 and not has_power_source_selected and not has_power_source_in_request
+
+        is_compound = len(unselected_components_with_data) >= 2 or has_downstream_only
+
+        if is_compound:
+            logger.info(f"COMPOUND REQUEST DETECTED (unselected components): {unselected_components_with_data}")
+            logger.info(f"   Already selected: {selected_components}")
+            logger.info(f"   Multiple unselected components: {len(unselected_components_with_data) >= 2}")
+            logger.info(f"   Downstream only (needs validation): {has_downstream_only}")
+        else:
+            logger.info(f"SEQUENTIAL REQUEST: {unselected_components_with_data} (already selected: {selected_components}) -> Using normal flow")
+
+        return is_compound
+
+    def _validate_compound_request(self, master_parameters: Dict[str, Any]) -> Tuple[bool, Optional[str]]:
+        """
+        Validate compound request dependencies
+        
+        Returns:
+            (is_valid, error_message)
+            
+        Rules:
+        - PowerSource can be requested standalone
+        - Feeder/Cooler/Interconnector/Torch/Accessories REQUIRE PowerSource first
+        """
+        
+        # Check what components user requested
+        has_power_source = bool(master_parameters.get("power_source", {}).get("product_name") or 
+                               any(master_parameters.get("power_source", {}).values()))
+        
+        downstream_components = []
+        for component in ["feeder", "cooler", "interconnector", "torch", "accessories"]:
+            component_dict = master_parameters.get(component, {})
+            if component_dict.get("product_name") or any(component_dict.values()):
+                downstream_components.append(component)
+        
+        # If user requested downstream components WITHOUT PowerSource
+        if downstream_components and not has_power_source:
+            component_names = [comp.replace("_", " ").title() for comp in downstream_components]
+            
+            error_msg = f"""PowerSource Required First!
+
+You requested: {', '.join(component_names)}
+
+However, these components depend on PowerSource compatibility.
+
+Here's what to do:
+
+Option 1 - Include PowerSource in your request:
+- "Give me Aristo 500ix with RobustFeed U6"
+- "I need Warrior 500i plus {component_names[0]}"
+- "Package for MIG welding aluminum with the components you mentioned"
+
+Option 2 - Let me help you choose:
+Tell me your welding requirements:
+- Material: aluminum, stainless steel, mild steel?
+- Process: MIG, TIG, or Stick?
+- Current rating: 300A, 500A, 600A?
+- Application: fabrication, automotive, repair?
+
+I'll find the perfect PowerSource and compatible components!
+"""
+            
+            return False, error_msg
+        
+        return True, None
+
+    def _is_specific_product_name(self, product_name: str) -> bool:
+        """
+        Determine if product name is specific enough for auto-selection
+        
+        STRICT RULES:
+        - Base name alone (e.g., "aristo") is NEVER specific ❌
+        - Must have model name + number (e.g., "aristo 500ix") ✅
+        """
+        if not product_name:
+            return False
+        
+        import re
+        
+        name = product_name.strip().lower()
+        
+        # Known base names that require numbers
+        known_base_names = ['aristo', 'warrior', 'renegade', 'robustfeed', 'rebel', 'caddy']
+        
+        # CRITICAL: Check if input is EXACTLY a base name (reject immediately)
+        name_normalized = name.replace(" ", "").replace("-", "")
+        if name_normalized in known_base_names:
+            logger.info(f"❌ Specificity FAILED: '{product_name}' is base name only (no model number)")
+            return False
+        
+        # Check if contains any base name
+        has_model = any(model in name for model in known_base_names)
+        if not has_model:
+            logger.info(f"❌ Specificity FAILED: '{product_name}' - no known model name")
+            return False
+        
+        # Check 2: Must contain a substantial number component
+        # Pattern: 3+ consecutive digits OR digits+letters (like "500ix", "5000iw")
+        has_substantial_number = bool(re.search(r'\d{3,}|\d+[a-z]+', name))
+        
+        if not has_substantial_number:
+            detected_model = [m for m in known_base_names if m in name][0]
+            logger.info(f"❌ Specificity FAILED: '{product_name}' - has '{detected_model}' but NO model number")
+            return False
+        
+        logger.info(f"✅ Specificity PASSED: '{product_name}' - has model + number")
+        return True
+
+    async def _process_compound_request(
+        self,
+        conversation_state: ConversationState
+    ) -> Dict[str, Any]:
+        """
+        Handle compound requests with dependency validation
+        
+        ENHANCED: Now handles accessory requests (trolley, cart, etc.)
+        
+        Strategy:
+        1. Validate dependencies (PowerSource required for downstream components)
+        2. Process components in dependency order (PowerSource → Feeder → Cooler → etc.)
+        3. For each component:
+        a. Search for compatible products using EXACT MODEL MATCHING first
+        b. Check if product name is SPECIFIC enough
+        c. If specific + exact match → auto-select
+        d. Otherwise → queue for disambiguation
+        4. Return consolidated response
+        """
+        
+        master_params = conversation_state.master_parameters.dict()
+        
+        # VALIDATE DEPENDENCIES FIRST
+        is_valid, error_message = self._validate_compound_request(master_params)
+        
+        if not is_valid:
+            logger.warning("Compound request validation failed - missing PowerSource")
+            return {
+                "message": error_message,
+                "current_state": ConfiguratorState.POWER_SOURCE_SELECTION.value,
+                "error": False,
+                "needs_power_source": True
+            }
+        
+        # Track selections and disambiguation needs
+        auto_selected: List[Tuple[str, ProductResult]] = []
+        needs_disambiguation: List[Tuple[str, Any, ConfiguratorState]] = []  # 🔧 Changed to Any to store SearchResults
+        
+        # 🆕 Track accessories mentioned (for later processing)
+        accessory_keywords = []
+        
+        # Define processing order (dependency-based)
+        component_order = [
+            ("power_source", "PowerSource", ConfiguratorState.POWER_SOURCE_SELECTION),
+            ("feeder", "Feeder", ConfiguratorState.FEEDER_SELECTION),
+            ("cooler", "Cooler", ConfiguratorState.COOLER_SELECTION),
+            ("interconnector", "Interconnector", ConfiguratorState.INTERCONNECTOR_SELECTION),
+            ("torch", "Torch", ConfiguratorState.TORCH_SELECTION),
+        ]
+        
+        logger.info("=" * 60)
+        logger.info("PROCESSING COMPOUND REQUEST")
+        logger.info("=" * 60)
+        
+        for component_key, component_type, target_state in component_order:
+            component_dict = master_params.get(component_key, {})
+            
+            # Skip if component not mentioned or already selected
+            if not component_dict or not any(component_dict.values()):
+                continue
+            
+            # Skip if component already selected in conversation state
+            if self._is_component_selected(conversation_state, component_type):
+                logger.info(f"Skipping {component_type} - already selected")
+                continue
+            
+            logger.info(f"\nProcessing compound component: {component_type}")
+            
+            # Search for component (now uses enhanced exact model matching)
+            search_results = await self._search_component(
+                component_type,
+                master_params,
+                conversation_state
+            )
+            
+            if not search_results or not search_results.products:
+                logger.warning(f"No results for {component_type}")
+                continue
+            
+            logger.info(f"   Found {len(search_results.products)} products")
+            
+            # Try to match product by name
+            product_name = component_dict.get("product_name")
+
+            # DISABLED: Auto-selection disabled globally - always require user confirmation
+            if False and product_name and self._is_specific_product_name(product_name):
+                logger.info(f"Product name '{product_name}' is specific - attempting auto-select")
+                matching_product = self._find_product_by_name(product_name, search_results.products)
+                
+                if matching_product:
+                    # Exact match found - auto-select
+                    selected_product = SelectedProduct(
+                        gin=matching_product.gin,
+                        name=matching_product.name,
+                        category=matching_product.category,
+                        description=matching_product.description,
+                        specifications=matching_product.specifications
+                    )
+                    
+                    # Select component in conversation state
+                    conversation_state.select_component(component_type, selected_product)
+                    
+                    # Store GIN immediately
+                    self.gin_manager.add_component(component_type, matching_product.gin, matching_product.name)
+                    
+                    auto_selected.append((component_type, matching_product))
+                    
+                    # Set applicability for PowerSource
+                    if component_type == "PowerSource":
+                        applicability = self._get_component_applicability(matching_product.gin)
+                        conversation_state.set_applicability(applicability)
+                    
+                    logger.info(f"   Auto-selected: {matching_product.name}")
+                else:
+                    # Multiple matches or no exact match - need disambiguation
+                    needs_disambiguation.append((component_type, search_results, target_state))  # 🔧 Store full SearchResults
+                    logger.info(f"   Needs disambiguation: {len(search_results.products)} options")
+                    break
+            else:
+                # Product name is too vague OR no product name - need disambiguation
+                if product_name:
+                    logger.info(f"Product name '{product_name}' is too vague - showing list")
+                else:
+                    logger.info(f"No product name specified - showing list")
+
+                needs_disambiguation.append((component_type, search_results, target_state))  # 🔧 Store full SearchResults
+                break
+        
+        # 🆕 NEW: Check for accessory keywords in original request
+        accessories_dict = master_params.get("accessories", {})
+        if accessories_dict:
+            product_name = accessories_dict.get("product_name", "")
+            if product_name:
+                accessory_keywords.append(product_name)
+                logger.info(f"📦 Accessory keywords detected: {accessory_keywords}")
+        
+        # Generate consolidated response
+        logger.info("=" * 60)
+        logger.info(f"COMPOUND REQUEST RESULT:")
+        logger.info(f"  Auto-selected: {len(auto_selected)} components")
+        logger.info(f"  Needs disambiguation: {len(needs_disambiguation)} components")
+        logger.info(f"  Accessory keywords: {accessory_keywords}")
+        logger.info("=" * 60)
+
+        return await self._generate_compound_response(
+            conversation_state,
+            auto_selected,
+            needs_disambiguation,
+            accessory_keywords  # 🆕 Pass accessory info
+        )
+
+    async def _search_component(
+        self,
+        component_type: str,
+        master_params: Dict[str, Any],
+        conversation_state: ConversationState
+    ) -> Optional[Any]:
+        """
+        Search for a specific component type
+        Handles both PowerSource (no dependencies) and other components (with dependencies)
+        """
+        
+        if component_type == "PowerSource":
+            return await self.product_search.search_power_source(master_params, limit=self.DEFAULT_SEARCH_LIMIT)
+
+        # Other components need response_json for compatibility
+        serialized_response = self._serialize_response_json(conversation_state)
+
+        search_methods = {
+            "Feeder": self.product_search.search_feeder_smart,
+            "Cooler": self.product_search.search_cooler_smart,
+            "Interconnector": self.product_search.search_interconnector,
+            "Torch": self.product_search.search_torch_smart,
+            "Accessories": self.product_search.search_accessories,
+        }
+
+        search_method = search_methods.get(component_type)
+        if search_method:
+            return await search_method(master_params, serialized_response, limit=self.DEFAULT_SEARCH_LIMIT)
+        
+        return None
+
+    def _is_component_selected(self, conversation_state: ConversationState, component_type: str) -> bool:
+        """Check if a component is already selected in conversation state"""
+        component_map = {
+            "PowerSource": conversation_state.response_json.PowerSource,
+            "Feeder": conversation_state.response_json.Feeder,
+            "Cooler": conversation_state.response_json.Cooler,
+            "Interconnector": conversation_state.response_json.Interconnector,
+            "Torch": conversation_state.response_json.Torch,
+            "Accessories": conversation_state.response_json.Accessories,
+        }
+        
+        return component_map.get(component_type) is not None
+
+    async def _generate_compound_response(
+        self,
+        conversation_state: ConversationState,
+        auto_selected: List[Tuple[str, ProductResult]],
+        needs_disambiguation: List[Tuple[str, Any, ConfiguratorState]],  # 🔧 Changed to Any for SearchResults
+        accessory_keywords: List[str] = None  # 🆕 New parameter
+    ) -> Dict[str, Any]:
+        """
+        Generate response for compound request
+        Shows what was auto-selected and what needs disambiguation
+
+        ENHANCED: Now mentions if accessories were requested for later
+        ENHANCED: Includes pagination metadata (has_more flag)
+        """
+        
+        message_parts = []
+        
+        # Show auto-selected components
+        if auto_selected:
+            message_parts.append("✅ **Auto-Selected Components:**\n")
+            for component_type, product in auto_selected:
+                message_parts.append(f"- {component_type}: **{product.name}** (GIN: {product.gin})")
+            message_parts.append("")
+        
+        # Show components needing disambiguation
+        if needs_disambiguation:
+            component_type, search_results, target_state = needs_disambiguation[0]  # 🔧 Unpacked SearchResults
+            products = search_results.products  # 🔧 Extract products list
+
+            message_parts.append(f"**Please select {component_type}:**\n")
+            for idx, product in enumerate(products, 1):
+                desc_preview = (product.description or "")[:150] + "..." if product.description and len(product.description) > 150 else (product.description or "")
+                message_parts.append(f"{idx}. **{product.name}** (GIN: {product.gin})")
+                if desc_preview:
+                    message_parts.append(f"   {desc_preview}")
+                message_parts.append("")
+
+            message_parts.append("💡 **Select by number (1-3) or say the product name.**")
+
+            # 🆕 Mention accessories if detected
+            if accessory_keywords:
+                message_parts.append(f"\n📦 *Note: I'll help you find accessories like '{', '.join(accessory_keywords)}' after selecting required components.*")
+
+            # Update conversation state to the component needing selection
+            conversation_state.current_state = target_state
+
+            # 🔧 PAGINATION FIX: Initialize pagination state for disambiguation component
+            state_key = target_state.value
+            conversation_state.pagination_states[state_key] = {
+                "offset": 0,
+                "total": 0,
+                "shown": len(products)
+            }
+            logger.info(f"✅ Initialized pagination for {component_type} (disambiguation): shown={len(products)}, has_more={search_results.has_more}")
+
+            return {
+                "message": "\n".join(message_parts),
+                "current_state": target_state.value,
+                "products": [p.dict() for p in products],
+                "awaiting_selection": True,
+                "compound_request_in_progress": True,
+                "auto_selected_count": len(auto_selected),
+                "pending_accessories": accessory_keywords,  # 🆕 Track for later
+                "pagination": {  # 🔧 Add pagination metadata
+                    "offset": 0,
+                    "limit": 3,
+                    "has_more": search_results.has_more,
+                    "append_results": False
+                }
+            }
+        else:
+            # All components auto-selected or processed
+            if auto_selected:
+                message_parts.append("\n✅ **All Components Selected!**")
+
+                # 🆕 Check if we should search for accessories
+                if accessory_keywords:
+                    message_parts.append(f"\n📦 **Now let's find your accessories:**")
+                    message_parts.append(f"You mentioned: {', '.join(accessory_keywords)}")
+                    message_parts.append("\nI'll search for compatible accessories...")
+                    
+                    # Move to accessories state
+                    conversation_state.current_state = ConfiguratorState.ACCESSORIES_SELECTION
+                    
+                    return {
+                        "message": "\n".join(message_parts),
+                        "current_state": ConfiguratorState.ACCESSORIES_SELECTION.value,
+                        "compound_request_complete": True,
+                        "auto_selected_count": len(auto_selected),
+                        "search_accessories": accessory_keywords  # 🆕 Trigger accessory search
+                    }
+                
+                # Use centralized next state logic
+                next_state = self._find_next_applicable_state(conversation_state)
+                if next_state and next_state != ConfiguratorState.FINALIZE:
+                    conversation_state.current_state = next_state
+                    message_parts.append(f"\n➡️ **Next:** {next_state.value.replace('_', ' ').title()}")
+
+                    # 🔧 PAGINATION FIX: Search for products and initialize pagination state for next component
+                    component_type_map = {
+                        ConfiguratorState.POWER_SOURCE_SELECTION: "PowerSource",
+                        ConfiguratorState.FEEDER_SELECTION: "Feeder",
+                        ConfiguratorState.COOLER_SELECTION: "Cooler",
+                        ConfiguratorState.INTERCONNECTOR_SELECTION: "Interconnector",
+                        ConfiguratorState.TORCH_SELECTION: "Torch",
+                        ConfiguratorState.ACCESSORIES_SELECTION: "Accessories"
+                    }
+
+                    next_component_type = component_type_map.get(next_state)
+                    if next_component_type:
+                        logger.info(f"🔍 Searching for {next_component_type} after compound request auto-selection")
+
+                        # Search for next component
+                        next_search_results = await self._search_component(
+                            next_component_type,
+                            master_params,
+                            conversation_state
+                        )
+
+                        if next_search_results and next_search_results.products:
+                            # Initialize pagination state for next component
+                            state_key = next_state.value
+                            conversation_state.pagination_states[state_key] = {
+                                "offset": 0,
+                                "total": 0,
+                                "shown": len(next_search_results.products)
+                            }
+                            logger.info(f"✅ Initialized pagination for {next_component_type}: shown={len(next_search_results.products)}, has_more={next_search_results.has_more}")
+
+                            return {
+                                "message": "\n".join(message_parts),
+                                "current_state": conversation_state.current_state.value,
+                                "compound_request_complete": True,
+                                "auto_selected_count": len(auto_selected),
+                                "products": [p.dict() for p in next_search_results.products],
+                                "pagination": {
+                                    "offset": 0,
+                                    "limit": 3,
+                                    "has_more": next_search_results.has_more,
+                                    "append_results": False
+                                },
+                                "awaiting_selection": True
+                            }
+                else:
+                    message_parts.append("\n✅ **Configuration complete!** Say 'done' to finalize.")
+
+                return {
+                    "message": "\n".join(message_parts),
+                    "current_state": conversation_state.current_state.value,
+                    "compound_request_complete": True,
+                    "auto_selected_count": len(auto_selected)
+                }
+            else:
+                return {
+                    "message": "Could not process compound request. Please provide more specific information.",
+                    "current_state": conversation_state.current_state.value,
+                    "error": True
+                }
+
+    # =========================================================================
+    # PRODUCT MATCHING (Fuzzy) - From Document 5 (UNCHANGED)
+    # =========================================================================
+
+    def _find_product_by_name(
+        self,
+        product_name: str,
+        products: List[ProductResult]
+    ) -> Optional[ProductResult]:
+        """
+        Enhanced fuzzy matching with STRICT rules:
+        - GIN numbers: instant match
+        - Base names only (e.g., "aristo"): NEVER auto-select
+        - Specific names (e.g., "aristo 500ix"): attempt match
+        """
+        if not product_name or not products:
+            return None
+
+        import re
+
+        user_input = product_name.strip()
+        user_input_lower = user_input.lower()
+
+        # =====================================================================
+        # STEP 1: GIN NUMBER DETECTION (highest priority)
+        # =====================================================================
+        if re.fullmatch(r'\d{7,10}', user_input):
+            logger.info(f"🔢 GIN detected: {user_input}")
+            gin_matches = [p for p in products if str(p.gin).strip() == user_input.strip()]
+            if gin_matches:
+                logger.info(f"✅ GIN match: {gin_matches[0].name}")
+                return gin_matches[0]
+            logger.info(f"❌ No GIN match found")
+            return None
+
+        # =====================================================================
+        # STEP 2: BASE NAME ONLY CHECK (reject immediately)
+        # =====================================================================
+        known_base_names = ['aristo', 'warrior', 'renegade', 'robustfeed', 'rebel', 'caddy']
+        user_normalized = user_input_lower.replace(" ", "").replace("-", "")
+        
+        if user_normalized in known_base_names:
+            logger.info(f"🚫 BASE NAME ONLY: '{product_name}' - FORCE SHOW LIST")
+            return None
+        
+        # Check if it's ONLY a base name (no numbers)
+        has_number = bool(re.search(r'\d', user_input_lower))
+        if not has_number:
+            logger.info(f"🚫 NO NUMBER: '{product_name}' - FORCE SHOW LIST")
+            return None
+
+        # =====================================================================
+        # STEP 3: Parse user input structure
+        # =====================================================================
+        user_base_match = re.match(r'^([a-z]+)\s*(\d+)([a-z]*)$', user_input_lower)
+        user_base_name, user_number, user_suffix = None, None, None
+        if user_base_match:
+            user_base_name = user_base_match.group(1)
+            user_number = user_base_match.group(2)
+            user_suffix = user_base_match.group(3)
+
+        # =====================================================================
+        # TIER 1: Exact Match
+        # =====================================================================
+        for product in products:
+            product_normalized = product.name.lower().replace(" ", "").replace("-", "").replace(",", "")
+            if user_normalized == product_normalized:
+                logger.info(f"✅ TIER 1 - Exact: '{product_name}' -> {product.name}")
+                return product
+
+        # =====================================================================
+        # TIER 2: Base + Number Match
+        # =====================================================================
+        if user_base_name and user_number:
+            number_matches = []
+            for product in products:
+                product_lower = product.name.lower()
+                product_match = re.search(r'\b([a-z]+)\s*(?:mig\s+)?(?:u)?(\d+)([a-z]*)', product_lower)
+                if not product_match:
+                    continue
+
+                product_base_name = product_match.group(1)
+                product_number = product_match.group(2)
+                product_suffix = product_match.group(3)
+
+                if user_base_name != product_base_name or user_number != product_number:
+                    continue
+
+                if user_suffix:
+                    if user_suffix == product_suffix:
+                        number_matches.append((product, 1))
+                    elif product_suffix.startswith(user_suffix):
+                        number_matches.append((product, 2))
+                else:
+                    number_matches.append((product, 3))
+
+            if number_matches:
+                number_matches.sort(key=lambda x: x[1])
+                top_matches = [p for p, pri in number_matches if pri == number_matches[0][1]]
+                if len(top_matches) == 1:
+                    logger.info(f"✅ TIER 2 - Number match: '{product_name}' -> {top_matches[0].name}")
+                    return top_matches[0]
+                else:
+                    logger.info(f"⚠️ TIER 2 - Multiple matches -> show list")
+                    return None
+
+        # =====================================================================
+        # TIER 3: Contains Match (DISABLED for single words without numbers)
+        # =====================================================================
+        if len(user_input_lower.split()) == 1 and not has_number:
+            logger.info(f"⚠️ TIER 3 SKIPPED - single word, no number")
+            return None
+
+        contains_matches = [p for p in products 
+                        if user_normalized in p.name.lower().replace(" ", "").replace("-", "")]
+        if len(contains_matches) == 1:
+            logger.info(f"✅ TIER 3 - Contains: '{product_name}' -> {contains_matches[0].name}")
+            return contains_matches[0]
+        elif len(contains_matches) > 1:
+            logger.info(f"⚠️ TIER 3 - Multiple matches -> show list")
+            return None
+
+        # No match
+        logger.warning(f"❌ No match for '{product_name}' -> show list")
+        return None
+
+    def _find_product_by_index(
+        self,
+        index: int,
+        products: List[ProductResult]
+    ) -> Optional[ProductResult]:
+        """Find product by index (1-based)"""
+        if not products or index < 1 or index > len(products):
+            logger.warning(f"Invalid index {index} for {len(products) if products else 0} products")
+            return None
+        
+        product = products[index - 1]
+        logger.info(f"Index match: {index} -> {product.name}")
+        return product
+
+    # =========================================================================
+    #  CENTRALIZED NEXT STATE LOGIC - From Document 6
+    # =========================================================================
+
+    def _find_next_applicable_state(self, conversation_state: ConversationState) -> ConfiguratorState:
+        """
+        Find next state where component is applicable and not yet selected.
+        CRITICAL: Always returns the FIRST unselected required component in sequence order.
+        This ensures we never skip required components like Feeder.
+        """
+        
+        # Get applicability
+        applicability = self._get_current_applicability(conversation_state)
+        
+        # State order with numeric indices for proper comparison
+        state_order = [
+            (0, ConfiguratorState.POWER_SOURCE_SELECTION, "PowerSource"),
+            (1, ConfiguratorState.FEEDER_SELECTION, "Feeder"),
+            (2, ConfiguratorState.COOLER_SELECTION, "Cooler"),
+            (3, ConfiguratorState.INTERCONNECTOR_SELECTION, "Interconnector"),
+            (4, ConfiguratorState.TORCH_SELECTION, "Torch"),
+            (5, ConfiguratorState.POWERSOURCE_ACCESSORIES_SELECTION, "PowerSourceAccessories"),
+            (6, ConfiguratorState.FEEDER_ACCESSORIES_SELECTION, "FeederAccessories"),
+            (7, ConfiguratorState.FEEDER_CONDITIONAL_ACCESSORIES, "FeederConditionalAccessories"),
+            (8, ConfiguratorState.INTERCONNECTOR_ACCESSORIES_SELECTION, "InterconnectorAccessories"),
+            (9, ConfiguratorState.REMOTE_SELECTION, "Remotes"),
+            (10, ConfiguratorState.REMOTE_ACCESSORIES_SELECTION, "RemoteAccessories"),
+            (11, ConfiguratorState.REMOTE_CONDITIONAL_ACCESSORIES, "RemoteConditionalAccessories"),
+            (12, ConfiguratorState.CONNECTIVITY_SELECTION, "Connectivity")
+        ]
+        
+        # Get current state index
+        current_index = -1
+        for idx, st, _ in state_order:
+            if st == conversation_state.current_state:
+                current_index = idx
+                break
+        
+        # Find first applicable and unselected component AFTER current state
+        for idx, next_state, component in state_order:
+            # Skip if current or earlier
+            if idx <= current_index:
+                continue
+            
+            # For accessories, check if base component exists
+            if component in ["PowerSourceAccessories", "FeederAccessories", "FeederConditionalAccessories",
+                           "InterconnectorAccessories", "RemoteAccessories", "RemoteConditionalAccessories",
+                           "FeederWears"]:
+                # These are optional, skip if base component not selected
+                base_map = {
+                    "PowerSourceAccessories": conversation_state.response_json.PowerSource,
+                    "FeederAccessories": conversation_state.response_json.Feeder,
+                    "FeederConditionalAccessories": conversation_state.response_json.FeederAccessories,
+                    "InterconnectorAccessories": conversation_state.response_json.Interconnector,
+                    "RemoteAccessories": conversation_state.response_json.Remotes,
+                    "RemoteConditionalAccessories": conversation_state.response_json.RemoteAccessories,
+                    "FeederWears": conversation_state.response_json.Feeder
+                }
+                if not base_map.get(component):
+                    logger.info(f"⏭ Skipping {component} (base component not selected)")
+                    continue
+
+                # ✅ Also check applicability even when base exists
+                component_applicability_value = applicability.get(component)
+                if component_applicability_value in ["N", "not_applicable"]:
+                    logger.info(f"⏭ Skipping {component} (not applicable)")
+                    continue
+
+                logger.info(f"✅ Next state: {next_state.value} ({component})")
+                return next_state
+            
+            # Check if applicable
+            # ✨ INTEGRATED COOLER: Skip cooler_selection if PowerSource has integrated cooler
+            component_applicability_value = applicability.get(component)
+            if component_applicability_value in ["N", "not_applicable"]:
+                logger.info(f" Skipping {component} (not applicable)")
+                continue
+            elif component == "Cooler" and component_applicability_value == "integrated_cooler":
+                logger.info(f"⏭️ Skipping {component} (PowerSource has integrated cooler)")
+                continue
+            
+            # Check if already selected
+            if component == "Accessories":
+                # Accessories can have multiple, always show
+                logger.info(f"📍 Next state: {next_state.value} ({component})")
+                return next_state
+            else:
+                selected = getattr(conversation_state.response_json, component, None)
+                if not selected:
+                    logger.info(f"📍 Next state: {next_state.value} ({component} - required but not selected)")
+                    return next_state
+                else:
+                    logger.info(f"✓ {component} already selected, continuing...")
+        
+        # All components done
+        logger.info(f"📍 Next state: FINALIZE (all required components selected)")
+        return ConfiguratorState.FINALIZE
+
+    def _get_current_applicability(self, conversation_state: ConversationState) -> Dict[str, str]:
+        """Get applicability for currently selected power source"""
+        power_source_gin = conversation_state.response_json.PowerSource.gin if conversation_state.response_json.PowerSource else None
+
+        if not power_source_gin or not self.applicability_config:
+            # Default: All components required
+            return {
+                "Feeder": "Y",
+                "Cooler": "Y",
+                "Interconnector": "Y",
+                "Torch": "Y",
+                "Accessories": "Y"
+            }
+
+        ps_config = self.applicability_config.get("power_sources", {}).get(power_source_gin, {})
+        applicability = ps_config.get("applicability", {})
+
+        # Normalize keys
+        normalized = {}
+        for key, value in applicability.items():
+            clean_key = key.replace("Powersource", "").replace("PowerSource", "").strip()
+            normalized[clean_key] = value
+
+        logger.info(f"📋 Applicability for {power_source_gin}: {normalized}")
+        return normalized
+
+    # =========================================================================
+    # 🆕 Q&A SUPPORT - From Document 6
+    # =========================================================================
+
+    def _is_question(self, user_input: str) -> bool:
+        """
+        Detect if user input is a question requiring Q&A response.
+
+        Detection rules:
+        1. Ends with '?'
+        2. Starts with question words (what, why, how, when, where, who, which)
+        3. Contains "can you", "could you", "would you" patterns
+
+        Exclusions:
+        - Greeting patterns (hi?, hello?, hey?)
+        - Selection confirmations (option 2?, this one?)
+
+        Returns:
+            True if input is a question, False otherwise
+        """
+        if not user_input or len(user_input.strip()) < 3:
+            return False
+        text = user_input.strip().lower()
+        
+        greeting_patterns = [
+            r'^(hi|hello|hey|sup|yo)\??$',
+        ]
+        for pattern in greeting_patterns:
+            if re.match(pattern, text):
+                return False
+        
+        selection_patterns = [
+            r'^(option|number|item|product)\s+\d+\??$',
+            r'^(this|that|yes|no|ok|sure)\s+(one|option)?\??$',
+            r'^\d+\??$'  # Just a number
+        ]
+        for pattern in selection_patterns:
+            if re.match(pattern, text):
+                return False
+        
+        if text.endswith('?'):
+            return True
+        
+        question_starters = [
+            'what', 'why', 'how', 'when', 'where', 'who',
+            'which', 'whose', 'whom', 'can', 'could', 'would',
+            'should', 'will', 'does', 'do', 'is', 'are', 'was', 'were'
+        ]
+        first_word = text.split()[0] if text.split() else ""
+        if first_word in question_starters:
+            return True
+        
+        question_patterns = [
+            r'\b(can you|could you|would you|will you)\b',
+            r'\b(tell me|explain|describe)\b',
+            r'\b(what is|what are|what\'s)\b',
+            r'\b(how do|how does|how can|how to)\b',
+            r'\b(why is|why are|why do|why does)\b'
+        ]
+        for pattern in question_patterns:
+            if re.search(pattern, text):
+                return True
+        
+        return False
+
+    async def _handle_question(
+        self,
+        user_input: str,
+        conversation_state: ConversationState
+    ) -> Dict[str, Any]:
+        """
+        Handle question using LLM-powered Q&A.
+
+        Args:
+            user_input: User's question
+            conversation_state: Current session state
+
+        Returns:
+            Response dict with Q&A answer and current state maintained
+        """
+        logger.info(f" Q&A Mode: Detected question: {user_input[:50]}...")
+        try:
+            # Build context for Q&A
+            qa_context = {
+                "current_state": conversation_state.current_state,
+                "response_json": conversation_state.response_json,
+                "master_parameters": conversation_state.master_parameters
+            }
+            qa_response = await self.message_generator.generate_qa_response(
+                question=user_input,
+                context=qa_context,
+                language=conversation_state.language
+            )
+
+            state_prompts = {
+                ConfiguratorState.POWER_SOURCE_SELECTION: "Power Source",
+                ConfiguratorState.FEEDER_SELECTION: "Feeder",
+                ConfiguratorState.COOLER_SELECTION: "Cooler",
+                ConfiguratorState.INTERCONNECTOR_SELECTION: "Interconnector",
+                ConfiguratorState.TORCH_SELECTION: "Torch",
+                ConfiguratorState.ACCESSORIES_SELECTION: "Accessories",
+            }
+
+            component = state_prompts.get(conversation_state.current_state, "configuration")
+            qa_response += f"\n\n💬 Ready to continue selecting your {component}?"
+
+            logger.info(f"✅ Q&A response generated successfully")
+            
+            return {
+                "message": qa_response,
+                "current_state": conversation_state.current_state.value,
+                "products": [],
+                "awaiting_selection": False,
+                "is_question_response": True
+            }
+        except Exception as e:
+            logger.error(f"❌ Q&A handling failed: {e}", exc_info=True)
+
+            fallback_message = (
+                "I'm having trouble answering that right now. "
+                "Let's continue with your configuration, or you can rephrase your question."
+            )
+
+            return {
+                "message": fallback_message,
+                "current_state": conversation_state.current_state.value,
+                "products": [],
+                "awaiting_selection": False,
+                "error": True
+            }
+
+    # =========================================================================
+    # MAIN MESSAGE PROCESSING - Enhanced with Q&A
+    # =========================================================================
+
+    @traceable(name="process_message", run_type="chain")
+    async def process_message(
+        self,
+        conversation_state: ConversationState,
+        user_message: str,
+        last_shown_products: Optional[List[Dict]] = None
+    ) -> Dict[str, Any]:
+        """
+        Process user message in current state with compound request support
+
+        Args:
+            conversation_state: Current conversation state
+            user_message: User's input
+            last_shown_products: Products shown in last response (for selection)
+
+        Returns:
+            Response dict with updated state and message
+        """
+
+        try:
+            logger.info(f"Processing message in state: {conversation_state.current_state}")
+            logger.info(f"Last shown products count: {len(last_shown_products) if last_shown_products else 0}")
+
+            logger.info(f"-- 1 --")
+            # 🆕 Add to conversation history (persists to Redis)
+            conversation_state.add_message("user", user_message)
+
+            logger.info(f"-- 2 --")
+            # 🆕 Check if question (before other processing)
+            if self._is_question(user_message):
+                logger.info(f"-- 3 --")
+                response = await self._handle_question(user_message, conversation_state)
+                conversation_state.add_message("assistant", response.get("message", ""), products=response.get("products", []))
+                logger.info(f"-- 4 --{response}")
+                return response
+
+            logger.info(f"-- 5 --")
+            # Check for special commands first
+            if user_message.lower().strip() in ["skip", "next"]:
+                logger.info(f"-- 6 -- {user_message.lower().strip()}")
+                return await self._handle_skip(conversation_state, user_message.lower().strip())
+
+            logger.info(f"-- 7 --")
+            if user_message.lower().strip() in ["done", "finish", "finalize"]:
+                logger.info(f"-- 8 --")
+                return await self._handle_finalize(conversation_state)
+
+            # 🆕 PAGINATION: Check for "show more" request
+            if self._is_show_more_request(user_message):
+                return await self._handle_show_more(conversation_state)
+
+            # Agent 1: Extract parameters
+            updated_master = await self.parameter_extractor.extract_parameters(
+                user_message,
+                conversation_state.current_state.value,
+                conversation_state.master_parameters.dict(),
+                # available_products=last_shown_products
+            )
+            
+            logger.info(f"-- 10 --")
+            logger.info(f"📋 Extracted parameters: {json.dumps(updated_master, indent=2, default=str)}")
+            
+            # Extract selection metadata (if present)
+            logger.info(f"-- 11 --")
+            selection_meta = updated_master.get("_selection_metadata", {})
+            logger.info(f"-- 12 --")
+            is_selection = selection_meta.get("is_selection", False)
+            skip_intent = selection_meta.get("skip_intent", False)
+            selected_index = selection_meta.get("selected_index")
+            selected_name = selection_meta.get("selected_product_name")
+
+            logger.info(f"Selection metadata: is_selection={is_selection}, skip={skip_intent}, index={selected_index}, name={selected_name}")
+
+            # Extract english_query (for multilingual Lucene search)
+            english_query = updated_master.get("_english_query", user_message)
+            if "_english_query" in updated_master:
+                conversation_state.metadata["english_query"] = english_query
+                logger.info(f"English query extracted: '{english_query}'")
+
+            # Update master parameters (remove metadata before storing)
+            clean_master = {k: v for k, v in updated_master.items() if k not in ["_selection_metadata", "_english_query"]}
+            conversation_state.update_master_parameters(clean_master)
+            logger.info(f"-- 12.5 -- {conversation_state}")
+
+            # Handle SKIP intent
+            if skip_intent:
+                return await self._handle_skip(conversation_state)
+
+            # CHECK FOR COMPOUND REQUEST (only in S1 or when no products shown)
+            if conversation_state.current_state == ConfiguratorState.POWER_SOURCE_SELECTION and not last_shown_products:
+                logger.info(f"-- 12.6 --")
+                # Pass response_json to exclude already-selected components from compound detection
+                if self._detect_compound_request(clean_master, conversation_state.response_json):
+                    logger.info("Triggering compound request processing")
+                    response = await self._process_compound_request(conversation_state)
+                    conversation_state.add_message("assistant", response.get("message", ""), products=response.get("products", []))
+                    return response
+
+            # Handle SELECTION intent (products must be shown)
+            if is_selection and last_shown_products:
+                logger.info("Selection detected - attempting to match product")
+                
+                # Convert dicts to ProductResult objects for matching
+                products = [ProductResult(**p) for p in last_shown_products]
+                
+                # Find the selected product
+                selected_product = None
+                if selected_index:
+                    selected_product = self._find_product_by_index(selected_index, products)
+                elif selected_name:
+                    selected_product = self._find_product_by_name(selected_name, products)
+                
+                if selected_product:
+                    # User successfully selected a product
+                    product_data = {
+                        "gin": selected_product.gin,
+                        "name": selected_product.name,
+                        "category": selected_product.category,
+                        "description": selected_product.description,
+                        "specifications": selected_product.specifications
+                    }
+                    
+                    logger.info(f"Product selected: {selected_product.name} (GIN: {selected_product.gin})")
+                    response = await self.select_product(
+                        conversation_state,
+                        selected_product.gin,
+                        product_data
+                    )
+                    conversation_state.add_message("assistant", response.get("message", ""), products=response.get("products", []))
+                    return response
+                else:
+                    # Selection failed - generate error message
+                    logger.warning(f"Failed to match selection: index={selected_index}, name={selected_name}")
+                    message = "I couldn't find that product in the list. Please try again:\n"
+                    message += "- Say a number (1, 2, 3)\n"
+                    message += "- Say the product name\n"
+                    message += "- Or say 'skip' to skip this step"
+                    
+                    return {
+                        "message": message,
+                        "current_state": conversation_state.current_state.value,
+                        "error": True,
+                        "products": last_shown_products,
+                        "awaiting_selection": True
+                    }
+
+            # ✅ FIX: If products already shown and user didn't select, check if this is:
+            # 1. Generic non-selection text ("yes", "ok") → Re-use cached products
+            # 2. New search request ("water-cooled feeder") → Execute NEW search with Lucene
+            if last_shown_products and not is_selection and not skip_intent:
+                # Check if user message contains meaningful search parameters
+                has_meaningful_content = self._has_meaningful_search_content(user_message, clean_master)
+
+                if has_meaningful_content:
+                    # User sent a NEW search request - execute search with Lucene scoring
+                    logger.info(f"🔍 Detected new search request: '{user_message}' - executing fresh search with Lucene")
+                    # Fall through to normal search flow below
+                else:
+                    # Generic non-selection text - re-use cached products
+                    # Validate cached products match current state to prevent stale data
+                    if self._validate_products_for_state(last_shown_products, conversation_state.current_state):
+                        logger.info("Generic text detected (no new search params) - re-displaying cached products")
+
+                        # Get component name for friendly message
+                        component_name = self._state_to_component_name(conversation_state.current_state)
+                        logger.info(f"-- 12.7 -- {component_name}")
+
+                        # Generate simple reminder message
+                        reminder_message = f"Please select a {component_name} from the options below by clicking one:"
+
+                        return {
+                            "message": reminder_message,
+                            "current_state": conversation_state.current_state.value,
+                            "products": last_shown_products,
+                            "awaiting_selection": True,
+                            "reminder": True  # Flag to indicate this is a reminder
+                        }
+                    else:
+                        # Cached products don't match current state - proceed with fresh search
+                        logger.warning(
+                            f"Cached products don't match state {conversation_state.current_state.value} "
+                            f"- proceeding with fresh search instead of re-displaying stale data"
+                        )
+
+            # NOT a selection - proceed with normal flow (search)
+            logger.info("No selection detected - proceeding with search flow")
+
+            # Process based on current state
+            if conversation_state.current_state == ConfiguratorState.POWER_SOURCE_SELECTION:
+                response = await self._process_power_source_selection(conversation_state, user_message)
+
+            elif conversation_state.current_state == ConfiguratorState.FEEDER_SELECTION:
+                response = await self._process_component_selection(conversation_state, "Feeder", user_message)
+
+            elif conversation_state.current_state == ConfiguratorState.COOLER_SELECTION:
+                response = await self._process_component_selection(conversation_state, "Cooler", user_message)
+
+            elif conversation_state.current_state == ConfiguratorState.INTERCONNECTOR_SELECTION:
+                response = await self._process_component_selection(conversation_state, "Interconnector", user_message)
+
+            elif conversation_state.current_state == ConfiguratorState.TORCH_SELECTION:
+                response = await self._process_component_selection(conversation_state, "Torch", user_message)
+
+            # Accessory Category States (From Document 5 - UNCHANGED)
+            elif conversation_state.current_state == ConfiguratorState.POWERSOURCE_ACCESSORIES_SELECTION:
+                logger.info("-- 13 --")
+                response = await self._process_powersource_accessories_selection(conversation_state, user_message)
+
+            elif conversation_state.current_state == ConfiguratorState.FEEDER_ACCESSORIES_SELECTION:
+                response = await self._process_feeder_accessories_selection(conversation_state, user_message)
+
+            elif conversation_state.current_state == ConfiguratorState.FEEDER_CONDITIONAL_ACCESSORIES:
+                response = await self._process_feeder_conditional_accessories(conversation_state)
+
+            elif conversation_state.current_state == ConfiguratorState.INTERCONNECTOR_ACCESSORIES_SELECTION:
+                response = await self._process_interconnector_accessories_selection(conversation_state)
+
+            elif conversation_state.current_state == ConfiguratorState.REMOTE_SELECTION:
+                response = await self._process_remote_selection(conversation_state)
+
+            elif conversation_state.current_state == ConfiguratorState.REMOTE_ACCESSORIES_SELECTION:
+                response = await self._process_remote_accessories_selection(conversation_state)
+
+            elif conversation_state.current_state == ConfiguratorState.REMOTE_CONDITIONAL_ACCESSORIES:
+                response = await self._process_remote_conditional_accessories(conversation_state)
+
+            elif conversation_state.current_state == ConfiguratorState.CONNECTIVITY_SELECTION:
+                response = await self._process_connectivity_selection(conversation_state)
+
+            elif conversation_state.current_state == ConfiguratorState.FINALIZE:
+                response = await self._process_finalize(conversation_state)
+
+            else:
+                response = {
+                    "message": f"Unknown state: {conversation_state.current_state}. Please restart the configuration.",
+                    "error": True
+                }
+
+            # 🆕 Add assistant message to history (persists to Redis)
+            conversation_state.add_message("assistant", response.get("message", ""), products=response.get("products", []))
+
+            return response
+
+        except Exception as e:
+            logger.error(f"Error processing message: {e}", exc_info=True)
+            error_message = self.message_generator.generate_error_message(
+                "search_failed",
+                str(e)
+            )
+            return {
+                "message": error_message,
+                "error": True,
+                "current_state": conversation_state.current_state.value
+            }
+
+    # =========================================================================
+    # CORE COMPONENT STATE PROCESSING (S1-S5) - From Document 5 (UNCHANGED)
+    # =========================================================================
+
+    async def _process_power_source_selection(
+        self,
+        conversation_state: ConversationState,
+        user_message: str
+    ) -> Dict[str, Any]:
+        """S1: PowerSource Selection (MANDATORY)"""
+
+        master_params_dict = conversation_state.master_parameters.dict()
+        
+        # =====================================================================
+        # 🔧 FIX: GIN DETECTION - Use correct category or no category
+        # =====================================================================
+        power_source_component = master_params_dict.get("power_source", {})
+        explicit_name = power_source_component.get("product_name", "")
+        
+        if explicit_name:
+            cleaned_input = explicit_name.strip().replace(" ", "").replace("-", "")
+            
+            # Check if it's a GIN (7-10 digits)
+            if re.fullmatch(r'\d{7,10}', cleaned_input):
+                logger.info(f"🔢 GIN NUMBER DETECTED: {cleaned_input}")
+                
+                try:
+                    # 🔧 CRITICAL FIX: Don't pass category, or try multiple category names
+                    # Option 1: Search without category restriction (RECOMMENDED)
+                    product = await self.product_search._search_by_gin_direct(
+                        cleaned_input, 
+                        category=None  # 🔧 FIX: Let it search all categories
+                    )
+                    
+                    # Option 2: Try common category variations if Option 1 fails
+                    if not product:
+                        for category_variant in ["Powersource", "PowerSource", "Power Source"]:
+                            product = await self.product_search._search_by_gin_direct(
+                                cleaned_input, 
+                                category=category_variant
+                            )
+                            if product:
+                                break
+                    
+                    if product:
+                        logger.info(f"✅ GIN MATCH FOUND: {product.name}")
+                        
+                        # Verify it's actually a PowerSource category
+                        if "power" not in product.category.lower():
+                            logger.warning(f"⚠️ GIN {cleaned_input} found but category is {product.category}, not PowerSource")
+                            # Continue to normal search
+                        else:
+                            # Valid PowerSource found - proceed with selection
+                            product_data = {
+                                "gin": product.gin,
+                                "name": product.name,
+                                "category": product.category,
+                                "description": product.description,
+                                "specifications": product.specifications
+                            }
+                            
+                            return await self.select_product(
+                                conversation_state,
+                                product.gin,
+                                product_data
+                            )
+                    else:
+                        logger.warning(f"⚠️ No product found for GIN: {cleaned_input}")
+                except Exception as e:
+                    logger.error(f"❌ GIN lookup failed: {e}")
+        
+        # =====================================================================
+        # STEP 2: Search flow - Modular vs Legacy architecture
+        # =====================================================================
+        logger.info(f"Master parameters before search: {master_params_dict}")
+
+        # Use English query for Lucene search (multilingual support)
+        english_query = conversation_state.metadata.get("english_query", user_message)
+        logger.info(f"🔍 User message for search: {user_message!r}")
+        logger.info(f"🌍 English query for search: {english_query!r}")
+
+        # Search using modular processor (uses configurable search_limit from state_config.json)
+        logger.info("🔍 Using modular architecture for PowerSource search")
+
+        try:
+            # Get PowerSource processor from registry
+            ps_processor = self.state_processor_registry.get_processor("power_source_selection")
+
+            if not ps_processor:
+                raise ValueError("PowerSource processor not found in registry")
+
+            # Search using modular processor
+            search_results_dict = await ps_processor.search_products(
+                user_message=english_query,
+                master_parameters=master_params_dict,
+                selected_components={},  # Empty for S1 (first component)
+                limit=None,  # Uses search_limit from state_config.json (10)
+                offset=0
+            )
+
+            # Convert dict from SearchOrchestrator to SearchResults object
+            search_results = self._convert_search_dict_to_results(search_results_dict)
+            logger.info(f"✅ Search completed: {len(search_results.products)} products found")
+
+        except Exception as e:
+            logger.error(f"❌ PowerSource search failed: {e}", exc_info=True)
+            return {
+                "message": f"I encountered an error searching for power sources. Please try again.",
+                "current_state": ConfiguratorState.POWER_SOURCE_SELECTION.value,
+                "products": [],
+                "error": True
+            }
+
+        if not search_results or not search_results.products:
+            message = "I couldn't find any power sources matching your requirements.\n\n"
+            message += "Please provide more details:\n"
+            message += "- Welding process: MIG, TIG, or Stick?\n"
+            message += "- Material: aluminum, stainless steel, mild steel?\n"
+            message += "- Current rating: 300A, 500A, 600A?\n"
+            message += "- Or specify a product name like 'Aristo 500ix'"
+
+            return {
+                "message": message,
+                "current_state": ConfiguratorState.POWER_SOURCE_SELECTION.value,
+                "products": []
+            }
+
+        # 🆕 AUTO-SELECT if exactly 1 result (using common method)
+        auto_select_result = await self._auto_select_single_result(
+            conversation_state,
+            search_results,
+            component_type="PowerSource",
+            response_json_field="PowerSource",
+            is_list=False
+        )
+        if auto_select_result:
+            return auto_select_result
+
+        # Check for specific product name
+        explicit_name = power_source_component.get("product_name")
+
+        # DISABLED: Auto-selection disabled globally - always require user confirmation
+        if False and explicit_name and self._is_specific_product_name(explicit_name):
+            logger.info(f"✅ Specific name detected: '{explicit_name}' - attempting match")
+            matching_product = self._find_product_by_name(explicit_name, search_results.products)
+
+            if matching_product:
+                logger.info(f"✅ Auto-selecting: {matching_product.name}")
+
+                selected_product = SelectedProduct(
+                    gin=matching_product.gin,
+                    name=matching_product.name,
+                    category=matching_product.category,
+                    description=matching_product.description,
+                    specifications=matching_product.specifications
+                )
+
+                conversation_state.select_component("PowerSource", selected_product)
+                self.gin_manager.add_component("PowerSource", matching_product.gin, matching_product.name)
+                
+                applicability = self._get_component_applicability(matching_product.gin)
+                conversation_state.set_applicability(applicability)
+
+                confirmation = self.message_generator.generate_selection_confirmation(
+                    "PowerSource",
+                    selected_product.name,
+                    selected_product.gin
+                )
+
+                # Determine next state using processor
+                next_state_name = ps_processor.get_next_state(conversation_state, selection_made=True)
+                next_state = ConfiguratorState(next_state_name) if next_state_name else None
+
+                if next_state and next_state != ConfiguratorState.FINALIZE:
+                    conversation_state.current_state = next_state
+
+                    # 🆕 PROACTIVE PREVIEW: Auto-display compatible products for next component
+                    try:
+                        logger.info(f"🔍 Proactive preview for next state: {next_state.value}")
+                        serialized_response = self._serialize_response_json(conversation_state)
+                        products = None
+                        search_result = None
+
+                        # Get next state's processor for proactive preview
+                        logger.info("🔍 Using modular architecture for proactive preview")
+                        next_processor = self.state_processor_registry.get_processor(next_state.value)
+
+                        if next_processor and next_processor.should_show_proactive_preview():
+                            # Use processor's get_proactive_preview() with preview_limit from config
+                            search_result = await next_processor.get_proactive_preview(
+                                user_message=user_message,
+                                master_parameters=conversation_state.master_parameters.dict(),
+                                selected_components=serialized_response,
+                                limit=None  # Uses preview_limit from state_config.json (5)
+                            )
+                            products = search_result.products if search_result else []
+                            logger.info(f"✅ Proactive preview: {len(products)} products (preview_limit from config)")
+                        else:
+                            logger.info(f"⚠️ Proactive preview disabled for {next_state.value}")
+
+                        if products and len(products) > 0:
+                            logger.info(f"📦 Found {len(products)} compatible products for preview")
+
+                            # Use the original search_result to preserve pagination
+                            products_message = await self.message_generator.generate_search_results_message(
+                                next_state.value,
+                                search_result,  # Use original search_result with pagination
+                                conversation_state.master_parameters.dict(),
+                                conversation_state.language
+                            )
+
+                            message = f"{confirmation}\n\n{products_message}"
+
+                            # 🆕 PAGINATION: Initialize pagination state for proactive search
+                            state_key = conversation_state.current_state.value
+                            conversation_state.pagination_states[state_key] = {
+                                "offset": 0,
+                                "total": 0,
+                                "shown": len(products)
+                            }
+
+                            return {
+                                "message": message,
+                                "current_state": conversation_state.current_state.value,
+                                "products": [p.dict() for p in products],
+                                "awaiting_selection": True,
+                                "product_selected": True,
+                                "auto_selected": True,
+                                "proactive_search": True,
+                                "pagination": {
+                                    "offset": search_result.offset,
+                                    "limit": search_result.limit,
+                                    "has_more": search_result.has_more,
+                                    "append_results": False
+                                }
+                            }
+                        else:
+                            logger.info(f"⚠️ No compatible products found for proactive search")
+                    except Exception as e:
+                        logger.error(f"❌ Proactive search failed: {e}", exc_info=True)
+
+                    # Fallback: Show prompt without products
+                    next_prompt = await self.message_generator.generate_state_prompt(
+                        next_state.value,
+                        conversation_state.master_parameters.dict(),
+                        self._serialize_response_json(conversation_state),
+                        conversation_state.language
+                    )
+                    message = f"{confirmation}\n\n{next_prompt}"
+                else:
+                    message = confirmation
+
+                return {
+                    "message": message,
+                    "current_state": conversation_state.current_state.value,
+                    "product_selected": True,
+                    "auto_selected": True
+                }
+            else:
+                logger.info(f"⚠️ No exact match for '{explicit_name}' - showing list")
+        elif explicit_name:
+            logger.info(f"⚠️ Name '{explicit_name}' NOT specific (base name only) - showing list")
+
+        # Show product list for selection
+        message = await self.message_generator.generate_search_results_message(
+            ConfiguratorState.POWER_SOURCE_SELECTION.value,
+            search_results,
+            conversation_state.master_parameters.dict(),
+            conversation_state.language
+        )
+
+        # 🎯 DEBUG: Log power source products being returned
+        logger.info(f"🎯 NUGGET DEBUG: Returning {len(search_results.products)} PowerSource products")
+        for idx, p in enumerate(search_results.products[:3], 1):
+            logger.info(f"🎯 NUGGET DEBUG: PowerSource {idx}: GIN={p.gin}, Name={p.name}, Category={p.category}")
+
+        # 🆕 PAGINATION: Initialize pagination state for this component
+        state_key = ConfiguratorState.POWER_SOURCE_SELECTION.value
+        conversation_state.pagination_states[state_key] = {
+            "offset": 0,
+            "total": 0,
+            "shown": len(search_results.products)
+        }
+
+        return {
+            "message": message,
+            "current_state": ConfiguratorState.POWER_SOURCE_SELECTION.value,
+            "products": [p.dict() for p in search_results.products],
+            "awaiting_selection": True,
+            "pagination": {
+                "offset": search_results.offset,
+                "limit": search_results.limit,
+                "has_more": search_results.has_more,
+                "append_results": False  # Initial display, not appending
+            }
+        }
+
+    async def _process_component_selection(
+        self,
+        conversation_state: ConversationState,
+        component_type: str,
+        user_message: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """S2-S5: Component Selection with Compatibility Validation"""
+
+        master_params_dict = conversation_state.master_parameters.dict()
+        component_key = component_type.lower()
+        component_dict = master_params_dict.get(component_key, {})
+        pre_existing_name = component_dict.get("product_name")
+
+        if pre_existing_name:
+            logger.info(f"Found pre-existing {component_type} product name: {pre_existing_name}")
+
+        serialized_response = self._serialize_response_json(conversation_state)
+        logger.info(f"response_json before {component_type} search: {serialized_response}")
+
+        # =====================================================================
+        # Search using modular processor
+        # =====================================================================
+
+        logger.info(f"🔍 Using modular architecture for {component_type} search")
+
+        try:
+            # Get state name from component type
+            state_map = {
+                "Feeder": "feeder_selection",
+                "Cooler": "cooler_selection",
+                "Interconnector": "interconnector_selection",
+                "Torch": "torch_selection"
+            }
+            state_name = state_map.get(component_type)
+            if not state_name:
+                raise ValueError(f"Unknown component type: {component_type}")
+
+            # Get processor from registry
+            processor = self.state_processor_registry.get_processor(state_name)
+            if not processor:
+                raise ValueError(f"{component_type} processor not found in registry")
+
+            # Search using modular processor (uses configurable search_limit from state_config.json)
+            search_results_dict = await processor.search_products(
+                user_message=user_message or "",
+                master_parameters=master_params_dict,
+                selected_components=serialized_response,
+                limit=None,  # Uses search_limit from state_config.json (10)
+                offset=0
+            )
+
+            # Convert dict from SearchOrchestrator to SearchResults object
+            search_results = self._convert_search_dict_to_results(search_results_dict)
+            logger.info(f"✅ Search completed for {component_type}: {len(search_results.products)} products found")
+
+        except Exception as e:
+            logger.error(f"❌ {component_type} search failed: {e}", exc_info=True)
+            return {
+                "message": f"I encountered an error searching for {component_type}. Please try again.",
+                "current_state": conversation_state.current_state.value,
+                "products": [],
+                "error": True
+            }
+
+        if not search_results.products:
+            message = self.message_generator.generate_error_message(
+                "compatibility_failed",
+                f"No compatible {component_type} found. Try adjusting requirements or say 'skip'."
+            )
+            return {
+                "message": message,
+                "current_state": conversation_state.current_state.value,
+                "products": []
+            }
+
+        # 🆕 AUTO-SELECT if exactly 1 result (using common method)
+        logger.info(f"🔍 Checking auto-selection for {component_type}: found {len(search_results.products) if search_results.products else 0} products")
+        auto_select_result = await self._auto_select_single_result(
+            conversation_state,
+            search_results,
+            component_type=component_type,
+            response_json_field=component_type,
+            is_list=False
+        )
+        if auto_select_result:
+            logger.info(f"✅ Auto-selection successful for {component_type}")
+            return auto_select_result
+        else:
+            logger.info(f"❌ Auto-selection skipped for {component_type} (multiple results or other reason)")
+
+        explicit_name = pre_existing_name
+
+        # DISABLED: Auto-selection disabled globally - always require user confirmation
+        if False and explicit_name and self._is_specific_product_name(explicit_name):
+            logger.info(f"Product name '{explicit_name}' is specific - attempting auto-select for {component_type}")
+            matching_product = self._find_product_by_name(explicit_name, search_results.products)
+
+            if matching_product:
+                logger.info(f"Match found - auto-selecting: {matching_product.name}")
+
+                selected_product = SelectedProduct(
+                    gin=matching_product.gin,
+                    name=matching_product.name,
+                    category=matching_product.category,
+                    description=matching_product.description,
+                    specifications=matching_product.specifications
+                )
+
+                conversation_state.select_component(component_type, selected_product)
+                self.gin_manager.add_component(component_type, matching_product.gin, matching_product.name)
+
+                confirmation = self.message_generator.generate_selection_confirmation(
+                    component_type,
+                    selected_product.name,
+                    selected_product.gin
+                )
+
+                next_state = self._find_next_applicable_state(conversation_state)
+                if next_state and next_state != ConfiguratorState.FINALIZE:
+                    conversation_state.current_state = next_state
+
+                    # 🆕 PROACTIVE SEARCH: Auto-list compatible products for next component
+                    try:
+                        logger.info(f"🔍 Proactive search for next state: {next_state.value}")
+                        serialized_response = self._serialize_response_json(conversation_state)
+                        products = None
+
+                        if next_state == ConfiguratorState.FEEDER_SELECTION:
+                            search_result = await self.product_search.search_feeder_smart(
+                                {},
+                                serialized_response,
+                                user_message=None,
+                                limit=self.PROACTIVE_SEARCH_LIMIT,
+                                offset=0
+                            )
+                            products = search_result.products if search_result else []
+
+                        elif next_state == ConfiguratorState.COOLER_SELECTION:
+                            search_result = await self.product_search.search_cooler_smart(
+                                {},
+                                serialized_response,
+                                user_message=None,
+                                limit=self.PROACTIVE_SEARCH_LIMIT,
+                                offset=0
+                            )
+                            products = search_result.products if search_result else []
+
+                        elif next_state == ConfiguratorState.INTERCONNECTOR_SELECTION:
+                            search_result = await self.product_search.search_interconnector(
+                                {},
+                                serialized_response,
+                                limit=self.PROACTIVE_SEARCH_LIMIT,
+                                offset=0
+                            )
+                            products = search_result.products if search_result else []
+
+                        elif next_state == ConfiguratorState.TORCH_SELECTION:
+                            search_result = await self.product_search.search_torch_smart(
+                                {},
+                                serialized_response,
+                                user_message=None,
+                                limit=self.PROACTIVE_SEARCH_LIMIT,
+                                offset=0
+                            )
+                            products = search_result.products if search_result else []
+
+                        if products and len(products) > 0:
+                            logger.info(f"📦 Found {len(products)} compatible products")
+
+                            # 🆕 CHECK FOR SINGLE RESULT → Auto-select recursively
+                            # DISABLED: Auto-selection disabled globally - always require user confirmation
+                            if False and len(products) == 1:
+                                logger.info(f"🔄 Single result in proactive search - recursively auto-selecting")
+                                next_component_type = self._state_to_component_type(next_state)
+
+                                # Use common auto-selection method
+                                auto_select_result = await self._auto_select_single_result(
+                                    conversation_state,
+                                    search_result,
+                                    component_type=next_component_type,
+                                    response_json_field=next_component_type,
+                                    is_list=False
+                                )
+
+                                if auto_select_result:
+                                    # Combine current confirmation with recursive result
+                                    auto_select_result["message"] = f"{confirmation}\n\n{auto_select_result['message']}"
+                                    return auto_select_result
+
+                            # Multiple results - show list for user selection
+                            # Use original search_result to preserve pagination
+                            products_message = await self.message_generator.generate_search_results_message(
+                                next_state.value,
+                                search_result,  # Use original with pagination
+                                conversation_state.master_parameters.dict(),
+                                conversation_state.language
+                            )
+
+                            # Add "Need more?" prompt for Feeder, Interconnector, and Torch only
+                            if component_type == "Feeder":
+                                message = f"{confirmation}\n\n💬 If you need more feeders, please specify your requirements.\n\n{products_message}"
+                            elif component_type == "Interconnector":
+                                message = f"{confirmation}\n\n💬 If you need more interconnectors, please specify your requirements.\n\n{products_message}"
+                            elif component_type == "Torch":
+                                message = f"{confirmation}\n\n💬 If you need more torches, please specify your requirements.\n\n{products_message}"
+                            else:
+                                message = f"{confirmation}\n\n{products_message}"
+
+                            # 🆕 PAGINATION: Initialize pagination state
+                            state_key = conversation_state.current_state.value
+                            conversation_state.pagination_states[state_key] = {
+                                "offset": 0,
+                                "total": 0,
+                                "shown": len(products)
+                            }
+
+                            return {
+                                "message": message,
+                                "current_state": conversation_state.current_state.value,
+                                "products": [p.dict() for p in products],
+                                "awaiting_selection": True,
+                                "product_selected": True,
+                                "auto_selected": True,
+                                "proactive_search": True,
+                                "pagination": {
+                                    "offset": search_result.offset,
+                                    "limit": search_result.limit,
+                                    "has_more": search_result.has_more,
+                                    "append_results": False
+                                }
+                            }
+                        else:
+                            logger.info(f"⚠️ No compatible products found for proactive search")
+                    except Exception as e:
+                        logger.error(f"❌ Proactive search failed: {e}", exc_info=True)
+
+                    # Fallback: Show prompt without products
+                    next_prompt = await self.message_generator.generate_state_prompt(
+                        next_state.value,
+                        conversation_state.master_parameters.dict(),
+                        self._serialize_response_json(conversation_state),
+                        conversation_state.language
+                    )
+                    message = f"{confirmation}\n\n{next_prompt}"
+                else:
+                    message = confirmation
+
+                return {
+                    "message": message,
+                    "current_state": conversation_state.current_state.value,
+                    "product_selected": True,
+                    "auto_selected": True
+                }
+            else:
+                logger.info(f"Multiple matches for '{explicit_name}' - showing list")
+        elif explicit_name:
+            logger.info(f"Product name '{explicit_name}' is too vague - showing list")
+
+        message = await self.message_generator.generate_search_results_message(
+            conversation_state.current_state.value,
+            search_results,
+            conversation_state.master_parameters.dict(),
+            conversation_state.language
+        )
+
+        # 🆕 PAGINATION: Initialize pagination state for this component
+        state_key = conversation_state.current_state.value
+        conversation_state.pagination_states[state_key] = {
+            "offset": 0,
+            "total": 0,
+            "shown": len(search_results.products)
+        }
+
+        return {
+            "message": message,
+            "current_state": conversation_state.current_state.value,
+            "products": [p.dict() for p in search_results.products],  # Should be limited to 3
+            "awaiting_selection": True,
+            "pagination": {
+                "offset": search_results.offset,
+                "limit": search_results.limit,
+                "has_more": search_results.has_more,
+                "append_results": False  # Initial display, not appending
+            }
+        }
+
+    # =========================================================================
+    # ACCESSORY CATEGORY STATE PROCESSING - From Document 5 (UNCHANGED)
+    # =========================================================================
+
+    async def _process_powersource_accessories_selection(
+        self,
+        conversation_state: ConversationState,
+        user_message: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """PowerSource Accessories Selection (Optional)"""
+
+        logger.info("-- 14 --")
+        power_source = conversation_state.response_json.PowerSource
+        if not power_source:
+            return await self._handle_skip(conversation_state)
+
+        logger.info("-- 15 --")
+
+        master_params_dict = conversation_state.master_parameters.dict()
+        serialized_response = self._serialize_response_json(conversation_state)
+
+        # =====================================================================
+        # Search using modular processor
+        # =====================================================================
+
+        logger.info("🔍 Using modular architecture for PowerSource Accessories search")
+
+        try:
+            processor = self.state_processor_registry.get_processor("powersource_accessories_selection")
+            if not processor:
+                raise ValueError("PowerSource Accessories processor not found in registry")
+
+            search_results = await processor.search_products(
+                user_message=user_message or "",
+                master_parameters=master_params_dict,
+                selected_components=serialized_response,
+                limit=None,  # Uses search_limit from state_config.json
+                offset=0
+            )
+
+            logger.info(f"✅ Search completed: {len(search_results.products) if search_results and search_results.products else 0} products found")
+
+        except Exception as e:
+            logger.error(f"❌ PowerSource Accessories search failed: {e}", exc_info=True)
+            return {
+                "message": "I encountered an error searching for PowerSource accessories. Say 'skip' to continue.",
+                "current_state": conversation_state.current_state.value,
+                "products": [],
+                "error": True
+            }
+        
+        if not search_results.products:
+            logger.info("No PowerSource accessories found - auto-skipping")
+            return await self._handle_skip(conversation_state)
+
+        # ❌ NO AUTO-SELECT for accessories - users can select multiple
+        # Stay in same state until user says "done", "next", or "skip"
+
+        message = f"**PowerSource Accessories for {power_source.name}**\n\n"
+        message += "Available accessories:\n\n"
+
+        for idx, product in enumerate(search_results.products, 1):
+            message += f"{idx}. {product.name}\n"
+            if product.description:
+                desc = product.description[:100] + "..." if len(product.description) > 100 else product.description
+                message += f"   {desc}\n"
+            message += "\n"
+
+        message += "Select by number, name, or say 'skip' to continue."
+
+        # 🆕 PAGINATION: Initialize pagination state
+        state_key = conversation_state.current_state.value
+        conversation_state.pagination_states[state_key] = {
+            "offset": 0,
+            "total": 0,
+            "shown": len(search_results.products)
+        }
+
+        return {
+            "message": message,
+            "current_state": conversation_state.current_state.value,
+            "products": [p.dict() for p in search_results.products],
+            "awaiting_selection": True,
+            "pagination": {
+                "offset": search_results.offset,
+                "limit": search_results.limit,
+                "has_more": search_results.has_more,
+                "append_results": False
+            }
+        }
+
+    async def _process_feeder_accessories_selection(
+        self,
+        conversation_state: ConversationState,
+        user_message: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Feeder Accessories Selection (Optional)"""
+
+        feeder = conversation_state.response_json.Feeder
+        if not feeder:
+            return await self._handle_skip(conversation_state)
+
+        master_params_dict = conversation_state.master_parameters.dict()
+        serialized_response = self._serialize_response_json(conversation_state)
+
+        # =====================================================================
+        # Search using modular processor
+        # =====================================================================
+
+        logger.info("🔍 Using modular architecture for Feeder Accessories search")
+
+        try:
+            processor = self.state_processor_registry.get_processor("feeder_accessories_selection")
+            if not processor:
+                raise ValueError("Feeder Accessories processor not found in registry")
+
+            search_results = await processor.search_products(
+                user_message=user_message or "",
+                master_parameters=master_params_dict,
+                selected_components=serialized_response,
+                limit=None,  # Uses search_limit from state_config.json
+                offset=0
+            )
+
+            logger.info(f"✅ Search completed: {len(search_results.products) if search_results and search_results.products else 0} products found")
+
+        except Exception as e:
+            logger.error(f"❌ Feeder Accessories search failed: {e}", exc_info=True)
+            return {
+                "message": "I encountered an error searching for Feeder accessories. Say 'skip' to continue.",
+                "current_state": conversation_state.current_state.value,
+                "products": [],
+                "error": True
+            }
+        
+        if not search_results.products:
+            logger.info("No Feeder accessories found - auto-skipping")
+            return await self._handle_skip(conversation_state)
+
+        # ❌ NO AUTO-SELECT for accessories - users can select multiple
+        # Stay in same state until user says "done", "next", or "skip"
+
+        # ✅ FIX: Use message_generator for consistent formatting and feature guidance
+        message = await self.message_generator.generate_search_results_message(
+            conversation_state.current_state.value,
+            search_results,
+            conversation_state.master_parameters.dict(),
+            conversation_state.language
+        )
+
+        # 🆕 PAGINATION: Initialize pagination state
+        state_key = conversation_state.current_state.value
+        conversation_state.pagination_states[state_key] = {
+            "offset": 0,
+            "total": 0,
+            "shown": len(search_results.products)
+        }
+
+        return {
+            "message": message,
+            "current_state": conversation_state.current_state.value,
+            "products": [p.dict() for p in search_results.products],
+            "awaiting_selection": True,
+            "pagination": {
+                "offset": search_results.offset,
+                "limit": search_results.limit,
+                "has_more": search_results.has_more,
+                "append_results": False
+            }
+        }
+
+    async def _process_feeder_conditional_accessories(
+        self,
+        conversation_state: ConversationState
+    ) -> Dict[str, Any]:
+        """Feeder Conditional Accessories (Depends on Feeder Accessory)"""
+        
+        feeder_accessories = conversation_state.response_json.FeederAccessories
+        
+        if not feeder_accessories:
+            logger.info("No Feeder accessories selected - skipping conditional accessories")
+            return await self._handle_skip(conversation_state)
+        
+        last_feeder_accessory = feeder_accessories[-1]
+        
+        search_results = await self.product_search.search_feeder_conditional_accessories(
+            last_feeder_accessory.gin,
+            limit=self.DEFAULT_SEARCH_LIMIT
+        )
+        
+        if not search_results.products:
+            logger.info("No Feeder conditional accessories found - auto-skipping")
+            return await self._handle_skip(conversation_state)
+
+        # 🆕 AUTO-SELECT if exactly 1 result (using common method)
+        auto_select_result = await self._auto_select_single_result(
+            conversation_state,
+            search_results,
+            component_type="Feeder Conditional Accessory",
+            response_json_field="FeederConditionalAccessories",
+            is_list=True
+        )
+        if auto_select_result:
+            return auto_select_result
+
+        message = f"**Conditional Accessories for {last_feeder_accessory.name}**\n\n"
+        message += "These accessories work with your selected feeder accessory:\n\n"
+        
+        for idx, product in enumerate(search_results.products, 1):
+            message += f"{idx}. {product.name}\n"
+            if product.description:
+                desc = product.description[:100] + "..." if len(product.description) > 100 else product.description
+                message += f"   {desc}\n"
+            message += "\n"
+        
+        message += "Select by number, name, or say 'skip' to continue."
+        
+        return {
+            "message": message,
+            "current_state": conversation_state.current_state.value,
+            "products": [p.dict() for p in search_results.products],
+            "awaiting_selection": True
+        }
+
+    async def _process_interconnector_accessories_selection(
+        self,
+        conversation_state: ConversationState
+    ) -> Dict[str, Any]:
+        """Interconnector Accessories Selection (Optional)"""
+        
+        interconnector = conversation_state.response_json.Interconnector
+        if not interconnector:
+            return await self._handle_skip(conversation_state)
+        
+        search_results = await self.product_search.search_interconn_accessories(
+            interconnector.gin,
+            limit=self.DEFAULT_SEARCH_LIMIT
+        )
+        
+        if not search_results.products:
+            logger.info("No Interconnector accessories found - auto-skipping")
+            return await self._handle_skip(conversation_state)
+
+        # 🆕 AUTO-SELECT if exactly 1 result (using common method)
+        auto_select_result = await self._auto_select_single_result(
+            conversation_state,
+            search_results,
+            component_type="Interconnector Accessory",
+            response_json_field="InterconnectorAccessories",
+            is_list=True
+        )
+        if auto_select_result:
+            return auto_select_result
+
+        message = f"**Interconnector Accessories for {interconnector.name}**\n\n"
+        message += "Available accessories:\n\n"
+        
+        for idx, product in enumerate(search_results.products, 1):
+            message += f"{idx}. {product.name}\n"
+            if product.description:
+                desc = product.description[:100] + "..." if len(product.description) > 100 else product.description
+                message += f"   {desc}\n"
+            message += "\n"
+        
+        message += "Select by number, name, or say 'skip' to continue."
+        
+        return {
+            "message": message,
+            "current_state": conversation_state.current_state.value,
+            "products": [p.dict() for p in search_results.products],
+            "awaiting_selection": True
+        }
+
+    async def _process_remote_selection(
+        self,
+        conversation_state: ConversationState
+    ) -> Dict[str, Any]:
+        """Remote Control Selection (Optional)"""
+        
+        power_source = conversation_state.response_json.PowerSource
+        feeder = conversation_state.response_json.Feeder
+        
+        if not power_source:
+            return await self._handle_skip(conversation_state)
+        
+        feeder_gin = feeder.gin if feeder else None
+        
+        search_results = await self.product_search.search_remotes(
+            power_source.gin,
+            feeder_gin,
+            limit=self.DEFAULT_SEARCH_LIMIT
+        )
+        
+        if not search_results.products:
+            logger.info("No Remotes found - auto-skipping")
+            return await self._handle_skip(conversation_state)
+
+        # 🆕 AUTO-SELECT if exactly 1 result (using common method)
+        auto_select_result = await self._auto_select_single_result(
+            conversation_state,
+            search_results,
+            component_type="Remote",
+            response_json_field="Remotes",
+            is_list=True
+        )
+        if auto_select_result:
+            return auto_select_result
+
+        # ✅ FIX: Use message_generator for consistent formatting and feature guidance
+        message = await self.message_generator.generate_search_results_message(
+            conversation_state.current_state.value,
+            search_results,
+            conversation_state.master_parameters.dict(),
+            conversation_state.language
+        )
+        
+        return {
+            "message": message,
+            "current_state": conversation_state.current_state.value,
+            "products": [p.dict() for p in search_results.products],
+            "awaiting_selection": True
+        }
+
+    async def _process_remote_accessories_selection(
+        self,
+        conversation_state: ConversationState
+    ) -> Dict[str, Any]:
+        """Remote Accessories Selection (Depends on Remote)"""
+        
+        remotes = conversation_state.response_json.Remotes
+        
+        if not remotes:
+            logger.info("No Remote selected - skipping remote accessories")
+            return await self._handle_skip(conversation_state)
+        
+        last_remote = remotes[-1]
+        
+        search_results = await self.product_search.search_remote_accessories(
+            last_remote.gin,
+            limit=self.DEFAULT_SEARCH_LIMIT
+        )
+        
+        if not search_results.products:
+            logger.info("No Remote accessories found - auto-skipping")
+            return await self._handle_skip(conversation_state)
+
+        # 🆕 AUTO-SELECT if exactly 1 result (using common method)
+        auto_select_result = await self._auto_select_single_result(
+            conversation_state,
+            search_results,
+            component_type="Remote Accessory",
+            response_json_field="RemoteAccessories",
+            is_list=True
+        )
+        if auto_select_result:
+            return auto_select_result
+
+        # ✅ FIX: Use message_generator for consistent formatting and feature guidance
+        message = await self.message_generator.generate_search_results_message(
+            conversation_state.current_state.value,
+            search_results,
+            conversation_state.master_parameters.dict(),
+            conversation_state.language
+        )
+        
+        return {
+            "message": message,
+            "current_state": conversation_state.current_state.value,
+            "products": [p.dict() for p in search_results.products],
+            "awaiting_selection": True
+        }
+
+    async def _process_remote_conditional_accessories(
+        self,
+        conversation_state: ConversationState
+    ) -> Dict[str, Any]:
+        """Remote Conditional Accessories (Depends on Remote Accessory)"""
+        
+        remote_accessories = conversation_state.response_json.RemoteAccessories
+        
+        if not remote_accessories:
+            logger.info("No Remote accessories selected - skipping conditional accessories")
+            return await self._handle_skip(conversation_state)
+        
+        last_remote_accessory = remote_accessories[-1]
+        
+        search_results = await self.product_search.search_remote_conditional_accessories(
+            last_remote_accessory.gin,
+            limit=self.DEFAULT_SEARCH_LIMIT
+        )
+        
+        if not search_results.products:
+            logger.info("No Remote conditional accessories found - auto-skipping")
+            return await self._handle_skip(conversation_state)
+
+        # 🆕 AUTO-SELECT if exactly 1 result (using common method)
+        auto_select_result = await self._auto_select_single_result(
+            conversation_state,
+            search_results,
+            component_type="Remote Conditional Accessory",
+            response_json_field="RemoteConditionalAccessories",
+            is_list=True
+        )
+        if auto_select_result:
+            return auto_select_result
+
+        message = f"**Conditional Accessories for {last_remote_accessory.name}**\n\n"
+        message += "These accessories work with your selected remote accessory:\n\n"
+        
+        for idx, product in enumerate(search_results.products, 1):
+            message += f"{idx}. {product.name}\n"
+            if product.description:
+                desc = product.description[:100] + "..." if len(product.description) > 100 else product.description
+                message += f"   {desc}\n"
+            message += "\n"
+        
+        message += "Select by number, name, or say 'skip' to continue."
+        
+        return {
+            "message": message,
+            "current_state": conversation_state.current_state.value,
+            "products": [p.dict() for p in search_results.products],
+            "awaiting_selection": True
+        }
+
+    async def _process_connectivity_selection(
+        self,
+        conversation_state: ConversationState
+    ) -> Dict[str, Any]:
+        """Connectivity Modules Selection (Optional)"""
+        
+        power_source = conversation_state.response_json.PowerSource
+        feeder = conversation_state.response_json.Feeder
+        
+        if not power_source:
+            return await self._handle_skip(conversation_state)
+        
+        feeder_gin = feeder.gin if feeder else None
+        
+        search_results = await self.product_search.search_connectivity(
+            power_source.gin,
+            feeder_gin,
+            limit=self.DEFAULT_SEARCH_LIMIT
+        )
+
+        if not search_results.products:
+            logger.info("No Connectivity modules found - auto-skipping")
+            return await self._handle_skip(conversation_state)
+
+        # 🆕 AUTO-SELECT if exactly 1 result (using common method)
+        auto_select_result = await self._auto_select_single_result(
+            conversation_state,
+            search_results,
+            component_type="Connectivity",
+            response_json_field="Connectivity",
+            is_list=True
+        )
+        if auto_select_result:
+            return auto_select_result
+
+        message = "**Connectivity Modules**\n\n"
+        message += "Available connectivity modules for your configuration:\n\n"
+
+        for idx, product in enumerate(search_results.products, 1):
+            message += f"{idx}. {product.name}\n"
+            if product.description:
+                desc = product.description[:100] + "..." if len(product.description) > 100 else product.description
+                message += f"   {desc}\n"
+            message += "\n"
+
+        message += "Select by number, name, or say 'skip' to continue."
+
+        return {
+            "message": message,
+            "current_state": conversation_state.current_state.value,
+            "products": [p.dict() for p in search_results.products],
+            "awaiting_selection": True
+        }
+
+    async def _process_feeder_wears_selection(
+        self,
+        conversation_state: ConversationState
+    ) -> Dict[str, Any]:
+        """Feeder Wear Parts Selection (Optional)"""
+        
+        feeder = conversation_state.response_json.Feeder
+        
+        if not feeder:
+            logger.info("No Feeder selected - skipping feeder wears")
+            return await self._handle_skip(conversation_state)
+        
+        search_results = await self.product_search.search_feeder_wears(
+            feeder.gin,
+            limit=self.DEFAULT_SEARCH_LIMIT
+        )
+        
+        if not search_results.products:
+            logger.info("No Feeder wears found - auto-skipping")
+            return await self._handle_skip(conversation_state)
+
+        # 🆕 AUTO-SELECT if exactly 1 result (using common method)
+        auto_select_result = await self._auto_select_single_result(
+            conversation_state,
+            search_results,
+            component_type="Feeder Wear",
+            response_json_field="FeederWears",
+            is_list=True
+        )
+        if auto_select_result:
+            return auto_select_result
+
+        message = f"**Feeder Wear Parts for {feeder.name}**\n\n"
+        message += "Available wear parts:\n\n"
+        
+        for idx, product in enumerate(search_results.products, 1):
+            message += f"{idx}. {product.name}\n"
+            if product.description:
+                desc = product.description[:100] + "..." if len(product.description) > 100 else product.description
+                message += f"   {desc}\n"
+            message += "\n"
+        
+        message += "Select by number, name, or say 'skip' to continue."
+        
+        return {
+            "message": message,
+            "current_state": conversation_state.current_state.value,
+            "products": [p.dict() for p in search_results.products],
+            "awaiting_selection": True
+        }
+
+    # =========================================================================
+    # LEGACY ACCESSORIES & FINALIZE - From Document 5 (UNCHANGED)
+    # =========================================================================
+
+    async def _process_accessories_selection(
+        self,
+        conversation_state: ConversationState
+    ) -> Dict[str, Any]:
+        """S6: Accessories Selection (Multi-select)"""
+
+        master_params_dict = conversation_state.master_parameters.dict()
+        serialized_response = self._serialize_response_json(conversation_state)
+
+        # =====================================================================
+        # Search using modular processor
+        # =====================================================================
+
+        logger.info("🔍 Using modular architecture for Accessories search")
+
+        try:
+            # Get accessories processor from registry
+            processor = self.state_processor_registry.get_processor("accessories_selection")
+            if not processor:
+                raise ValueError("Accessories processor not found in registry")
+
+            # Search using modular processor (uses configurable search_limit from state_config.json)
+            search_results = await processor.search_products(
+                user_message="",
+                master_parameters=master_params_dict,
+                selected_components=serialized_response,
+                limit=None,  # Uses search_limit from state_config.json (10)
+                offset=0
+            )
+
+            logger.info(f"✅ Search completed for Accessories: {len(search_results.products) if search_results and search_results.products else 0} products found")
+
+        except Exception as e:
+            logger.error(f"❌ Accessories search failed: {e}", exc_info=True)
+            return {
+                "message": "I encountered an error searching for accessories. Please try again.",
+                "current_state": ConfiguratorState.ACCESSORIES_SELECTION.value,
+                "products": [],
+                "error": True
+            }
+
+        if not search_results.products:
+            message = "No accessories found. Say 'done' to finalize your configuration."
+            return {
+                "message": message,
+                "current_state": ConfiguratorState.ACCESSORIES_SELECTION.value,
+                "products": []
+            }
+
+        message = self.message_generator.generate_search_results_message(
+            conversation_state.current_state.value,
+            search_results,
+            conversation_state.master_parameters.dict()
+        )
+
+        return {
+            "message": message,
+            "current_state": ConfiguratorState.ACCESSORIES_SELECTION.value,
+            "products": [p.dict() for p in search_results.products],
+            "awaiting_selection": True
+        }
+
+    async def _process_finalize(
+        self,
+        conversation_state: ConversationState
+    ) -> Dict[str, Any]:
+        """S7: Finalize Configuration"""
+
+        if not conversation_state.can_finalize():
+            message = self.message_generator.generate_error_message(
+                "invalid_selection",
+                "Cannot finalize - required components missing. Please select mandatory components first."
+            )
+            return {
+                "message": message,
+                "current_state": ConfiguratorState.FINALIZE.value,
+                "can_finalize": False
+            }
+
+        message = await self.message_generator.generate_state_prompt(
+            ConfiguratorState.FINALIZE.value,
+            conversation_state.master_parameters.dict(),
+            self._serialize_response_json(conversation_state),
+            conversation_state.language
+        )
+        
+        # 🆕 Add GIN config to output
+        gin_config = self.gin_manager.get_output_format()
+
+        return {
+            "message": message,
+            "current_state": ConfiguratorState.FINALIZE.value,
+            "can_finalize": True,
+            "configuration": self._serialize_response_json(conversation_state),
+            "gin_config": gin_config  # 🆕 Backend-compatible GIN format
+        }
+
+    # =========================================================================
+    # PAGINATION HANDLERS - "Show me more options" support
+    # =========================================================================
+
+    def _is_show_more_request(self, message: str) -> bool:
+        """
+        Detect if user message is a "show more" request
+
+        Supports various phrasings:
+        - "show me more"
+        - "show more"
+        - "more options"
+        - "see more"
+        - "more products"
+        """
+        normalized = message.lower().strip()
+        show_more_phrases = [
+            "show me more",
+            "show more",
+            "show other options"
+            "more options",
+            "see more",
+            "more products",
+            "show me more options",
+            "view more"
+        ]
+        return any(phrase in normalized for phrase in show_more_phrases)
+
+    async def _handle_show_more(
+        self,
+        conversation_state: ConversationState
+    ) -> Dict[str, Any]:
+        """
+        Handle 'show more' request - fetch next page of results
+
+        Logic:
+        1. Get current state's pagination info
+        2. Calculate next offset (first: 3→7=+4, then +4 increments)
+        3. Call search with new offset
+        4. Update pagination state
+        5. Return results with append_results=True
+        """
+        current_state = conversation_state.current_state
+        state_key = current_state.value
+
+        logger.info(f"🔄 Show more request for state: {state_key}")
+
+        # Get or initialize pagination state for current state
+        if state_key not in conversation_state.pagination_states:
+            # First "show more" - offset from 3 to 6 (initial 3 were shown at indices 0-2)
+            conversation_state.pagination_states[state_key] = {
+                "offset": 3,  # 🔧 FIX: Changed from 2 to 3 to avoid duplicate at index 2
+                "total": 0,
+                "shown": 3
+            }
+
+        pagination = conversation_state.pagination_states[state_key]
+        current_offset = pagination["offset"]
+
+        # Determine next batch size
+        if current_offset == 0:
+            # Initial display was 3 (indices 0-2), next should be 3 (indices 3-5)
+            next_offset = 3  # 🔧 FIX: Changed from 2 to 3 to avoid duplicate at index 2
+            batch_size = 3
+        else:
+            # Subsequent batches are always 3
+            next_offset = current_offset + 3
+            batch_size = 3
+
+        logger.info(f"📄 Pagination: current_offset={current_offset}, next_offset={next_offset}, batch_size={batch_size}")
+
+        # Call appropriate search method based on current state
+        master_params = conversation_state.master_parameters.dict()
+        response_json_dict = conversation_state.response_json.dict()
+
+        search_results = None
+
+        if current_state == ConfiguratorState.POWER_SOURCE_SELECTION:
+            search_results = await self.product_search.search_power_source(
+                master_params,
+                limit=batch_size,
+                offset=next_offset
+            )
+        elif current_state == ConfiguratorState.FEEDER_SELECTION:
+            search_results = await self.product_search.search_feeder_smart(
+                master_params,
+                response_json_dict,
+                user_message=None,
+                limit=batch_size,
+                offset=next_offset
+            )
+        elif current_state == ConfiguratorState.COOLER_SELECTION:
+            search_results = await self.product_search.search_cooler_smart(
+                master_params,
+                response_json_dict,
+                user_message=None,
+                limit=batch_size,
+                offset=next_offset
+            )
+        elif current_state == ConfiguratorState.TORCH_SELECTION:
+            search_results = await self.product_search.search_torch_smart(
+                master_params,
+                response_json_dict,
+                user_message=None,
+                limit=batch_size,
+                offset=next_offset
+            )
+        elif current_state == ConfiguratorState.INTERCONNECTOR_SELECTION:  # 🔧 FIX: Was INTERCONN_SELECTION (wrong enum name!)
+            search_results = await self.product_search.search_interconnector(
+                master_params,
+                response_json_dict,
+                limit=batch_size,
+                offset=next_offset
+            )
+        elif current_state == ConfiguratorState.POWERSOURCE_ACCESSORIES_SELECTION:
+            # 🔧 FIXED: Use _smart method with Lucene support
+            search_results = await self.product_search.search_powersource_accessories_smart(
+                master_params,
+                response_json_dict,
+                user_message=None,
+                limit=batch_size,
+                offset=next_offset
+            )
+        elif current_state == ConfiguratorState.FEEDER_ACCESSORIES_SELECTION:
+            # 🔧 FIXED: Use _smart method with Lucene support
+            search_results = await self.product_search.search_feeder_accessories_smart(
+                master_params,
+                response_json_dict,
+                user_message=None,
+                limit=batch_size,
+                offset=next_offset
+            )
+        elif current_state == ConfiguratorState.ACCESSORIES_SELECTION:
+            search_results = await self.product_search.search_accessories(
+                master_params,
+                response_json_dict,
+                "Accessory",
+                limit=batch_size,
+                offset=next_offset
+            )
+        else:
+            # Unsupported state for pagination
+            message = f"Show more is not available for {current_state.value}"
+            return {
+                "message": message,
+                "current_state": current_state.value,
+                "products": [],
+                "awaiting_selection": False
+            }
+
+        if not search_results or not search_results.products:
+            message = "That's all the compatible products we have for this selection. Please choose from the listed options."
+            return {
+                "message": message,
+                "current_state": current_state.value,
+                "products": [],
+                "awaiting_selection": True,  # Still waiting for selection from existing products
+                "pagination": {
+                    "offset": next_offset,
+                    "limit": batch_size,
+                    "has_more": False,
+                    "append_results": False
+                }
+            }
+
+        # Update pagination state
+        pagination["offset"] = next_offset
+        pagination["shown"] = pagination.get("shown", 0) + len(search_results.products)
+        pagination["total"] = pagination.get("total", 0)  # Can be updated if we count total
+
+        # Generate message
+        products_list = [p.dict() for p in search_results.products]
+        message = f"Here are {len(products_list)} more options:"
+
+        # Add "show me more" hint if more results exist
+        if search_results.has_more:
+            message += "\n\n💡 Click 'Show me more options' or type 'show me more' to see additional products."
+        else:
+            message += "\n\nThat's all the compatible products available."
+
+        response = {
+            "message": message,
+            "current_state": current_state.value,
+            "products": products_list,
+            "awaiting_selection": True,
+            "pagination": {
+                "offset": next_offset,
+                "limit": batch_size,
+                "has_more": search_results.has_more,
+                "append_results": True  # 🎯 CRITICAL: Tells frontend to append, not replace
+            }
+        }
+
+        # Add to conversation history (persists to Redis)
+        conversation_state.add_message("assistant", message, products=products_list)
+
+        logger.info(f"✅ Returned {len(products_list)} more products (offset={next_offset}, has_more={search_results.has_more})")
+
+        return response
+
+    # =========================================================================
+    # COMMAND HANDLERS - From Document 5 (UNCHANGED)
+    # =========================================================================
+
+    async def _handle_skip(
+        self,
+        conversation_state: ConversationState,
+        key: str = 'skip'
+    ) -> Dict[str, Any]:
+        """Handle 'skip' command - move to next state"""
+
+        current_state = conversation_state.current_state
+        
+        # Check if current component is mandatory
+        applicability = conversation_state.response_json.applicability
+        
+        if current_state == ConfiguratorState.POWER_SOURCE_SELECTION:
+            message = self.message_generator.generate_error_message(
+                "power_source_required",
+                "PowerSource selection is mandatory and cannot be skipped."
+            )
+            return {
+                "message": message,
+                "current_state": ConfiguratorState.POWER_SOURCE_SELECTION.value
+            }
+        
+        # Check if component is mandatory based on applicability
+        component_applicability_map = {
+            ConfiguratorState.FEEDER_SELECTION: "Feeder",
+            ConfiguratorState.COOLER_SELECTION: "Cooler",
+            ConfiguratorState.INTERCONNECTOR_SELECTION: "Interconnector",
+            ConfiguratorState.TORCH_SELECTION: "Torch",
+        }
+        
+        if current_state in component_applicability_map and applicability:
+            component_key = component_applicability_map[current_state]
+            applicability_value = getattr(applicability, component_key, "optional")
+            
+            if applicability_value == "mandatory":
+                message = f"{component_key} is mandatory for this configuration and cannot be skipped."
+                return {
+                    "message": message,
+                    "current_state": current_state.value
+                }
+
+        # ✨ SKIP TRACKING: Mark component as "skipped" in ResponseJSON
+        component_type = self._get_component_type(current_state)
+
+        # Track skips for core components
+        if component_type in ["PowerSource", "Feeder", "Cooler", "Interconnector", "Torch"]:
+            setattr(conversation_state.response_json, component_type, "skipped")
+            logger.info(f"✅ ResponseJSON: Marked {component_type} as 'skipped'")
+
+        # Track skips for accessory categories
+        accessory_types = [
+            "PowerSourceAccessories", "FeederAccessories", "FeederConditionalAccessories",
+            "InterconnectorAccessories", "Remotes", "RemoteAccessories",
+            "RemoteConditionalAccessories", "Connectivity", "FeederWears", "Accessories"
+        ]
+        if component_type in accessory_types:
+            # Only mark as skipped if list is empty (user didn't add anything)
+            current_value = getattr(conversation_state.response_json, component_type, [])
+            if isinstance(current_value, list) and len(current_value) == 0:
+                setattr(conversation_state.response_json, component_type, "skipped")
+                logger.info(f"✅ ResponseJSON: Marked {component_type} accessory category as 'skipped'")
+
+        component_name = self._get_component_name(current_state)
+        confirmation = self.message_generator.generate_skip_confirmation(component_name, key)
+
+        # 🆕 Use centralized next state logic
+        next_state = self._find_next_applicable_state(conversation_state)
+        if next_state and next_state != ConfiguratorState.FINALIZE:
+            conversation_state.current_state = next_state
+
+            # 🆕 PROACTIVE SEARCH for ALL accessory states
+            # These states need product search to know if they should be skipped
+            if next_state == ConfiguratorState.POWERSOURCE_ACCESSORIES_SELECTION:
+                logger.info("🔍 Proactively processing PowerSourceAccessories...")
+                return await self._process_powersource_accessories_selection(conversation_state)
+            elif next_state == ConfiguratorState.FEEDER_ACCESSORIES_SELECTION:
+                logger.info("🔍 Proactively processing FeederAccessories...")
+                return await self._process_feeder_accessories_selection(conversation_state)
+            elif next_state == ConfiguratorState.FEEDER_CONDITIONAL_ACCESSORIES:
+                logger.info("🔍 Proactively processing FeederConditionalAccessories...")
+                return await self._process_feeder_conditional_accessories(conversation_state)
+            elif next_state == ConfiguratorState.INTERCONNECTOR_ACCESSORIES_SELECTION:
+                logger.info("🔍 Proactively processing InterconnectorAccessories...")
+                return await self._process_interconnector_accessories_selection(conversation_state)
+            elif next_state == ConfiguratorState.REMOTE_SELECTION:
+                logger.info("🔍 Proactively processing Remote...")
+                return await self._process_remote_selection(conversation_state)
+            elif next_state == ConfiguratorState.REMOTE_ACCESSORIES_SELECTION:
+                logger.info("🔍 Proactively processing RemoteAccessories...")
+                return await self._process_remote_accessories_selection(conversation_state)
+            elif next_state == ConfiguratorState.REMOTE_CONDITIONAL_ACCESSORIES:
+                logger.info("🔍 Proactively processing RemoteConditionalAccessories...")
+                return await self._process_remote_conditional_accessories(conversation_state)
+            elif next_state == ConfiguratorState.CONNECTIVITY_SELECTION:
+                logger.info("🔍 Proactively processing Connectivity...")
+                return await self._process_connectivity_selection(conversation_state)
+
+            next_prompt = await self.message_generator.generate_state_prompt(
+                next_state.value,
+                conversation_state.master_parameters.dict(),
+                self._serialize_response_json(conversation_state),
+                conversation_state.language
+            )
+            message = f"{confirmation}\n\n{next_prompt}"
+        else:
+            message = confirmation
+
+        return {
+            "message": message,
+            "current_state": conversation_state.current_state.value,
+            "skipped": True
+        }
+
+    async def _handle_finalize(
+        self,
+        conversation_state: ConversationState
+    ) -> Dict[str, Any]:
+        """Handle 'done' / 'finalize' command"""
+        conversation_state.current_state = ConfiguratorState.FINALIZE
+        return await self._process_finalize(conversation_state)
+
+    async def select_product(
+        self,
+        conversation_state: ConversationState,
+        product_gin: str,
+        product_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Select a product for current state component - FIXED with correct limits"""
+
+        selected_product = SelectedProduct(**product_data)
+        component_type = self._get_component_type(conversation_state.current_state)
+
+        if conversation_state.current_state == ConfiguratorState.POWER_SOURCE_SELECTION:
+            # Load applicability first to check for integrated cooler
+            applicability = self._get_component_applicability(product_gin)
+
+            # ✨ INTEGRATED COOLER: Check if PowerSource has built-in cooler
+            has_integrated_cooler = (applicability.Cooler == "integrated_cooler")
+            if has_integrated_cooler:
+                # Add flag to product data before storing
+                product_data_with_flag = dict(product_data)
+                product_data_with_flag["has_integrated_cooler"] = True
+                selected_product = SelectedProduct(**product_data_with_flag)
+                logger.info(f"✅ PowerSource {product_gin} has integrated cooler - will skip cooler_selection")
+
+            conversation_state.select_component(component_type, selected_product)
+            self.gin_manager.add_component(component_type, product_gin, selected_product.name)
+            conversation_state.set_applicability(applicability)
+        else:
+            conversation_state.select_component(component_type, selected_product)
+            self.gin_manager.add_component(component_type, product_gin, selected_product.name)
+
+        confirmation = self.message_generator.generate_selection_confirmation(
+            component_type,
+            selected_product.name,
+            selected_product.gin
+        )
+
+        config_summary = self._generate_config_summary(conversation_state)
+
+        # Check if this is an accessory category (multiple selection allowed)
+        accessory_states = [
+            ConfiguratorState.POWERSOURCE_ACCESSORIES_SELECTION,
+            ConfiguratorState.FEEDER_ACCESSORIES_SELECTION,
+            ConfiguratorState.FEEDER_CONDITIONAL_ACCESSORIES,
+            ConfiguratorState.INTERCONNECTOR_ACCESSORIES_SELECTION,
+            ConfiguratorState.REMOTE_SELECTION,
+            ConfiguratorState.REMOTE_ACCESSORIES_SELECTION,
+            ConfiguratorState.REMOTE_CONDITIONAL_ACCESSORIES,
+            ConfiguratorState.CONNECTIVITY_SELECTION
+        ]
+        
+        if conversation_state.current_state in accessory_states:
+            message = f"{confirmation}\n\n"
+            message += "Would you like to:\n"
+            message += "- Select more items from this category\n"
+            message += "- Say 'next' to move to the next category\n"
+            message += "- Say 'done' to finalize your configuration"
+
+            # 🆕 FIX: Preview NEXT accessory state's products before returning
+            # This ensures accessory→accessory transitions work like main→accessory transitions
+            next_state = self._find_next_applicable_state(conversation_state)
+            products_preview = []
+
+            if next_state and next_state in accessory_states:
+                # Next state is ALSO an accessory - show products proactively
+                logger.info(f"🔍 Previewing products for next accessory state: {next_state.value}")
+
+                try:
+                    serialized_response = self._serialize_response_json(conversation_state)
+                    search_result = None
+
+                    # Match the same search methods used in the main proactive search block (lines 3001-3070)
+                    if next_state == ConfiguratorState.FEEDER_ACCESSORIES_SELECTION:
+                        search_result = await self.product_search.search_feeder_accessories_smart(
+                            {},
+                            serialized_response,
+                            user_message=None,
+                            limit=self.PROACTIVE_SEARCH_LIMIT,
+                            offset=0
+                        )
+
+                    elif next_state == ConfiguratorState.REMOTE_SELECTION:
+                        if conversation_state.response_json.PowerSource:
+                            feeder_gin = conversation_state.response_json.Feeder.gin if conversation_state.response_json.Feeder else None
+                            search_result = await self.product_search.search_remotes(
+                                conversation_state.response_json.PowerSource.gin,
+                                feeder_gin,
+                                limit=self.PROACTIVE_SEARCH_LIMIT
+                            )
+
+                    elif next_state == ConfiguratorState.CONNECTIVITY_SELECTION:
+                        if conversation_state.response_json.PowerSource:
+                            feeder_gin = conversation_state.response_json.Feeder.gin if conversation_state.response_json.Feeder else None
+                            search_result = await self.product_search.search_connectivity(
+                                conversation_state.response_json.PowerSource.gin,
+                                feeder_gin,
+                                limit=self.PROACTIVE_SEARCH_LIMIT
+                            )
+
+                    elif next_state == ConfiguratorState.INTERCONNECTOR_ACCESSORIES_SELECTION:
+                        if conversation_state.response_json.Interconnector:
+                            search_result = await self.product_search.search_interconn_accessories(
+                                conversation_state.response_json.Interconnector.gin,
+                                limit=self.PROACTIVE_SEARCH_LIMIT
+                            )
+
+                    # Note: Conditional accessory states are intentionally excluded from preview:
+                    # - FEEDER_CONDITIONAL_ACCESSORIES (requires Feeder Accessory selection first)
+                    # - REMOTE_ACCESSORIES_SELECTION (requires Remote selection first)
+                    # - REMOTE_CONDITIONAL_ACCESSORIES (requires Remote Accessory selection first)
+                    # These will trigger search when user enters the state, not proactively
+
+                    if search_result and search_result.products:
+                        products_preview = [p.dict() for p in search_result.products]
+                        logger.info(f"✅ Previewed {len(products_preview)} products for next state: {next_state.value}")
+
+                        # Add preview message
+                        next_component_name = self._state_to_component_name(next_state)
+                        message += f"\n\n---\n\n"
+                        message += f"📦 Preview of {next_component_name} (say 'next' to see all):\n"
+                        for idx, product in enumerate(products_preview[:3], 1):  # Show first 3
+                            message += f"  {idx}. {product['name']}\n"
+                        if len(products_preview) > 3:
+                            message += f"  ...and {len(products_preview) - 3} more options available"
+                    else:
+                        logger.info(f"⚠ No products found for next state: {next_state.value}")
+
+                except Exception as e:
+                    logger.error(f"❌ Error previewing products for {next_state.value}: {e}", exc_info=True)
+
+            return {
+                "message": message,
+                "current_state": conversation_state.current_state.value,
+                "product_selected": True,
+                "stay_in_state": True,
+                "products": products_preview  # 🆕 Include preview products (renamed from preview_products)
+            }
+
+        # Find next state and do proactive search
+        next_state = self._find_next_applicable_state(conversation_state)
+        
+        if next_state and next_state != ConfiguratorState.FINALIZE:
+            conversation_state.current_state = next_state
+            
+            # 🔧 FIXED: Use modular architecture with state processors
+            try:
+                logger.info(f"🔍 Attempting proactive search for next state: {next_state.value}")
+
+                serialized_response = self._serialize_response_json(conversation_state)
+                products = None
+                search_result = None
+
+                # Get next state's processor for proactive search
+                logger.info("🔍 Using modular architecture for proactive search")
+                next_processor = self.state_processor_registry.get_processor(next_state.value)
+
+                if next_processor and next_processor.should_show_proactive_preview():
+                    # Use processor's get_proactive_preview() with PROACTIVE_SEARCH_LIMIT
+                    search_result_dict = await next_processor.get_proactive_preview(
+                        user_message=None,
+                        master_parameters=conversation_state.master_parameters.dict(),
+                        selected_components=serialized_response,
+                        limit=self.PROACTIVE_SEARCH_LIMIT  # Use full limit for proactive search
+                    )
+                    # Convert dict to SearchResults object (get_proactive_preview returns dict)
+                    search_result = self._convert_search_dict_to_results(search_result_dict) if search_result_dict else None
+                    products = search_result.products if search_result else []
+                    logger.info(f"✅ Proactive search: {len(products)} products found")
+                else:
+                    logger.info(f"⚠️ Proactive search disabled for {next_state.value}")
+
+                if products and len(products) > 0:
+                    logger.info(f"📦 Found {len(products)} compatible products for proactive search")
+
+                    # Use original search_result to preserve pagination
+                    products_message = await self.message_generator.generate_search_results_message(
+                        next_state.value,
+                        search_result,  # Use original with pagination, not recreated
+                        conversation_state.master_parameters.dict(),
+                        conversation_state.language
+                    )
+
+                    # Combine confirmation and product list
+                    next_component_name = self._state_to_component_name(next_state)
+                    message = f"{confirmation}\n\n"
+
+                    # ✅ Simple flow: Just show next component options
+                    message += f"Next, let's select your {next_component_name}.\n\n"
+                    message += products_message
+
+                    # 🎯 DEBUG: Log products being returned for nugget rendering
+                    logger.info(f"🎯 NUGGET DEBUG: Returning {len(products)} products for state {next_state.value}")
+                    for idx, p in enumerate(products[:3], 1):  # Log first 3
+                        logger.info(f"🎯 NUGGET DEBUG: Product {idx}: GIN={p.gin}, Name={p.name}, Category={p.category}")
+
+                    # Initialize pagination state
+                    state_key = next_state.value
+                    conversation_state.pagination_states[state_key] = {
+                        "offset": 0,
+                        "total": 0,
+                        "shown": len(products)
+                    }
+
+                    return {
+                        "message": message,
+                        "current_state": next_state.value,
+                        "products": [p.dict() for p in products],
+                        "awaiting_selection": True,
+                        "product_selected": True,
+                        "proactive_search": True,
+                        "pagination": {
+                            "offset": search_result.offset,
+                            "limit": search_result.limit,
+                            "has_more": search_result.has_more,
+                            "append_results": False
+                        }
+                    }
+                else:
+                    logger.info(f"⚠️ No compatible products found for proactive search")
+
+            except Exception as e:
+                logger.error(f"❌ Proactive search failed: {e}", exc_info=True)
+            
+            # Fallback: Generate prompt without products
+            next_prompt = await self.message_generator.generate_state_prompt(
+                next_state.value,
+                conversation_state.master_parameters.dict(),
+                self._serialize_response_json(conversation_state),
+                conversation_state.language
+            )
+            message = f"{confirmation}\n\n{next_prompt}"
+        else:
+            message = f"{confirmation}"
+
+        return {
+            "message": message,
+            "current_state": conversation_state.current_state.value,
+            "product_selected": True
+        }
+
+
+    def _get_selected_gins(self, conversation_state: ConversationState) -> List[str]:
+        """Get list of selected GINs for compatibility filtering"""
+        gins = []
+
+        if conversation_state.response_json.PowerSource:
+            gins.append(conversation_state.response_json.PowerSource.gin)
+        if conversation_state.response_json.Feeder:
+            gins.append(conversation_state.response_json.Feeder.gin)
+        if conversation_state.response_json.Cooler:
+            gins.append(conversation_state.response_json.Cooler.gin)
+        if conversation_state.response_json.Interconnector:
+            gins.append(conversation_state.response_json.Interconnector.gin)
+        if conversation_state.response_json.Torch:
+            gins.append(conversation_state.response_json.Torch.gin)
+
+        return gins
+
+    def _state_to_component_name(self, state: ConfiguratorState) -> str:
+        """Convert state to friendly component name"""
+        mapping = {
+            ConfiguratorState.POWER_SOURCE_SELECTION: "Power Source",
+            ConfiguratorState.FEEDER_SELECTION: "Feeder",
+            ConfiguratorState.COOLER_SELECTION: "Cooler",
+            ConfiguratorState.INTERCONNECTOR_SELECTION: "Interconnector",
+            ConfiguratorState.TORCH_SELECTION: "Torch",
+            ConfiguratorState.ACCESSORIES_SELECTION: "Accessories",
+            # Accessory states - Fixed enum names to match actual ConfiguratorState enum
+            ConfiguratorState.POWERSOURCE_ACCESSORIES_SELECTION: "Power Source Accessories",  # 🔧 Fixed: no underscore between POWER and SOURCE
+            ConfiguratorState.FEEDER_ACCESSORIES_SELECTION: "Feeder Accessories",
+            ConfiguratorState.FEEDER_CONDITIONAL_ACCESSORIES: "Feeder Conditional Accessories",
+            # ConfiguratorState.COOLER_ACCESSORIES_SELECTION removed - doesn't exist in enum
+            ConfiguratorState.INTERCONNECTOR_ACCESSORIES_SELECTION: "Interconnector Accessories",
+            ConfiguratorState.REMOTE_SELECTION: "Remote Controls",
+            ConfiguratorState.REMOTE_ACCESSORIES_SELECTION: "Remote Accessories",
+            ConfiguratorState.REMOTE_CONDITIONAL_ACCESSORIES: "Remote Conditional Accessories",
+            ConfiguratorState.CONNECTIVITY_SELECTION: "Connectivity",
+            ConfiguratorState.FEEDER_WEARS_SELECTION: "Feeder Wear Parts"
+        }
+        return mapping.get(state, "next component")
+
+    def _validate_products_for_state(self, products: List[Dict], state: ConfiguratorState) -> bool:
+        """
+        Validate that cached products match the expected category for current state.
+
+        This prevents stale products from being re-displayed after state transitions.
+        For example, prevents Feeder products from being shown in PowerSource Accessories state.
+
+        Args:
+            products: List of product dictionaries from Redis cache
+            state: Current configurator state
+
+        Returns:
+            True if products match expected category, False otherwise
+        """
+        if not products:
+            return False
+
+        # Get expected category for this state
+        expected_category = self._get_component_type(state)
+
+        # For accessory states, we need to check the actual category
+        # because Neo4j has different category names than our state names
+        category_mapping = {
+            "PowerSourceAccessories": "Accessory",
+            "FeederAccessories": "Accessory",
+            "FeederConditionalAccessories": "Accessory",
+            "InterconnectorAccessories": "Accessory",
+            "RemoteAccessories": "Accessory",
+            "RemoteConditionalAccessories": "Accessory",
+            "FeederWears": "Accessory",
+            "Connectivity": "Accessory",
+            "Accessories": "Accessory",
+            "Remotes": "Remote"
+        }
+
+        # Map state component type to actual Neo4j category
+        expected_neo4j_category = category_mapping.get(expected_category, expected_category)
+
+        # Check if all products match the expected category
+        for product in products:
+            product_category = product.get("category", "")
+            if product_category != expected_neo4j_category:
+                logger.warning(
+                    f"Product category mismatch: expected '{expected_neo4j_category}' "
+                    f"for state {state.value}, but found '{product_category}' "
+                    f"(product: {product.get('name')})"
+                )
+                return False
+
+        logger.info(f"✅ Products validated for state {state.value}: category={expected_neo4j_category}")
+        return True
+
+    def _has_meaningful_search_content(self, user_message: str, master_parameters: Dict[str, Any]) -> bool:
+        """
+        Determine if a user message contains meaningful search parameters.
+
+        This distinguishes between:
+        - Generic text: "yes", "ok", "show me" → False (re-use cached products)
+        - New search: "water-cooled feeder", "500A MIG welder" → True (execute new search)
+
+        Args:
+            user_message: The user's message
+            master_parameters: Extracted parameters from the message
+
+        Returns:
+            True if message contains meaningful search content, False for generic text
+        """
+        if not user_message:
+            return False
+
+        # Normalize message for comparison
+        msg_lower = user_message.lower().strip()
+
+        # List of generic phrases that should re-use cached products
+        generic_phrases = {
+            "yes", "ok", "okay", "sure", "yep", "yeah", "yup",
+            "show me", "tell me more", "go ahead", "continue",
+            "what else", "any more", "more options", "show more",
+            "proceed", "next", "go on"
+        }
+
+        # Check if message is a generic phrase
+        if msg_lower in generic_phrases:
+            logger.info(f"🔍 Generic phrase detected: '{msg_lower}' - will re-use cached products")
+            return False
+
+        # Check if parameters contain actual search values
+        # Look through all component parameters for non-empty values
+        has_params = False
+        for component_key, component_params in master_parameters.items():
+            if isinstance(component_params, dict):
+                # Check if any parameter has a meaningful value
+                for param_key, param_value in component_params.items():
+                    if param_value and param_value not in ["", "null", "None"]:
+                        # Found a meaningful parameter
+                        logger.info(f"🔍 Meaningful parameter detected: {component_key}.{param_key}={param_value}")
+                        has_params = True
+                        break
+            if has_params:
+                break
+
+        if has_params:
+            # Parameters extracted - this is a new search request
+            logger.info(f"🔍 Search parameters detected in message - will execute new search")
+            return True
+
+        # No parameters extracted - check message length
+        word_count = len(msg_lower.split())
+        if word_count < 3:
+            # Very short message without parameters - likely generic text
+            logger.info(f"🔍 Short message ({word_count} words) without parameters - treating as generic text")
+            return False
+        else:
+            # Longer message - might be natural language search, execute search to be safe
+            logger.info(f"🔍 Longer message ({word_count} words) - treating as search request")
+            return True
+
+    # =========================================================================
+    # UTILITY METHODS - From Document 5 (UNCHANGED)
+    # =========================================================================
+
+    def _get_component_applicability(self, power_source_gin: str) -> ComponentApplicability:
+        """Load component applicability from config for power source"""
+        power_sources = self.applicability_config.get("power_sources", {})
+        ps_config = power_sources.get(power_source_gin)
+
+        if ps_config:
+            applicability_data = ps_config.get("applicability", {})
+            return ComponentApplicability(**applicability_data)
+        else:
+            default_policy = self.applicability_config.get("default_policy", {})
+            applicability_data = default_policy.get("applicability", {})
+            return ComponentApplicability(**applicability_data)
+
+    def _get_component_type(self, state: ConfiguratorState) -> str:
+        """Map state to component type"""
+        component_map = {
+            ConfiguratorState.POWER_SOURCE_SELECTION: "PowerSource",
+            ConfiguratorState.FEEDER_SELECTION: "Feeder",
+            ConfiguratorState.COOLER_SELECTION: "Cooler",
+            ConfiguratorState.INTERCONNECTOR_SELECTION: "Interconnector",
+            ConfiguratorState.TORCH_SELECTION: "Torch",
+            ConfiguratorState.POWERSOURCE_ACCESSORIES_SELECTION: "PowerSourceAccessories",
+            ConfiguratorState.FEEDER_ACCESSORIES_SELECTION: "FeederAccessories",
+            ConfiguratorState.FEEDER_CONDITIONAL_ACCESSORIES: "FeederConditionalAccessories",
+            ConfiguratorState.INTERCONNECTOR_ACCESSORIES_SELECTION: "InterconnectorAccessories",
+            ConfiguratorState.REMOTE_SELECTION: "Remotes",
+            ConfiguratorState.REMOTE_ACCESSORIES_SELECTION: "RemoteAccessories",
+            ConfiguratorState.REMOTE_CONDITIONAL_ACCESSORIES: "RemoteConditionalAccessories",
+            ConfiguratorState.CONNECTIVITY_SELECTION: "Connectivity",
+            ConfiguratorState.FEEDER_WEARS_SELECTION: "FeederWears",
+            ConfiguratorState.ACCESSORIES_SELECTION: "Accessories"
+        }
+        return component_map.get(state, "Unknown")
+
+    async def _auto_select_single_result(
+        self,
+        conversation_state: ConversationState,
+        search_results,
+        component_type: str,
+        response_json_field: str,
+        is_list: bool = False
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Common auto-selection logic for when exactly 1 result is found.
+
+        Args:
+            conversation_state: Current conversation state
+            search_results: Search results object
+            component_type: Display name (e.g., "PowerSource", "Connectivity", "FeederAccessories")
+            response_json_field: Field name in ResponseJSON (e.g., "PowerSource", "Connectivity", "FeederAccessories")
+            is_list: True if field is a list (accessories), False if single component
+
+        Returns:
+            Response dict if auto-selected, None if multiple results (should show list)
+        """
+        logger.info(f"🔎 _auto_select_single_result called for {component_type}")
+
+        # DISABLE AUTO-SELECTION FOR ALL PRODUCTS - User must confirm all selections
+        logger.info(f"⏭️ Auto-selection globally disabled for {component_type} - showing result to user")
+        return None
+
+        if not search_results or not search_results.products:
+            logger.info(f"⚠️ No search results for {component_type} - returning None")
+            return None
+
+        product_count = len(search_results.products)
+        logger.info(f"📊 {component_type} search returned {product_count} products")
+
+        # 🆕 DISABLE AUTO-SELECTION for Feeder and Cooler (user wants to see single result)
+        if component_type in ["Feeder", "Cooler"]:
+            logger.info(f"⏭️ Auto-selection disabled for {component_type} - showing result to user")
+            return None  # Show single result to user instead of auto-selecting
+
+        if product_count != 1:
+            logger.info(f"❌ Multiple products ({product_count}) found for {component_type} - skipping auto-selection")
+            return None  # Multiple results - let caller show list
+
+        product = search_results.products[0]
+        logger.info(f"✅ Only 1 {component_type} found - auto-selecting: {product.name}")
+
+        selected_product = SelectedProduct(
+            gin=product.gin,
+            name=product.name,
+            category=product.category,
+            description=product.description,
+            specifications=product.specifications
+        )
+
+        # Add to ResponseJSON - either single field or list
+        if is_list:
+            # Accessory list field
+            current_list = getattr(conversation_state.response_json, response_json_field, None)
+            if current_list is None:
+                setattr(conversation_state.response_json, response_json_field, [])
+                current_list = getattr(conversation_state.response_json, response_json_field)
+            current_list.append(selected_product)
+        else:
+            # Single component field (PowerSource, Feeder, etc.)
+            setattr(conversation_state.response_json, response_json_field, selected_product)
+
+            # Add to GIN manager for compatibility tracking
+            self.gin_manager.add_component(component_type, product.gin, product.name)
+
+            # Set applicability for PowerSource
+            if component_type == "PowerSource":
+                applicability = self._get_component_applicability(product.gin)
+                conversation_state.set_applicability(applicability)
+
+        confirmation = f"✅ Auto-selected {component_type}: **{selected_product.name}** (GIN: {selected_product.gin})"
+
+        # Find next state and PROCESS it (not just generate prompt)
+        next_state = self._find_next_applicable_state(conversation_state)
+        if next_state and next_state != ConfiguratorState.FINALIZE:
+            conversation_state.current_state = next_state
+            logger.info(f"🔄 Recursively processing next state: {next_state.value}")
+
+            # 🆕 PROACTIVE SEARCH: Process the next state to show results
+            next_state_response = await self._route_to_state_processor(conversation_state, next_state)
+
+            # Combine confirmation with next state's response
+            if next_state_response and "message" in next_state_response:
+                message = f"{confirmation}\n\n{next_state_response['message']}"
+
+                # Return combined response with next state's data
+                return {
+                    "message": message,
+                    "current_state": next_state_response.get("current_state", next_state.value),
+                    "products": next_state_response.get("products", []),
+                    "awaiting_selection": next_state_response.get("awaiting_selection", False),
+                    "product_selected": True,
+                    "auto_selected": True,
+                    "pagination": next_state_response.get("pagination")
+                }
+            else:
+                # Fallback to generic prompt if processor fails
+                next_prompt = await self.message_generator.generate_state_prompt(
+                    next_state.value,
+                    conversation_state.master_parameters.dict(),
+                    self._serialize_response_json(conversation_state),
+                    conversation_state.language
+                )
+                message = f"{confirmation}\n\n{next_prompt}"
+        else:
+            message = confirmation
+
+        return {
+            "message": message,
+            "current_state": conversation_state.current_state.value,
+            "product_selected": True,
+            "auto_selected": True
+        }
+
+    async def _route_to_state_processor(
+        self,
+        conversation_state: ConversationState,
+        state: ConfiguratorState
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Route to the appropriate state processor
+        Used by auto-selection to proactively process next state
+        """
+        try:
+            if state == ConfiguratorState.POWER_SOURCE_SELECTION:
+                # For auto-routing, pass empty string (will use traditional search)
+                return await self._process_power_source_selection(conversation_state, "")
+
+            elif state == ConfiguratorState.FEEDER_SELECTION:
+                return await self._process_component_selection(conversation_state, "Feeder")
+
+            elif state == ConfiguratorState.COOLER_SELECTION:
+                return await self._process_component_selection(conversation_state, "Cooler")
+
+            elif state == ConfiguratorState.INTERCONNECTOR_SELECTION:
+                return await self._process_component_selection(conversation_state, "Interconnector")
+
+            elif state == ConfiguratorState.TORCH_SELECTION:
+                return await self._process_component_selection(conversation_state, "Torch")
+
+            elif state == ConfiguratorState.POWERSOURCE_ACCESSORIES_SELECTION:
+                return await self._process_powersource_accessories_selection(conversation_state)
+
+            elif state == ConfiguratorState.FEEDER_ACCESSORIES_SELECTION:
+                return await self._process_feeder_accessories_selection(conversation_state)
+
+            elif state == ConfiguratorState.FEEDER_CONDITIONAL_ACCESSORIES:
+                return await self._process_feeder_conditional_accessories(conversation_state)
+
+            elif state == ConfiguratorState.INTERCONNECTOR_ACCESSORIES_SELECTION:
+                return await self._process_interconnector_accessories_selection(conversation_state)
+
+            elif state == ConfiguratorState.REMOTE_SELECTION:
+                return await self._process_remote_selection(conversation_state)
+
+            elif state == ConfiguratorState.REMOTE_ACCESSORIES_SELECTION:
+                return await self._process_remote_accessories_selection(conversation_state)
+
+            elif state == ConfiguratorState.REMOTE_CONDITIONAL_ACCESSORIES:
+                return await self._process_remote_conditional_accessories(conversation_state)
+
+            elif state == ConfiguratorState.CONNECTIVITY_SELECTION:
+                return await self._process_connectivity_selection(conversation_state)
+
+            elif state == ConfiguratorState.FEEDER_WEARS_SELECTION:
+                return await self._process_feeder_wears_selection(conversation_state)
+
+            elif state == ConfiguratorState.ACCESSORIES_SELECTION:
+                return await self._process_accessories_selection(conversation_state)
+
+            elif state == ConfiguratorState.FINALIZE:
+                return await self._process_finalize(conversation_state)
+
+            else:
+                logger.warning(f"No processor found for state: {state}")
+                return None
+
+        except Exception as e:
+            logger.error(f"Error routing to processor for state {state}: {e}", exc_info=True)
+            return None
+
+    def _state_to_component_type(self, state: ConfiguratorState) -> str:
+        """Convert state enum to component type string for response_json"""
+        state_to_component = {
+            ConfiguratorState.POWER_SOURCE_SELECTION: "PowerSource",
+            ConfiguratorState.FEEDER_SELECTION: "Feeder",
+            ConfiguratorState.COOLER_SELECTION: "Cooler",
+            ConfiguratorState.INTERCONNECTOR_SELECTION: "Interconnector",
+            ConfiguratorState.TORCH_SELECTION: "Torch",
+        }
+        return state_to_component.get(state, "Unknown")
+
+    def _get_component_name(self, state: ConfiguratorState) -> str:
+        """Get friendly component name"""
+        return self._get_component_type(state).replace("_", " ")
+
+    def _serialize_response_json(self, conversation_state: ConversationState) -> Dict[str, Any]:
+        """
+        Serialize response JSON for API output
+        ALL components appear in response:
+        - Selected: full product object
+        - Not selected (None, empty, or skipped): "skipped" string
+        """
+        response_dict = {}
+
+        # Helper to serialize single-selection component
+        # Selected → dict, anything else → "skipped"
+        def serialize_component(component_value):
+            if component_value == "skipped":
+                return "skipped"
+            if component_value is None:
+                return "skipped"
+            # SelectedProduct instance
+            return component_value.dict()
+
+        # Core components - ALWAYS appear in response
+        response_dict["PowerSource"] = serialize_component(conversation_state.response_json.PowerSource)
+        response_dict["Feeder"] = serialize_component(conversation_state.response_json.Feeder)
+        response_dict["Cooler"] = serialize_component(conversation_state.response_json.Cooler)
+        response_dict["Interconnector"] = serialize_component(conversation_state.response_json.Interconnector)
+        response_dict["Torch"] = serialize_component(conversation_state.response_json.Torch)
+
+        # Helper to serialize multi-selection accessory categories
+        # List with products → list of dicts, anything else → "skipped"
+        def serialize_accessory_category(category_value):
+            if category_value == "skipped":
+                return "skipped"
+            if isinstance(category_value, list) and len(category_value) > 0:
+                return [a.dict() for a in category_value]
+            # None or empty list → "skipped"
+            return "skipped"
+
+        # Accessory categories - ALWAYS appear in response
+        response_dict["PowerSourceAccessories"] = serialize_accessory_category(
+            conversation_state.response_json.PowerSourceAccessories
+        )
+        response_dict["FeederAccessories"] = serialize_accessory_category(
+            conversation_state.response_json.FeederAccessories
+        )
+        response_dict["FeederConditionalAccessories"] = serialize_accessory_category(
+            conversation_state.response_json.FeederConditionalAccessories
+        )
+        response_dict["InterconnectorAccessories"] = serialize_accessory_category(
+            conversation_state.response_json.InterconnectorAccessories
+        )
+        response_dict["Remotes"] = serialize_accessory_category(
+            conversation_state.response_json.Remotes
+        )
+        response_dict["RemoteAccessories"] = serialize_accessory_category(
+            conversation_state.response_json.RemoteAccessories
+        )
+        response_dict["RemoteConditionalAccessories"] = serialize_accessory_category(
+            conversation_state.response_json.RemoteConditionalAccessories
+        )
+        response_dict["Connectivity"] = serialize_accessory_category(
+            conversation_state.response_json.Connectivity
+        )
+        response_dict["FeederWears"] = serialize_accessory_category(
+            conversation_state.response_json.FeederWears
+        )
+
+        # Legacy - Accessories (for backward compatibility)
+        response_dict["Accessories"] = serialize_accessory_category(
+            conversation_state.response_json.Accessories
+        )
+
+        return response_dict
+
+    def _generate_config_summary(self, conversation_state: ConversationState) -> str:
+        """Generate current configuration summary for display in chat
+        ✨ SKIP TRACKING: Handles 'skipped' literals
+        """
+        summary = "**Current Configuration:**\n\n"
+
+        # Core components - Handle "skipped" literal
+        ps = conversation_state.response_json.PowerSource
+        if ps and ps != "skipped":
+            summary += f"✅ PowerSource: {ps.name}\n"
+
+        feeder = conversation_state.response_json.Feeder
+        if feeder and feeder != "skipped":
+            summary += f"✅ Feeder: {feeder.name}\n"
+
+        cooler = conversation_state.response_json.Cooler
+        if cooler and cooler != "skipped":
+            summary += f"✅ Cooler: {cooler.name}\n"
+
+        ic = conversation_state.response_json.Interconnector
+        if ic and ic != "skipped":
+            summary += f"✅ Interconnector: {ic.name}\n"
+
+        torch = conversation_state.response_json.Torch
+        if torch and torch != "skipped":
+            summary += f"✅ Torch: {torch.name}\n"
+
+        # Accessory categories - Check for "skipped" and ensure it's a list
+        ps_acc = conversation_state.response_json.PowerSourceAccessories
+        if ps_acc and ps_acc != "skipped" and isinstance(ps_acc, list):
+            summary += f"\n✅ PowerSource Accessories ({len(ps_acc)}):\n"
+            for acc in ps_acc:
+                if hasattr(acc, 'name'):
+                    summary += f"  • {acc.name}\n"
+
+        f_acc = conversation_state.response_json.FeederAccessories
+        if f_acc and f_acc != "skipped" and isinstance(f_acc, list):
+            summary += f"\n✅ Feeder Accessories ({len(f_acc)}):\n"
+            for acc in f_acc:
+                if hasattr(acc, 'name'):
+                    summary += f"  • {acc.name}\n"
+
+        fc_acc = conversation_state.response_json.FeederConditionalAccessories
+        if fc_acc and fc_acc != "skipped" and isinstance(fc_acc, list):
+            summary += f"\n✅ Feeder Conditional Accessories ({len(fc_acc)}):\n"
+            for acc in fc_acc:
+                if hasattr(acc, 'name'):
+                    summary += f"  • {acc.name}\n"
+
+        ic_acc = conversation_state.response_json.InterconnectorAccessories
+        if ic_acc and ic_acc != "skipped" and isinstance(ic_acc, list):
+            summary += f"\n✅ Interconnector Accessories ({len(ic_acc)}):\n"
+            for acc in ic_acc:
+                if hasattr(acc, 'name'):
+                    summary += f"  • {acc.name}\n"
+
+        remotes = conversation_state.response_json.Remotes
+        if remotes and remotes != "skipped" and isinstance(remotes, list):
+            summary += f"\n✅ Remotes ({len(remotes)}):\n"
+            for remote in remotes:
+                if hasattr(remote, 'name'):
+                    summary += f"  • {remote.name}\n"
+
+        r_acc = conversation_state.response_json.RemoteAccessories
+        if r_acc and r_acc != "skipped" and isinstance(r_acc, list):
+            summary += f"\n✅ Remote Accessories ({len(r_acc)}):\n"
+            for acc in r_acc:
+                if hasattr(acc, 'name'):
+                    summary += f"  • {acc.name}\n"
+
+        rc_acc = conversation_state.response_json.RemoteConditionalAccessories
+        if rc_acc and rc_acc != "skipped" and isinstance(rc_acc, list):
+            summary += f"\n✅ Remote Conditional Accessories ({len(rc_acc)}):\n"
+            for acc in rc_acc:
+                if hasattr(acc, 'name'):
+                    summary += f"  • {acc.name}\n"
+
+        connectivity = conversation_state.response_json.Connectivity
+        if connectivity and connectivity != "skipped" and isinstance(connectivity, list):
+            summary += f"\n✅ Connectivity ({len(connectivity)}):\n"
+            for conn in connectivity:
+                if hasattr(conn, 'name'):
+                    summary += f"  • {conn.name}\n"
+
+        feeder_wears = conversation_state.response_json.FeederWears
+        if feeder_wears and feeder_wears != "skipped" and isinstance(feeder_wears, list):
+            summary += f"\n✅ Feeder Wears ({len(feeder_wears)}):\n"
+            for wear in feeder_wears:
+                if hasattr(wear, 'name'):
+                    summary += f"  • {wear.name}\n"
+
+        # Legacy accessories
+        accessories = conversation_state.response_json.Accessories
+        if accessories and accessories != "skipped" and isinstance(accessories, list):
+            summary += f"\n✅ Accessories ({len(accessories)}):\n"
+            for acc in accessories:
+                if hasattr(acc, 'name'):
+                    summary += f"  • {acc.name}\n"
+
+        return summary

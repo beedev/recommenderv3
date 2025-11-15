@@ -1,0 +1,364 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>6305e786-844b-40eb-bb57-dffe697384d1</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>src\backend\app\main.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>esab_recommender</Name>
+    <RootNamespace>esab_recommender</RootNamespace>
+    <InterpreterId>MSBuild|venv|$(MSBuildProjectFullPath)</InterpreterId>
+    <TestFramework>Pytest</TestFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="src\backend\analyze_neo4j.py" />
+    <Compile Include="src\backend\app\api\v1\configurator.py" />
+    <Compile Include="src\backend\app\api\v1\health.py" />
+    <Compile Include="src\backend\app\config\schema_loader.py" />
+    <Compile Include="src\backend\app\database\database.py" />
+    <Compile Include="src\backend\app\database\postgres_archival.py" />
+    <Compile Include="src\backend\app\database\redis_session_storage.py" />
+    <Compile Include="src\backend\app\database\__init__.py" />
+    <Compile Include="src\backend\app\main.py" />
+    <Compile Include="src\backend\app\middleware\logging_middleware.py" />
+    <Compile Include="src\backend\app\middleware\__init__.py" />
+    <Compile Include="src\backend\app\models\conversation.py" />
+    <Compile Include="src\backend\app\models\graph_state.py" />
+    <Compile Include="src\backend\app\models\state_factory.py" />
+    <Compile Include="src\backend\app\models\__init__.py" />
+    <Compile Include="src\backend\app\services\config\configuration_service.py" />
+    <Compile Include="src\backend\app\services\config\config_monitor.py" />
+    <Compile Include="src\backend\app\services\config\config_validator.py" />
+    <Compile Include="src\backend\app\services\config\prompt_service.py" />
+    <Compile Include="src\backend\app\services\config\__init__.py" />
+    <Compile Include="src\backend\app\services\graph\configurator_graph.py" />
+    <Compile Include="src\backend\app\services\graph\__init__.py" />
+    <Compile Include="src\backend\app\services\intent\parameter_extractor.py" />
+    <Compile Include="src\backend\app\services\intent\__init__.py" />
+    <Compile Include="src\backend\app\services\multilingual\translator.py" />
+    <Compile Include="src\backend\app\services\multilingual\__init__.py" />
+    <Compile Include="src\backend\app\services\neo4j\product_search.py" />
+    <Compile Include="src\backend\app\services\neo4j\__init__.py" />
+    <Compile Include="src\backend\app\services\observability\langsmith_service.py" />
+    <Compile Include="src\backend\app\services\observability\__init__.py" />
+    <Compile Include="src\backend\app\services\orchestrator\state_orchestrator.py" />
+    <Compile Include="src\backend\app\services\orchestrator\state_processors.py" />
+    <Compile Include="src\backend\app\services\orchestrator\__init__.py" />
+    <Compile Include="src\backend\app\services\ranker\product_ranker.py" />
+    <Compile Include="src\backend\app\services\response\message_generator.py" />
+    <Compile Include="src\backend\app\services\response\__init__.py" />
+    <Compile Include="src\backend\app\utils\logging_context.py" />
+    <Compile Include="src\backend\app\utils\log_parser.py" />
+    <Compile Include="src\backend\app\utils\__init__.py" />
+    <Compile Include="src\backend\app\__init__.py" />
+    <Compile Include="src\backend\check_aura_category.py" />
+    <Compile Include="src\backend\extract_product_names.py" />
+    <Compile Include="src\backend\tests\conftest.py" />
+    <Compile Include="src\backend\tests\e2e\test_complete_workflow.py" />
+    <Compile Include="src\backend\tests\e2e\test_state_transitions.py" />
+    <Compile Include="src\backend\tests\e2e\__init__.py" />
+    <Compile Include="src\backend\tests\integration\conftest.py" />
+    <Compile Include="src\backend\tests\integration\test_api_endpoints.py" />
+    <Compile Include="src\backend\tests\integration\test_configurator_flow.py" />
+    <Compile Include="src\backend\tests\integration\test_config_system.py" />
+    <Compile Include="src\backend\tests\integration\test_multiuser_sessions.py" />
+    <Compile Include="src\backend\tests\integration\test_session_management.py" />
+    <Compile Include="src\backend\tests\integration\__init__.py" />
+    <Compile Include="src\backend\tests\manual\test_explicit_selection.py" />
+    <Compile Include="src\backend\tests\manual\test_local_neo4j.py" />
+    <Compile Include="src\backend\tests\manual\test_message_cleanup.py" />
+    <Compile Include="src\backend\tests\manual\__init__.py" />
+    <Compile Include="src\backend\tests\unit\api\test_health_endpoints.py" />
+    <Compile Include="src\backend\tests\unit\api\__init__.py" />
+    <Compile Include="src\backend\tests\unit\conftest.py" />
+    <Compile Include="src\backend\tests\unit\database\test_postgres_archival.py" />
+    <Compile Include="src\backend\tests\unit\database\test_redis_session_storage.py" />
+    <Compile Include="src\backend\tests\unit\database\__init__.py" />
+    <Compile Include="src\backend\tests\unit\models\test_conversation_state.py" />
+    <Compile Include="src\backend\tests\unit\models\test_selected_product.py" />
+    <Compile Include="src\backend\tests\unit\models\test_serialization.py" />
+    <Compile Include="src\backend\tests\unit\models\__init__.py" />
+    <Compile Include="src\backend\tests\unit\services\config\test_configuration_service.py" />
+    <Compile Include="src\backend\tests\unit\services\config\test_prompt_service.py" />
+    <Compile Include="src\backend\tests\unit\services\intent\test_parameter_extractor.py" />
+    <Compile Include="src\backend\tests\unit\services\intent\__init__.py" />
+    <Compile Include="src\backend\tests\unit\services\multilingual\test_translator.py" />
+    <Compile Include="src\backend\tests\unit\services\multilingual\__init__.py" />
+    <Compile Include="src\backend\tests\unit\services\neo4j\test_product_search.py" />
+    <Compile Include="src\backend\tests\unit\services\neo4j\__init__.py" />
+    <Compile Include="src\backend\tests\unit\services\orchestrator\test_state_orchestrator.py" />
+    <Compile Include="src\backend\tests\unit\services\orchestrator\__init__.py" />
+    <Compile Include="src\backend\tests\unit\services\response\test_message_generator.py" />
+    <Compile Include="src\backend\tests\unit\services\response\__init__.py" />
+    <Compile Include="src\backend\tests\unit\services\__init__.py" />
+    <Compile Include="src\backend\tests\unit\__init__.py" />
+    <Compile Include="src\backend\tests\__init__.py" />
+    <Compile Include="src\backend\test_chat_flow.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="deployment\" />
+    <Folder Include="deployment\database\" />
+    <Folder Include="deployment\database\backups\" />
+    <Folder Include="deployment\database\init\" />
+    <Folder Include="deployment\database\migrations\" />
+    <Folder Include="deployment\docker\" />
+    <Folder Include="deployment\env\" />
+    <Folder Include="deployment\local\" />
+    <Folder Include="deployment\systemd\" />
+    <Folder Include="docs\api\" />
+    <Folder Include="docs\architecture\" />
+    <Folder Include="docs\architecture\sessions\" />
+    <Folder Include="docs\archive\" />
+    <Folder Include="docs\deployment\" />
+    <Folder Include="docs\development\" />
+    <Folder Include="docs\operations\" />
+    <Folder Include="src\" />
+    <Folder Include="src\backend\" />
+    <Folder Include="src\backend\app\" />
+    <Folder Include="src\backend\app\api\" />
+    <Folder Include="src\backend\app\api\v1\" />
+    <Folder Include="src\backend\app\config\" />
+    <Folder Include="src\backend\app\config\schemas\" />
+    <Folder Include="src\backend\app\config\temp\" />
+    <Folder Include="src\backend\app\database\" />
+    <Folder Include="src\backend\app\middleware\" />
+    <Folder Include="src\backend\app\middleware\__pycache__\" />
+    <Folder Include="src\backend\app\models\" />
+    <Folder Include="src\backend\app\services\" />
+    <Folder Include="src\backend\app\services\config\" />
+    <Folder Include="src\backend\app\services\graph\" />
+    <Folder Include="src\backend\app\services\intent\" />
+    <Folder Include="src\backend\app\services\multilingual\" />
+    <Folder Include="src\backend\app\services\neo4j\" />
+    <Folder Include="src\backend\app\services\ranker\" />
+    <Folder Include="src\backend\app\services\observability\" />
+    <Folder Include="src\backend\app\services\orchestrator\" />
+    <Folder Include="src\backend\app\services\response\" />
+    <Folder Include="docs\" />
+    <Folder Include="src\backend\app\utils\" />
+    <Folder Include="src\backend\test-results\" />
+    <Folder Include="src\backend\test-results\artifacts\" />
+    <Folder Include="src\backend\test-results\artifacts\data\" />
+    <Folder Include="src\backend\test-results\artifacts\screenshots\" />
+    <Folder Include="src\backend\test-results\artifacts\traces\" />
+    <Folder Include="src\backend\test-results\benchmarks\" />
+    <Folder Include="src\backend\test-results\coverage\" />
+    <Folder Include="src\backend\test-results\coverage\html\" />
+    <Folder Include="src\backend\test-results\logs\" />
+    <Folder Include="src\backend\test-results\logs\e2e\" />
+    <Folder Include="src\backend\test-results\logs\integration\" />
+    <Folder Include="src\backend\test-results\logs\unit\" />
+    <Folder Include="src\backend\test-results\reports\" />
+    <Folder Include="src\backend\test-results\reports\html\" />
+    <Folder Include="src\backend\test-results\reports\json\" />
+    <Folder Include="src\backend\test-results\reports\junit\" />
+    <Folder Include="src\backend\tests\" />
+    <Folder Include="src\backend\tests\e2e\" />
+    <Folder Include="src\backend\tests\fixtures\" />
+    <Folder Include="src\backend\tests\integration\" />
+    <Folder Include="src\backend\tests\integration\__pycache__\" />
+    <Folder Include="src\backend\tests\manual\" />
+    <Folder Include="src\backend\tests\unit\" />
+    <Folder Include="src\backend\tests\unit\api\" />
+    <Folder Include="src\backend\tests\unit\database\" />
+    <Folder Include="src\backend\tests\unit\models\" />
+    <Folder Include="src\backend\tests\unit\services\" />
+    <Folder Include="src\backend\tests\unit\services\config\" />
+    <Folder Include="src\backend\tests\unit\services\intent\" />
+    <Folder Include="src\backend\tests\unit\services\multilingual\" />
+    <Folder Include="src\backend\tests\unit\services\neo4j\" />
+    <Folder Include="src\backend\tests\unit\services\orchestrator\" />
+    <Folder Include="src\backend\tests\unit\services\response\" />
+    <Folder Include="src\backend\tests\__pycache__\" />
+    <Folder Include="src\frontend\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".gitignore" />
+    <Content Include="AGENTS.md" />
+    <Content Include="CLAUDE.md" />
+    <Content Include="deployment\database\backups\backup.sh" />
+    <Content Include="deployment\database\backups\restore.sh" />
+    <Content Include="deployment\database\init\neo4j-init.cypher" />
+    <Content Include="deployment\database\init\postgres-init.sql" />
+    <Content Include="deployment\database\init\redis-init.sh" />
+    <Content Include="deployment\database\migrations\README.md" />
+    <Content Include="deployment\database\README.md" />
+    <Content Include="deployment\docker\.dockerignore" />
+    <Content Include="deployment\docker\docker-compose.prod.yml" />
+    <Content Include="deployment\docker\docker-compose.yml" />
+    <Content Include="deployment\docker\Dockerfile" />
+    <Content Include="deployment\docker\Dockerfile.dev" />
+    <Content Include="deployment\docker\README.md" />
+    <Content Include="deployment\docker\REDISINSIGHT_TROUBLESHOOTING.md" />
+    <Content Include="deployment\docker\UPGRADE_DOCKER_COMPOSE.sh" />
+    <Content Include="deployment\env\.env.development.example" />
+    <Content Include="deployment\env\.env.example" />
+    <Content Include="deployment\env\.env.production.example" />
+    <Content Include="deployment\env\README.md" />
+    <Content Include="deployment\local\README.md" />
+    <Content Include="deployment\local\start_servers.sh" />
+    <Content Include="deployment\local\stop_servers.sh" />
+    <Content Include="deployment\README.md" />
+    <Content Include="deployment\Redis-Config.md" />
+    <Content Include="deployment\systemd\CHANGELOG.md" />
+    <Content Include="deployment\systemd\deploy.sh" />
+    <Content Include="deployment\systemd\esab-recommender-frontend.service" />
+    <Content Include="deployment\systemd\esab-recommender.service" />
+    <Content Include="deployment\systemd\esab-recommender.target" />
+    <Content Include="deployment\systemd\MIGRATION_GUIDE.md" />
+    <Content Include="deployment\systemd\PERMISSION_FIX.md" />
+    <Content Include="deployment\systemd\QUICK_START_AYNALINUX.md" />
+    <Content Include="deployment\systemd\README.md" />
+    <Content Include="docs\ACCESSORY_SKIP_TRACKING_IMPLEMENTATION.md" />
+    <Content Include="docs\ADDING_NEW_STATES.md" />
+    <Content Include="docs\architecture\sessions\README.md" />
+    <Content Include="docs\architecture\sessions\renegade-workflow-fixes.md" />
+    <Content Include="docs\archive\deployment-checklist-docker.md" />
+    <Content Include="docs\archive\deployment-success.md" />
+    <Content Include="docs\archive\docker-compose-fix.md" />
+    <Content Include="docs\archive\docker-frontend-verification.md" />
+    <Content Include="docs\archive\migration-plan.md" />
+    <Content Include="docs\archive\phase1-architecture.md" />
+    <Content Include="docs\archive\system-alignment-2024-10.md" />
+    <Content Include="docs\archive\testing-organization-review.md" />
+    <Content Include="docs\deployment\CHANGES_COMPARISON.md" />
+    <Content Include="docs\deployment\database-migrations.md" />
+    <Content Include="docs\deployment\database-setup.md" />
+    <Content Include="docs\deployment\deployment-checklist.md" />
+    <Content Include="docs\deployment\docker.md" />
+    <Content Include="docs\deployment\DOCKERFILE_DEV_ANALYSIS.md" />
+    <Content Include="docs\deployment\environment-variables.md" />
+    <Content Include="docs\deployment\FIX_PERMISSION_ERROR.md" />
+    <Content Include="docs\deployment\frontend-config.md" />
+    <Content Include="docs\deployment\linux-systemd.md" />
+    <Content Include="docs\deployment\local-development.md" />
+    <Content Include="docs\deployment\optional-services.md" />
+    <Content Include="docs\deployment\PRODUCTION_DEPLOYMENT_GUIDE.md" />
+    <Content Include="docs\deployment\quick-start.md" />
+    <Content Include="docs\deployment\QUICK_FIX_COMMANDS.md" />
+    <Content Include="docs\deployment\QUICK_START.md" />
+    <Content Include="docs\deployment\README-1.md" />
+    <Content Include="docs\deployment\README.md" />
+    <Content Include="docs\deployment\redis-linux-systemd.md" />
+    <Content Include="docs\deployment\troubleshooting.md" />
+    <Content Include="docs\development\mcp-setup.md" />
+    <Content Include="docs\development\README.md" />
+    <Content Include="docs\development\requirements-sync.md" />
+    <Content Include="docs\DOCUMENTATION_NAVIGATION.md" />
+    <Content Include="docs\DYNAMIC_STATE_ARCHITECTURE.md" />
+    <Content Include="docs\DYNAMIC_STATE_MIGRATION_SUMMARY.md" />
+    <Content Include="docs\FINALIZE_SKIPPED_ITEMS_IMPLEMENTATION.md" />
+    <Content Include="docs\INTEGRATED_COOLER_IMPLEMENTATION.md" />
+    <Content Include="docs\INTEGRATION_FIX.md" />
+    <Content Include="docs\LOG_VIEWER_IMPLEMENTATION.md" />
+    <Content Include="docs\NUMBER_SELECTION_FIX.md" />
+    <Content Include="docs\operations\runbook.md" />
+    <Content Include="docs\operations\structured-logging-guide.md" />
+    <Content Include="docs\PRODUCT_SEARCH_SERVICE.md" />
+    <Content Include="docs\REDIS_MULTI_USER_SESSION_REVIEW.md" />
+    <Content Include="docs\redis_session_lifecycle.md" />
+    <Content Include="docs\SKIP_TRACKING_FIX_PRODUCT_SEARCH.md" />
+    <Content Include="docs\SKIP_TRACKING_IMPLEMENTATION_SUMMARY.md" />
+    <Content Include="docs\SKIP_TRACKING_LINE_REFERENCE.md" />
+    <Content Include="docs\TEMP_FOLDER_INTEGRATION.md" />
+    <Content Include="docs\testing-guide.md" />
+    <Content Include="docs\V2_INTEGRATED_COOLER_MERGE.md" />
+    <Content Include="DOCUMENTATION_NAVIGATION.md.bak" />
+    <Content Include="README.md" />
+    <Content Include="src\backend\.env" />
+    <Content Include="src\backend\app\config\cache_config.json" />
+    <Content Include="src\backend\app\config\component_applicability.json" />
+    <Content Include="src\backend\app\config\component_types.json" />
+    <Content Include="src\backend\app\config\cooling_types.json" />
+    <Content Include="src\backend\app\config\error_messages.json" />
+    <Content Include="src\backend\app\config\languages.json" />
+    <Content Include="src\backend\app\config\llm_config.json" />
+    <Content Include="src\backend\app\config\llm_prompts.json" />
+    <Content Include="src\backend\app\config\master_parameter_schema.json" />
+    <Content Include="src\backend\app\config\materials.json" />
+    <Content Include="src\backend\app\config\product_names.json" />
+    <Content Include="docs\CLAUDE.md" />
+    <Content Include="docs\CORRECTED_STATE_FLOW_ARCHITECTURE.md" />
+    <Content Include="docs\LANGGRAPH_INTEGRATION.md" />
+    <Content Include="docs\LLM_ENTITY_EXTRACTION_ARCHITECTURE.md" />
+    <Content Include="docs\MASTER_PARAMETER_JSON_ARCHITECTURE.md" />
+    <Content Include="docs\MULTILINGUAL_FLOW.md" />
+    <Content Include="docs\README.md" />
+    <Content Include="docs\SEARCH_IMPLEMENTATION.md" />
+    <Content Include="src\backend\app\config\schemas\component_applicability.schema.json" />
+    <Content Include="src\backend\app\config\schemas\component_types.schema.json" />
+    <Content Include="src\backend\app\config\schemas\state_prompts.schema.json" />
+    <Content Include="src\backend\app\config\search_config.json" />
+    <Content Include="src\backend\app\config\state_prompts.json" />
+    <Content Include="src\backend\app\config\temp\component_applicability.json" />
+    <Content Include="src\backend\app\config\welding_processes.json" />
+    <Content Include="src\backend\app\middleware\__pycache__\logging_middleware.cpython-312.pyc" />
+    <Content Include="src\backend\app\middleware\__pycache__\__init__.cpython-312.pyc" />
+    <Content Include="src\backend\clean-test-results.sh" />
+    <Content Include="src\backend\pytest.ini" />
+    <Content Include="src\backend\requirements.txt" />
+    <Content Include="src\backend\test-results\.gitkeep" />
+    <Content Include="src\backend\test-results\artifacts\.gitkeep" />
+    <Content Include="src\backend\test-results\artifacts\data\.gitkeep" />
+    <Content Include="src\backend\test-results\artifacts\screenshots\.gitkeep" />
+    <Content Include="src\backend\test-results\artifacts\traces\.gitkeep" />
+    <Content Include="src\backend\test-results\benchmarks\.gitkeep" />
+    <Content Include="src\backend\test-results\coverage\.gitkeep" />
+    <Content Include="src\backend\test-results\coverage\html\.gitkeep" />
+    <Content Include="src\backend\test-results\logs\.gitkeep" />
+    <Content Include="src\backend\test-results\logs\e2e\.gitkeep" />
+    <Content Include="src\backend\test-results\logs\integration\.gitkeep" />
+    <Content Include="src\backend\test-results\logs\unit\.gitkeep" />
+    <Content Include="src\backend\test-results\README.md" />
+    <Content Include="src\backend\test-results\reports\.gitkeep" />
+    <Content Include="src\backend\test-results\reports\html\.gitkeep" />
+    <Content Include="src\backend\test-results\reports\json\.gitkeep" />
+    <Content Include="src\backend\test-results\reports\junit\.gitkeep" />
+    <Content Include="src\backend\tests\integration\__pycache__\test_config_integration.cpython-312-pytest-8.4.2.pyc" />
+    <Content Include="src\backend\tests\integration\__pycache__\__init__.cpython-312.pyc" />
+    <Content Include="src\backend\tests\manual\README.md" />
+    <Content Include="src\backend\tests\README.md" />
+    <Content Include="src\backend\tests\requirements-test.txt" />
+    <Content Include="src\backend\tests\__pycache__\conftest.cpython-312-pytest-8.4.2.pyc" />
+    <Content Include="src\backend\tests\__pycache__\__init__.cpython-312.pyc" />
+    <Content Include="src\backend\validation_result.txt" />
+    <Content Include="src\frontend\common.js" />
+    <Content Include="src\frontend\config.js" />
+    <Content Include="src\frontend\index.html" />
+    <Content Include="src\frontend\test_configurator.html" />
+    <Content Include="src\frontend\test_extraction.html" />
+    <Content Include="src\frontend\translations.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="venv\">
+      <Id>venv</Id>
+      <Version>3.12</Version>
+      <Description>venv (Python 3.12 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+  <!-- Uncomment the CoreCompile target to enable the Build command in
+       Visual Studio and specify your pre- and post-build commands in
+       the BeforeBuild and AfterBuild targets below. -->
+  <!--<Target Name="CoreCompile" />-->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+</Project>

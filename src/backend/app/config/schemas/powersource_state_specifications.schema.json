@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "powersource_state_specifications.schema.json",
+  "title": "PowerSource State Specifications Configuration Schema",
+  "description": "Schema for validating powersource_state_specifications.json - defines Y/N flags for component applicability per power source",
+  "type": "object",
+  "required": ["version", "power_sources", "default_policy"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$",
+      "description": "Configuration version"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description"
+    },
+    "power_sources": {
+      "type": "object",
+      "description": "Applicability rules per power source GIN",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["name", "applicability"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Power source product name",
+            "minLength": 1
+          },
+          "gin": {
+            "type": "string",
+            "description": "Power source GIN (optional duplicate for reference)"
+          },
+          "applicability": {
+            "type": "object",
+            "description": "Applicability flags for each component (keyed by api_key)",
+            "minProperties": 1,
+            "additionalProperties": {
+              "type": "string",
+              "enum": ["mandatory", "conditional", "optional", "not_applicable"],
+              "description": "mandatory = Required, conditional = Based on user needs, optional = Can be skipped, not_applicable = Not available"
+            }
+          },
+          "notes": {
+            "type": "string",
+            "description": "Optional notes about this power source configuration"
+          }
+        }
+      }
+    },
+    "default_policy": {
+      "type": "object",
+      "description": "Default applicability when power source GIN not found",
+      "required": ["applicability"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Description of default policy"
+        },
+        "applicability": {
+          "type": "object",
+          "description": "Default applicability flags",
+          "additionalProperties": {
+            "type": "string",
+            "enum": ["mandatory", "conditional", "optional", "not_applicable"]
+          }
+        }
+      }
+    },
+    "applicability_rules": {
+      "type": "object",
+      "description": "Documentation of applicability logic",
+      "properties": {
+        "Y_means": {"type": "string"},
+        "N_means": {"type": "string"},
+        "Optional_means": {"type": "string"}
+      }
+    }
+  }
+}

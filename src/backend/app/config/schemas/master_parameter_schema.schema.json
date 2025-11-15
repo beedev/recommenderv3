@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Master Parameter Schema Schema",
+  "description": "Schema for master_parameter_schema.json - defines all components and their features for MasterParameterJSON",
+  "type": "object",
+  "required": ["version", "description", "components"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$",
+      "description": "Version number (e.g., 1.0)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Overall description of master parameter schema"
+    },
+    "components": {
+      "type": "object",
+      "description": "Component definitions with their features",
+      "patternProperties": {
+        "^[a-z_]+$": {
+          "type": "object",
+          "required": ["description", "features"],
+          "properties": {
+            "description": {
+              "type": "string",
+              "minLength": 5,
+              "description": "Human-readable description of component requirements"
+            },
+            "features": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z_]+$"
+              },
+              "minItems": 1,
+              "uniqueItems": true,
+              "description": "List of feature names that can be specified for this component"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "minProperties": 1,
+      "additionalProperties": false
+    },
+    "product_name_enabled_components": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z_]+$"
+      },
+      "uniqueItems": true,
+      "description": "List of components that support product_name feature for explicit product selection"
+    }
+  },
+  "additionalProperties": false
+}

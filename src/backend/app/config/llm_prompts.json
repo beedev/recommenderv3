@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "description": "LLM system prompts and templates for the configurator",
+  "last_updated": "2025-01-28",
+  "prompts": {
+    "parameter_extraction_system": {
+      "version": "1.0",
+      "description": "System prompt for extracting parameters from user input",
+      "prompt": "You are a welding equipment expert. Extract technical parameters from user queries into component-based JSON structure."
+    },
+    "parameter_extraction_user": {
+      "version": "1.0",
+      "description": "User message template for parameter extraction",
+      "template": "TASK: Extract welding equipment requirements from user query and update the Master Parameter JSON.\n\nUSER QUERY: \"{user_message}\"\n\nCURRENT STATE: {current_state}\n\n{guidance}\n\nEXISTING MASTER PARAMETER JSON:\n{master_parameters}\n{product_reference}\n\nINSTRUCTIONS:\n1. COMPONENT-BASED EXTRACTION:\n   - Each component (power_source, feeder, cooler, interconnector, torch, accessories) has its own dict\n   - Extract requirements into the appropriate component dict based on current state\n   - Use string keys and string values (e.g., {{\"current_output\": \"500 A\", \"process\": \"MIG (GMAW)\"}})\n\n2. PRODUCT NAME RECOGNITION:\n   - If user mentions a specific product name from the list above, add it to the component's dict\n   - Use key \"product_name\" (e.g., {{\"product_name\": \"Aristo 500ix\"}})\n   - Match product names to correct component category\n\n3. COMPOUND REQUESTS:\n   - User might mention requirements for multiple components in one message\n   - Example: \"I want 500A power source with water cooled feeder\"\n   - Extract both: power_source {{\"current_output\": \"500 A\"}} AND feeder {{\"cooling_type\": \"water-cooled\"}}\n\n4. PRESERVE EXISTING VALUES:\n   - Start with the existing Master Parameter JSON\n   - Only update/add new information from current user query\n   - Do NOT remove or nullify existing values unless user explicitly changes them\n\n5. FEATURE EXTRACTION EXAMPLES:\n   - \"500A MIG welder\" → power_source: {{\"current_output\": \"500 A\", \"process\": \"MIG (GMAW)\"}}\n   - \"aluminum 6mm thick\" → power_source or feeder: {{\"material\": \"Aluminum\", \"thickness\": \"6 mm\"}}\n   - \"water cooled feeder\" → feeder: {{\"cooling_type\": \"Water-cooled\"}}\n   - \"Aristo 500ix\" → power_source: {{\"product_name\": \"Aristo 500ix\"}}\n   - \"RobustFeed with Cool2\" → feeder: {{\"product_name\": \"RobustFeed\"}}, cooler: {{\"product_name\": \"Cool2\"}}\n\n6. OUTPUT FORMAT:\n   - Return COMPLETE updated Master Parameter JSON\n   - Include ALL components (power_source, feeder, cooler, interconnector, torch, accessories)\n   - Use empty dict {{}} for components with no requirements\n\nRETURN COMPLETE UPDATED JSON:\n{{\n  \"power_source\": {{...}},\n  \"feeder\": {{...}},\n  \"cooler\": {{...}},\n  \"interconnector\": {{...}},\n  \"torch\": {{...}},\n  \"accessories\": {{...}}\n}}",
+      "variables": [
+        "user_message",
+        "current_state",
+        "guidance",
+        "master_parameters",
+        "product_reference"
+      ]
+    },
+    "translation_system": {
+      "version": "1.0",
+      "description": "System prompt for translating responses",
+      "template": "You are a professional translator specializing in welding equipment and industrial terminology.\n\nTranslate the following text from English to {language_name}.\n\nIMPORTANT RULES:\n1. Maintain technical accuracy for welding terms (Power Source, Feeder, Cooler, etc.)\n2. Keep product names and GIN codes unchanged\n3. Use natural, conversational phrasing appropriate for {language_name}\n4. Preserve any formatting (line breaks, bullet points, etc.)\n5. Do not add explanations or notes, only provide the translation\n\nContext: {context}",
+      "variables": [
+        "language_name",
+        "context"
+      ]
+    }
+  }
+}

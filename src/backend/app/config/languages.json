@@ -1,0 +1,139 @@
+{
+  "version": "1.0",
+  "description": "Supported languages configuration for multilingual interface",
+  "last_updated": "2025-01-28",
+  "USAGE_GUIDE": {
+    "purpose": "Defines all supported languages for the multilingual configurator. Backend uses LLM translation, frontend uses static translations.",
+    "loaded_by": [
+      "configuration_service.py - Loads language metadata via get_supported_languages()",
+      "translator.py - Uses for LLM-based translation validation and language name mapping",
+      "Frontend translations.js - Uses language codes and names for UI language selector"
+    ],
+    "what_it_controls": [
+      "Which languages are available in the UI language selector",
+      "LLM translation behavior (llm_translation_enabled flag)",
+      "Default language selection (is_default flag)",
+      "Fallback translation availability",
+      "Language code to display name mapping"
+    ]
+  },
+  "HOW_TO_MODIFY": {
+    "adding_new_language": {
+      "step_1": "Add new language object to supported_languages array",
+      "step_2": "Set code to ISO 639-1 code (e.g., 'nl' for Dutch, 'ja' for Japanese)",
+      "step_3": "Set name to English name, native_name to native language name",
+      "step_4": "Set llm_translation_enabled: true (backend will use GPT-4 for translation)",
+      "step_5": "Set fallback_translations_available based on whether you have static translations",
+      "step_6": "Update frontend/translations.js with static UI translations for new language",
+      "step_7": "Test translation quality with sample queries"
+    },
+    "modifying_existing_language": {
+      "disable_llm": "Set llm_translation_enabled: false to disable GPT-4 translation (use fallback only)",
+      "change_default": "Move is_default: true to different language to change system default",
+      "add_fallback": "Set fallback_translations_available: true and add translations to translator.py FALLBACK_TRANSLATIONS"
+    },
+    "translation_settings": {
+      "use_llm_for_dynamic_content": "If true, uses GPT-4 for translating dynamic content (product search results, prompts)",
+      "use_fallback_for_common_phrases": "If true, uses static translations for common phrases (faster, cheaper than LLM)",
+      "cache_translations": "If true, caches translated text to avoid repeated API calls",
+      "translation_timeout_seconds": "Max time to wait for LLM translation before falling back. Default: 10s"
+    }
+  },
+  "IMPORTANT_NOTES": {
+    "backend_vs_frontend": {
+      "backend": "Uses this file + OpenAI GPT-4 for dynamic translation (product names, search results, prompts)",
+      "frontend": "Uses translations.js for static UI text (buttons, labels, placeholders) - does NOT use this file directly"
+    },
+    "supported_languages_list": ["en (English)", "es (Spanish)", "fr (French)", "de (German)", "pt (Portuguese)", "it (Italian)", "sv (Swedish)"],
+    "llm_translation_cost": "GPT-4 translation costs tokens - only enable for languages without static translations",
+    "fallback_strategy": "If LLM translation fails, system falls back to FALLBACK_TRANSLATIONS in translator.py, then English",
+    "quality_considerations": [
+      "LLM translations are high-quality but cost tokens and have latency",
+      "Static fallback translations are instant but limited to common phrases",
+      "Product-specific terminology may need review for accuracy"
+    ],
+    "validation": "No schema file - validate by running translator tests: pytest tests/unit/services/test_translator.py",
+    "related_configs": [
+      "state_prompts.json - Contains English prompts that get translated",
+      "llm_config.json - LLM settings for translation model (temperature, tokens)"
+    ]
+  },
+  "supported_languages": [
+    {
+      "code": "en",
+      "iso_639_1": "en",
+      "name": "English",
+      "native_name": "English",
+      "is_default": true,
+      "llm_translation_enabled": false,
+      "fallback_translations_available": true,
+      "description": "Default language - no translation needed"
+    },
+    {
+      "code": "es",
+      "iso_639_1": "es",
+      "name": "Spanish",
+      "native_name": "Español",
+      "is_default": false,
+      "llm_translation_enabled": true,
+      "fallback_translations_available": true,
+      "description": "Spanish language support with LLM translation"
+    },
+    {
+      "code": "fr",
+      "iso_639_1": "fr",
+      "name": "French",
+      "native_name": "Français",
+      "is_default": false,
+      "llm_translation_enabled": true,
+      "fallback_translations_available": true,
+      "description": "French language support with LLM translation"
+    },
+    {
+      "code": "de",
+      "iso_639_1": "de",
+      "name": "German",
+      "native_name": "Deutsch",
+      "is_default": false,
+      "llm_translation_enabled": true,
+      "fallback_translations_available": true,
+      "description": "German language support with LLM translation"
+    },
+    {
+      "code": "pt",
+      "iso_639_1": "pt",
+      "name": "Portuguese",
+      "native_name": "Português",
+      "is_default": false,
+      "llm_translation_enabled": true,
+      "fallback_translations_available": true,
+      "description": "Portuguese language support with LLM translation"
+    },
+    {
+      "code": "it",
+      "iso_639_1": "it",
+      "name": "Italian",
+      "native_name": "Italiano",
+      "is_default": false,
+      "llm_translation_enabled": true,
+      "fallback_translations_available": true,
+      "description": "Italian language support with LLM translation"
+    },
+    {
+      "code": "sv",
+      "iso_639_1": "sv",
+      "name": "Swedish",
+      "native_name": "Svenska",
+      "is_default": false,
+      "llm_translation_enabled": true,
+      "fallback_translations_available": true,
+      "description": "Swedish language support with LLM translation"
+    }
+  ],
+  "translation_settings": {
+    "use_llm_for_dynamic_content": true,
+    "use_fallback_for_common_phrases": true,
+    "cache_translations": true,
+    "translation_timeout_seconds": 10
+  }
+}

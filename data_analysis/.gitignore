@@ -1,0 +1,23 @@
+# Environment variables
+.env
+
+# Results directory (contains analysis output)
+results/*.json
+results/*.txt
+results/*.csv
+
+# Keep README in results
+!results/README.md
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

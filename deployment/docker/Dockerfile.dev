@@ -1,0 +1,66 @@
+# ============================================================================
+# ESAB Recommender V2 - Development Dockerfile
+# Optimized for local development with hot reload support
+# ============================================================================
+
+FROM python:3.11-slim
+
+# Set metadata
+LABEL maintainer="ESAB Recommender Team"
+LABEL description="ESAB Welding Equipment Configurator - Development Backend"
+LABEL version="2.0.0-dev"
+
+# Set environment variables for development
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    # Development settings
+    ENVIRONMENT=development \
+    DEBUG=True \
+    # FastAPI/Uvicorn settings (hot reload)
+    HOST=0.0.0.0 \
+    PORT=8000 \
+    # Application directory
+    APP_DIR=/app
+
+# Install system dependencies (including dev tools)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    libpq-dev \
+    curl \
+    git \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR ${APP_DIR}
+
+# Copy requirements first (for Docker layer caching)
+COPY src/backend/requirements.txt .
+
+# Install Python dependencies (including dev dependencies if any)
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    # Install development tools
+    pip install --no-cache-dir \
+    ipython \
+    ipdb \
+    pytest \
+    pytest-cov \
+    pytest-asyncio
+
+# Copy frontend static files (must be before container starts)
+COPY src/frontend/ ../frontend/
+
+# Create directories
+RUN mkdir -p logs data
+
+# Expose port
+EXPOSE ${PORT}
+
+# Health check (more frequent for dev)
+HEALTHCHECK --interval=15s --timeout=5s --start-period=20s --retries=2 \
+    CMD curl -f http://localhost:${PORT}/health || exit 1
+
+# Default command with hot reload enabled
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload", "--log-level", "debug"]

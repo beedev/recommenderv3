@@ -1,0 +1,48 @@
+{
+  "category": "Interconn",
+  "product_count": 50,
+  "sample_product_names": [
+    "Intercon. RF CAN W 70mm2 2m",
+    "Intercon. RF CAN W 70mm2 5m",
+    "Intercon. RF CAN W 70mm2 10m",
+    "Intercon. RF CAN W 70mm2 15m",
+    "Intercon. RF CAN W 70mm2 20m",
+    "Intercon. RF CAN W 70mm2 25m",
+    "Intercon. RF CAN W 70mm2 35m",
+    "Intercon. RF CAN 70mm2 2m",
+    "Intercon. RF CAN 70mm2 5m",
+    "Intercon. RF CAN 70mm2 10m"
+  ],
+  "consensus_threshold": "2 out of 3",
+  "features": {
+    "numeric_specs": [
+      {
+        "name": "Cable Length",
+        "min": 1.7,
+        "max": 35.0,
+        "unit": "m",
+        "display": "1.7m - 35.0m"
+      },
+      {
+        "name": "Conductor Size",
+        "min": 70,
+        "max": 95,
+        "unit": "mm²",
+        "display": "70mm² - 95mm²"
+      }
+    ],
+    "categorical_features": [
+      {
+        "name": "Cooling Type",
+        "options": [
+          "Air",
+          "Water"
+        ],
+        "display": "Air, Water"
+      }
+    ],
+    "capabilities": [],
+    "key_features": []
+  },
+  "guidance": "\n📋 Interconn - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Cable Length: 1.7m - 35.0m\n    • Conductor Size: 70mm² - 95mm²\n\n  🏷️  Options:\n    • Cooling Type: Air, Water"
+}

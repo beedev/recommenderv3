@@ -1,0 +1,123 @@
+# ============================================================================
+# ESAB Recommender V2 - Docker Compose (Cloud Databases)
+# For use with Azure PostgreSQL and Neo4j Aura (or other cloud services)
+# Only local services: Backend API and Redis Cache
+# ============================================================================
+
+# Load environment variables from src/backend/.env
+# The .env file should contain cloud database connection details:
+# - NEO4J_URI (bolt+s://your-neo4j-aura.databases.neo4j.io)
+# - NEO4J_USERNAME, NEO4J_PASSWORD
+# - POSTGRES_HOST, POSTGRES_PORT, POSTGRES_USER, POSTGRES_PASSWORD
+# - REDIS_HOST, REDIS_PORT, REDIS_PASSWORD (can be local or cloud)
+#
+services:
+  # ==========================================================================
+  # Backend API Service
+  # ==========================================================================
+  backend:
+    build:
+      context: ../../
+      dockerfile: deployment/docker/Dockerfile.dev
+    container_name: esab-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount source code for hot reload
+      - ../../src/backend:/app:delegated
+      # Separate volume for dependencies to avoid overwriting
+      - backend-venv:/root/.local
+    # Load environment variables from src/backend/.env
+    # This file should contain ALL cloud database credentials
+    env_file:
+      - ../../src/backend/.env
+    environment:
+      # API Configuration (overrides .env if needed)
+      - ENVIRONMENT=development
+      - DEBUG=True
+      # Redis Configuration (local or override from .env)
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=esab_redis_password
+      - REDIS_DB=0
+      - ENABLE_REDIS_CACHING=true
+      - CACHE_TTL=3600
+      # LangSmith (Optional - from .env file or override)
+      - LANGSMITH_PROJECT=Recommender-Dev
+      - LANGSMITH_TRACING=false
+      # Note: Neo4j and PostgreSQL connections come from .env file
+      # Do NOT override NEO4J_* and POSTGRES_* variables here
+      # They will be read from src/backend/.env for cloud services
+    depends_on:
+      - redis
+    networks:
+      - esab-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ==========================================================================
+  # Redis Cache (Session Storage - Local)
+  # Neo4j Aura and Azure PostgreSQL are configured in .env file
+  # ==========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: esab-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: >
+      redis-server
+      --requirepass esab_redis_password
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --appendfsync everysec
+    networks:
+      - esab-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # ==========================================================================
+  # RedisInsight (Redis Management UI)
+  # ==========================================================================
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    container_name: esab-redisinsight
+    ports:
+      - "8001:8001"
+    volumes:
+      - redisinsight-data:/db
+    networks:
+      - esab-network
+    restart: unless-stopped
+    depends_on:
+      - redis
+
+# ==============================================================================
+# Named Volumes for Data Persistence
+# ==============================================================================
+volumes:
+  backend-venv:
+    name: esab-backend-venv
+  redis-data:
+    name: esab-redis-data
+  redisinsight-data:
+    name: esab-redisinsight-data
+
+# ==============================================================================
+# Custom Network
+# ==============================================================================
+networks:
+  esab-network:
+    name: esab-network
+    driver: bridge

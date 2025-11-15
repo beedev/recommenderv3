@@ -1,0 +1,61 @@
+# TEMPLATE FILE - DO NOT COPY DIRECTLY TO /etc/systemd/system/
+# This file contains placeholder paths for reference only.
+# The deploy.sh script will generate the actual service file with correct paths.
+# Run: sudo ./deployment/systemd/deploy.sh install
+
+[Unit]
+Description=ESAB Recommender Backend API (FastAPI)
+After=network.target postgresql.service redis.service
+Wants=postgresql.service redis.service
+PartOf=esab-recommender.target
+
+[Service]
+Type=exec
+User=<PLACEHOLDER_USER>
+Group=<PLACEHOLDER_GROUP>
+WorkingDirectory=<PLACEHOLDER_BACKEND_DIR>
+Environment="PATH=<PLACEHOLDER_BACKEND_DIR>/venv/bin"
+Environment="PYTHONPATH=<PLACEHOLDER_BACKEND_DIR>"
+EnvironmentFile=<PLACEHOLDER_BACKEND_DIR>/.env
+
+# Uvicorn command with production settings
+ExecStart=<PLACEHOLDER_BACKEND_DIR>/venv/bin/uvicorn app.main:app \
+    --host 0.0.0.0 \
+    --port 8000 \
+    --workers 4 \
+    --log-level info \
+    --access-log
+
+# Startup timeout (allow time for all workers to initialize)
+TimeoutStartSec=120
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=5min
+StartLimitBurst=5
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=<PLACEHOLDER_LOG_DIR>
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+# Logging - Write to both journal AND files
+StandardOutput=append:<PLACEHOLDER_LOG_DIR>/esab-recommender.log
+StandardError=append:<PLACEHOLDER_LOG_DIR>/esab-recommender-error.log
+SyslogIdentifier=esab-recommender
+
+# Graceful shutdown
+TimeoutStopSec=30
+KillMode=mixed
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target
+WantedBy=esab-recommender.target

@@ -1,0 +1,200 @@
+{
+  "version": "1.0",
+  "description": "Master parameter schema - defines all components and their features",
+  "USAGE_GUIDE": {
+    "purpose": "Defines the structure of MasterParameterJSON - the dynamic data model that stores LLM-extracted user requirements for each component.",
+    "loaded_by": [
+      "schema_loader.py - Creates Pydantic models dynamically from this schema",
+      "parameter_extractor.py - Uses schema to extract parameters from user messages",
+      "conversation.py - MasterParameterJSON model is generated from this schema at runtime"
+    ],
+    "what_it_controls": [
+      "Which parameters can be extracted for each component (e.g., process, current_output, material)",
+      "Structure of MasterParameterJSON Pydantic model (auto-generated)",
+      "LLM parameter extraction scope (only defined features are extracted)",
+      "Available fields for product search filters"
+    ],
+    "how_it_works": {
+      "step_1_schema_loaded": "schema_loader.py loads this JSON at app startup",
+      "step_2_model_created": "Pydantic model MasterParameterJSON created dynamically with all component features",
+      "step_3_llm_extraction": "parameter_extractor.py uses schema to guide LLM parameter extraction",
+      "step_4_data_storage": "Extracted parameters stored in ConversationState.master_parameters",
+      "example": "If user says 'I need 500A MIG for steel', LLM extracts: {power_source: {current_output: '500A', process: 'MIG', material: 'Steel'}}"
+    }
+  },
+  "HOW_TO_MODIFY": {
+    "adding_new_component": {
+      "step_1": "Add new component key matching component_types.json (e.g., 'new_component')",
+      "step_2": "Add description explaining what this component is",
+      "step_3": "Define features array with all extractable parameters",
+      "step_4": "Update parameter_extractor.py LLM prompt to recognize new component",
+      "step_5": "Add product search logic in neo4j/product_search.py for new component",
+      "step_6": "Restart server - Pydantic model auto-regenerates from schema"
+    },
+    "adding_feature_to_existing_component": {
+      "step_1": "Add feature name to features array (e.g., add 'wire_size' to feeder.features)",
+      "step_2": "Use descriptive feature names (snake_case, self-explanatory)",
+      "step_3": "Update parameter_extractor.py LLM prompt to extract new feature",
+      "step_4": "Update product search to filter by new feature if needed",
+      "step_5": "Restart server - model auto-updates",
+      "note": "Features are strings - LLM extracts values, search logic interprets them"
+    },
+    "removing_obsolete_features": {
+      "step_1": "Remove feature from features array",
+      "step_2": "Check if any code depends on removed feature (grep for feature name)",
+      "step_3": "Remove related search logic in product_search.py",
+      "step_4": "Update LLM prompts to not extract removed feature",
+      "step_5": "Restart server",
+      "warning": "Removing features breaks existing sessions with that data - plan migrations"
+    }
+  },
+  "IMPORTANT_NOTES": {
+    "dynamic_model_generation": "MasterParameterJSON Pydantic model is GENERATED at runtime from this schema - no hardcoded model exists",
+    "flexibility": "This approach allows adding/removing components and features without code changes - just edit JSON and restart",
+    "llm_extraction_scope": "Only features defined here can be extracted by LLM - adding a feature here enables LLM to extract it",
+    "schema_validation": "No separate schema file - this IS the schema. Validate by ensuring valid JSON + required keys (components, features)",
+    "feature_naming_conventions": [
+      "Use snake_case (current_output, not currentOutput)",
+      "Be specific (wire_diameter, not size)",
+      "Avoid abbreviations unless industry-standard (process, not prc)",
+      "Match Neo4j property names when possible for easier search"
+    ],
+    "backwards_compatibility": {
+      "adding_features": "Safe - existing data unaffected, new field defaults to None",
+      "removing_features": "Breaking - existing sessions may have data for removed field",
+      "renaming_features": "Breaking - requires data migration",
+      "recommendation": "Add new features freely, deprecate old ones slowly"
+    },
+    "testing": "Test schema changes by: 1) Restart server, 2) Extract parameters via API, 3) Check MasterParameterJSON structure",
+    "related_configs": [
+      "component_types.json - Defines which components exist (must align with this schema)",
+      "llm_prompts.json - LLM extraction prompts reference these feature names",
+      "llm_context.json - Product names help LLM extract product_name features"
+    ]
+  },
+  "components": {
+    "power_source": {
+      "description": "Power source requirements",
+      "features": [
+        "product_name",
+        "portability",
+        "process",
+        "current_output",
+        "voltage",
+        "material",
+        "application",
+        "environment",
+        "duty_cycle"
+      ]
+    },
+    "feeder": {
+      "description": "Wire feeder requirements",
+      "features": [
+        "product_name",
+        "process",
+        "material",
+        "thickness",
+        "cooling_type",
+        "wire_diameter"
+      ]
+    },
+    "cooler": {
+      "description": "Cooling unit requirements",
+      "features": [
+        "product_name",
+        "duty_cycle",
+        "application",
+        "environment",
+        "cooling_capacity"
+      ]
+    },
+    "interconnector": {
+      "description": "Interconnector cable requirements",
+      "features": [
+        "cable_length",
+        "current_rating",
+        "cooling_type",
+        "cross_section"
+      ]
+    },
+    "torch": {
+      "description": "Torch requirements",
+      "features": [
+        "process",
+        "current_rating",
+        "cooling_type",
+        "swan_neck_angle"
+      ]
+    },
+    "powersource_accessories": {
+      "description": "Power source accessory requirements",
+      "features": [
+        "product_name",
+        "cable_length",
+        "current_rating",
+        "voltage_compatibility",
+        "cooling_type"
+      ]
+    },
+    "feeder_accessories": {
+      "description": "Feeder accessory requirements",
+      "features": [
+        "product_name",
+        "cable_length",
+        "spool_diameter"
+      ]
+    },
+    "feeder_conditional_accessories": {
+      "description": "Feeder conditional accessory requirements (depends on selected feeder accessory)",
+      "features": [
+        "product_name",
+        "accessory_type"
+      ]
+    },
+    "remote": {
+      "description": "Remote control requirements",
+      "features": [
+        "product_name",
+        "cable_length",
+        "process_support",
+        "control_type"
+      ]
+    },
+    "remote_accessories": {
+      "description": "Remote accessory requirements",
+      "features": [
+        "product_name",
+        "cable_length"
+      ]
+    },
+    "remote_conditional_accessories": {
+      "description": "Remote conditional accessory requirements (depends on selected remote)",
+      "features": [
+        "product_name",
+        "cable_length"
+      ]
+    },
+    "connectivity": {
+      "description": "Connectivity accessory requirements",
+      "features": [
+        "product_name",
+        "cable_length"
+      ]
+    },
+    "interconnector_accessories": {
+      "description": "Interconnector accessory requirements",
+      "features": [
+        "product_name",
+        "accessory_type"
+      ]
+    }
+  },
+  "product_name_enabled_components": [
+    "power_source",
+    "feeder",
+    "cooler",
+    "powersource_accessories",
+    "feeder_accessories",
+    "remote"
+  ]
+}

@@ -1,0 +1,48 @@
+# TEMPLATE FILE - DO NOT COPY DIRECTLY TO /etc/systemd/system/
+# This file contains placeholder paths for reference only.
+# The deploy.sh script will generate the actual service file with correct paths.
+# Run: sudo ./deployment/systemd/deploy.sh install
+
+[Unit]
+Description=ESAB Recommender Frontend HTTP Server
+After=network.target
+PartOf=esab-recommender.target
+
+[Service]
+Type=simple
+User=<PLACEHOLDER_USER>
+Group=<PLACEHOLDER_GROUP>
+WorkingDirectory=<PLACEHOLDER_INSTALL_DIR>/src
+
+# Python HTTP server for static frontend
+ExecStart=/usr/bin/python3 -m http.server 3000 --bind 0.0.0.0
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitInterval=5min
+StartLimitBurst=5
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+
+# Resource limits
+LimitNOFILE=1024
+LimitNPROC=512
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=esab-frontend
+
+# Graceful shutdown
+TimeoutStopSec=10
+KillMode=mixed
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target
+WantedBy=esab-recommender.target

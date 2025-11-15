@@ -1,0 +1,70 @@
+{
+  "category": "Powersource Accessories",
+  "product_count": 26,
+  "all_product_names": [
+    "TROLLEY Warrior/Aristo 3 in 1",
+    "Wheel kit Warrior/500ix/W. Edg",
+    "COOLANT LIQUID",
+    "Trolley 1 Aristo 4000i/5000i",
+    "Trolley2  Mig 4000i/5000i",
+    "Wire Feeder attachment compl",
+    "Multi Voltage Unit Aristo Mig",
+    "Return cable 5m, 95mm2",
+    "TIG TORCH EXEOR SR 18, 4m",
+    "TIG TORCH EXEOR SR 18, 8m",
+    "TIG TORCH EXEOR SR 18 FX, 4m",
+    "TIG TORCH EXEOR SR 18 FX, 8m",
+    "TIG TORCH EXEOR SR 21, 4m",
+    "TIG TORCH EXEOR SR 21, 8m",
+    "TIG TORCH EXEOR SR 21 FX, 4m",
+    "TIG TORCH EXEOR SR 21 FX, 8m",
+    "TIG TORCH EXEOR SR 400, 4m",
+    "TIG TORCH EXEOR SR 400, 8m",
+    "1 to 3 phase (Renegade)",
+    "Trolley with adaptor plate",
+    "Shoulder strap",
+    "Welding cable 300A OKC 50 3m",
+    "Return cable 300A OKC 50 3m",
+    "Welding cable 300A OKC 50 5m",
+    "Return cable 300A OKC 50 5m",
+    "Trolley with adaptor plate"
+  ],
+  "consensus_threshold": "2 out of 3",
+  "features": {
+    "numeric_specs": [
+      {
+        "name": "Cable Length",
+        "min": 3,
+        "max": 8,
+        "unit": "m",
+        "display": "3m - 8m"
+      },
+      {
+        "name": "Current Rating",
+        "min": 300,
+        "max": 450,
+        "unit": "A",
+        "display": "300A - 450A"
+      },
+      {
+        "name": "Voltage",
+        "min": 208,
+        "max": 575,
+        "unit": "V",
+        "display": "208V - 575V"
+      }
+    ],
+    "categorical_features": [
+      {
+        "name": "Cooling Type",
+        "options": [
+          "Water"
+        ],
+        "display": "Water"
+      }
+    ],
+    "capabilities": [],
+    "key_features": []
+  },
+  "guidance": "\n📋 Powersource Accessories - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Cable Length: 3m - 8m\n    • Current Rating: 300A - 450A\n    • Voltage: 208V - 575V\n\n  🏷️  Options:\n    • Cooling Type: Water"
+}

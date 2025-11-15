@@ -1,0 +1,258 @@
+{
+  "version": "1.0",
+  "description": "State-specific user prompts and UI text for the configurator workflow",
+  "last_updated": "2025-01-28",
+  "USAGE_GUIDE": {
+    "purpose": "Defines LLM prompts and UI text for each state in the S1→SN configurator flow. These prompts guide users through component selection.",
+    "loaded_by": [
+      "configuration_service.py - Loads state prompts via get_state_prompt_config()",
+      "message_generator.py - Uses prompts to generate user-facing messages",
+      "state_orchestrator.py - Uses prompts when transitioning between states"
+    ],
+    "what_it_controls": [
+      "Prompt text shown to users at each state (S1-S7)",
+      "Guidance questions for parameter extraction",
+      "State titles and step numbers",
+      "User instructions and examples",
+      "Prompt templates with dynamic placeholders"
+    ]
+  },
+  "HOW_TO_MODIFY": {
+    "editing_existing_prompts": {
+      "prompt_template": "Main prompt with placeholders like {processes}, {materials} - filled dynamically from configs",
+      "prompt_simple": "Fallback prompt without placeholders - used if template filling fails",
+      "guidance_bullets": "Array of question bullets shown to users - keep concise and actionable",
+      "title": "State display name shown in UI - use Title Case",
+      "step_number": "Sequential order (1-7) - should match state_sequence in component_types.json"
+    },
+    "adding_new_state": {
+      "step_1": "Add new state key (e.g., 'new_component_selection') matching component_types.json state_name",
+      "step_2": "Define step_number (position in S1→SN flow)",
+      "step_3": "Write clear, concise prompt_template and prompt_simple",
+      "step_4": "Add 3-5 guidance_bullets with specific questions",
+      "step_5": "Test prompt clarity with actual users",
+      "step_6": "Ensure title is user-friendly (not technical)"
+    },
+    "prompt_template_placeholders": {
+      "processes": "Filled from welding_processes.json (e.g., 'MIG, TIG, STICK')",
+      "materials": "Filled from materials.json (e.g., 'Steel, Aluminum, Stainless Steel')",
+      "cooling_types": "Filled from cooling_types.json",
+      "note": "If placeholder filling fails, prompt_simple is used as fallback"
+    },
+    "multilingual_support": {
+      "english_base": "All prompts written in English in this file",
+      "translation": "Prompts translated dynamically by translator.py using GPT-4",
+      "testing": "Test translations in all supported languages (es, fr, de, pt, it, sv)"
+    }
+  },
+  "IMPORTANT_NOTES": {
+    "consolidation_history": "Nov 15, 2024 - Rationalized to remove duplicate system prompts (moved to llm_prompts.json)",
+    "prompt_structure": "Each state prompt includes: step_number, title, prompt_template, prompt_simple, guidance_bullets",
+    "state_alignment": "State keys here must match state_name in component_types.json (e.g., power_source_selection)",
+    "prompt_length": "Keep prompts concise - long prompts consume LLM tokens and may confuse users",
+    "emojis": "Use emojis consistently (🔋 Power, 📦 Feeder, ❄️ Cooler, 🔌 Interconnector, 🔥 Torch, 🛒 Accessories, ✅ Finalize)",
+    "user_guidance": [
+      "Ask specific questions users can answer",
+      "Provide examples in parentheses",
+      "Explain WHY component is needed (context helps users)",
+      "Use simple language, avoid jargon when possible"
+    ],
+    "validation": "No schema file - validate by testing each state in configurator workflow",
+    "related_configs": [
+      "component_types.json - Defines state_sequence and state_name",
+      "llm_prompts.json - Contains system prompts for LLM (different from user-facing prompts)",
+      "languages.json - Defines which languages prompts get translated to"
+    ]
+  },
+  "states": {
+    "power_source_selection": {
+      "step_number": 1,
+      "title": "Power Source Selection",
+      "prompt_template": "🔋 **Step 1: Power Source Selection (Required)**\n\nPlease tell me about your welding needs:\n- What welding process? ({processes})\n- Required amperage or power range?\n- Application type? (industrial, automotive, construction, etc.)\n- Any specific model in mind?\n\nThis is a required step - I'll help you find the right power source.",
+      "prompt_simple": "🔋 **Step 1: Power Source Selection (Required)**\n\nPlease tell me about your welding needs:\n- What welding process? (MIG, TIG, STICK, etc.)\n- Required amperage or power range?\n- Application type? (industrial, automotive, construction, etc.)\n- Any specific model in mind?\n\nThis is a required step - I'll help you find the right power source.",
+      "guidance_bullets": [
+        "What welding process? (MIG, TIG, STICK, etc.)",
+        "Required amperage or power range?",
+        "Application type? (industrial, automotive, construction, etc.)",
+        "Any specific model in mind?"
+      ]
+    },
+    "feeder_selection": {
+      "step_number": 2,
+      "title": "Wire Feeder Selection",
+      "prompt_template_base": "🔌 **Step 2: Wire Feeder Selection**\n\nBased on your selected power source: **{power_source_name}**",
+      "prompt_with_details": "🔌 **Step 2: Wire Feeder Selection**\n\nBased on your selected power source: **{power_source_name}**\n\nI see you mentioned: {details}\n\nWould you like to:\n- Confirm this feeder (just say the product name again or 'yes')\n- Add more requirements (portability, wire feed speed, etc.)",
+      "prompt_simple": "🔌 **Step 2: Wire Feeder Selection**\n\nBased on your selected power source: **{power_source_name}**\n\nProvide requirements (portability, wire feed speed, etc.)",
+      "guidance_bullets": [
+        "Provide requirements (portability, wire feed speed, etc.)"
+      ]
+    },
+    "cooler_selection": {
+      "step_number": 3,
+      "title": "Cooling System Selection",
+      "prompt_template_base": "❄️ **Step 3: Cooling System Selection**",
+      "prompt_with_details": "❄️ **Step 3: Cooling System Selection**\n\nI see you mentioned: Product: **{product_name}**\n\nWould you like to:\n- Confirm this cooler (just say the product name again or 'yes')\n- Add more requirements (duty cycle, flow rate, etc.)",
+      "prompt_simple": "❄️ **Step 3: Cooling System Selection**\n\nSpecify cooling requirements (duty cycle, flow rate, etc.)",
+      "guidance_bullets": [
+        "Specify cooling requirements (duty cycle, flow rate, etc.)"
+      ]
+    },
+    "interconnector_selection": {
+      "step_number": 4,
+      "title": "Interconnector Cable Selection",
+      "prompt_simple": "🔗 **Step 4: Interconnector Cable Selection**\n\nSpecify length and current rating requirements or say **'skip'** if not needed",
+      "guidance_bullets": [
+        "Specify length and current rating requirements",
+        "Or say 'skip' if not needed"
+      ]
+    },
+    "torch_selection": {
+      "step_number": 5,
+      "title": "Welding Torch Selection",
+      "prompt_simple": "🔦 **Step 5: Welding Torch Selection**\n\nSpecify torch type (TIG/MIG), current rating, cooling type or say **'skip'** if not needed",
+      "guidance_bullets": [
+        "Specify torch type (TIG/MIG), current rating, cooling type",
+        "Or say 'skip' if not needed"
+      ]
+    },
+    "accessories_selection": {
+      "step_number": 6,
+      "title": "Accessories Selection",
+      "prompt_simple": "🛠️ **Step 6: Accessories Selection**\n\nDo you need any accessories?\n- Power source accessories\n- Connectivity accessories\n- Remote controls\n- Other accessories\n\nOr say **'done'** to finalize your configuration.",
+      "guidance_bullets": [
+        "Power source accessories",
+        "Connectivity accessories",
+        "Remote controls",
+        "Other accessories",
+        "Or say 'done' to finalize"
+      ]
+    },
+    "powersource_accessories_selection": {
+      "step_number": 6.1,
+      "title": "Power Source Accessories",
+      "prompt_simple": "🔌 **Power Source Accessories**\n\nWould you like to add accessories for **{power_source_name}**?\n- Cables and connectors\n- Protective covers\n- Mounting accessories\n- Spare parts\n\nOr say **'skip'** to continue.",
+      "guidance_bullets": [
+        "Cables and connectors",
+        "Protective covers",
+        "Mounting accessories",
+        "Spare parts",
+        "Or say 'skip' to continue"
+      ]
+    },
+    "feeder_accessories_selection": {
+      "step_number": 6.2,
+      "title": "Feeder Accessories",
+      "prompt_simple": "🔩 **Feeder Accessories**\n\nWould you like to add accessories for **{feeder_name}**?\n- Drive rolls\n- Inlet guides\n- Outlet guides\n- Mounting hardware\n\nOr say **'skip'** to continue.",
+      "guidance_bullets": [
+        "Drive rolls",
+        "Inlet guides",
+        "Outlet guides",
+        "Mounting hardware",
+        "Or say 'skip' to continue"
+      ]
+    },
+    "feeder_conditional_accessories": {
+      "step_number": 6.3,
+      "title": "Feeder Conditional Accessories",
+      "prompt_simple": "🔧 **Feeder Conditional Accessories**\n\nBased on your feeder configuration, would you like to add:\n- Wire guides for specific materials\n- Specialized drive systems\n- Push-pull accessories\n- Wire feed optimizers\n\nOr say **'skip'** to continue.",
+      "guidance_bullets": [
+        "Wire guides for specific materials",
+        "Specialized drive systems",
+        "Push-pull accessories",
+        "Wire feed optimizers",
+        "Or say 'skip' to continue"
+      ]
+    },
+    "interconnector_accessories_selection": {
+      "step_number": 6.4,
+      "title": "Interconnector Accessories",
+      "prompt_simple": "🔗 **Interconnector Accessories**\n\nWould you like to add accessories for your interconnector cable?\n- Extension cables\n- Adapters and connectors\n- Cable management\n- Protective sleeving\n\nOr say **'skip'** to continue.",
+      "guidance_bullets": [
+        "Extension cables",
+        "Adapters and connectors",
+        "Cable management",
+        "Protective sleeving",
+        "Or say 'skip' to continue"
+      ]
+    },
+    "remote_selection": {
+      "step_number": 6.5,
+      "title": "Remote Control Selection",
+      "prompt_simple": "📱 **Remote Control Selection**\n\nWould you like to add a remote control?\n- Wired remotes\n- Wireless remotes\n- Pendant controls\n- Digital interfaces\n\nOr say **'skip'** to continue.",
+      "guidance_bullets": [
+        "Wired remotes",
+        "Wireless remotes",
+        "Pendant controls",
+        "Digital interfaces",
+        "Or say 'skip' to continue"
+      ]
+    },
+    "remote_accessories_selection": {
+      "step_number": 6.6,
+      "title": "Remote Control Accessories",
+      "prompt_simple": "🎮 **Remote Control Accessories**\n\nWould you like to add accessories for your remote control?\n- Mounting brackets\n- Extension cables\n- Protective cases\n- Battery packs\n\nOr say **'skip'** to continue.",
+      "guidance_bullets": [
+        "Mounting brackets",
+        "Extension cables",
+        "Protective cases",
+        "Battery packs",
+        "Or say 'skip' to continue"
+      ]
+    },
+    "remote_conditional_accessories": {
+      "step_number": 6.7,
+      "title": "Remote Conditional Accessories",
+      "prompt_simple": "🔋 **Remote Conditional Accessories**\n\nBased on your remote configuration, would you like to add:\n- Wireless adapters\n- Signal boosters\n- Replacement parts\n- Calibration tools\n\nOr say **'skip'** to continue.",
+      "guidance_bullets": [
+        "Wireless adapters",
+        "Signal boosters",
+        "Replacement parts",
+        "Calibration tools",
+        "Or say 'skip' to continue"
+      ]
+    },
+    "connectivity_selection": {
+      "step_number": 6.8,
+      "title": "Connectivity Accessories",
+      "prompt_simple": "🌐 **Connectivity Accessories**\n\nWould you like to add connectivity accessories?\n- WiFi modules\n- Bluetooth adapters\n- Ethernet cables\n- Data logging devices\n\nOr say **'skip'** to continue.",
+      "guidance_bullets": [
+        "WiFi modules",
+        "Bluetooth adapters",
+        "Ethernet cables",
+        "Data logging devices",
+        "Or say 'skip' to continue"
+      ]
+    },
+    "feeder_wears_selection": {
+      "step_number": 6.9,
+      "title": "Feeder Wear Parts",
+      "prompt_simple": "⚙️ **Feeder Wear Parts**\n\nWould you like to add wear parts for your feeder?\n- Contact tips\n- Liners\n- Drive roll sets\n- Nozzles\n\nOr say **'skip'** to continue.",
+      "guidance_bullets": [
+        "Contact tips",
+        "Liners",
+        "Drive roll sets",
+        "Nozzles",
+        "Or say 'skip' to continue"
+      ]
+    },
+    "finalize": {
+      "step_number": 7,
+      "title": "Finalize Configuration",
+      "finalize_header": "📋 **Final Configuration:**",
+      "finalize_footer": "\n\n✨ Your configuration is ready! Would you like to:\n1. Review component details\n2. Make changes\n3. Confirm and generate packages",
+      "guidance_bullets": [
+        "Review component details",
+        "Make changes",
+        "Confirm and generate packages"
+      ]
+    }
+  },
+  "common_messages": {
+    "skip_command": "skip",
+    "done_command": "done",
+    "finalize_command": "finalize",
+    "back_command": "back",
+    "yes_confirmations": ["yes", "y", "confirm", "ok", "sure"],
+    "no_confirmations": ["no", "n", "nope", "skip"]
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "version": "1.0",
+  "description": "Search and product matching configuration",
+  "last_updated": "2025-01-28",
+  "USAGE_GUIDE": {
+    "purpose": "Defines global search strategy settings and multi-strategy orchestration. Works with component-specific settings in component_types.json.",
+    "loaded_by": [
+      "configuration_service.py - Loads search config via get_search_config()",
+      "search_orchestrator.py - Coordinates Cypher and Lucene strategies",
+      "consolidator.py - Merges and scores multi-strategy results",
+      "parameter_extractor.py - Uses fuzzy matching settings"
+    ],
+    "what_it_controls": [
+      "Fuzzy matching algorithm and thresholds (global settings)",
+      "Search strategy weights (Cypher vs Lucene importance)",
+      "Result consolidation logic (deduplication, scoring, normalization)",
+      "Search orchestration (parallel/sequential execution)",
+      "Fallback behavior when no results found",
+      "Compatibility checking rules"
+    ]
+  },
+  "HOW_TO_MODIFY": {
+    "fuzzy_matching": {
+      "score_cutoff": "Range: 0-100. Higher = stricter matching. Default: 80 (recommended: 75-85)",
+      "max_matches": "How many fuzzy matches to return per product. Default: 1 (recommended: 1-3)",
+      "algorithm": "Options: 'fuzz.ratio', 'fuzz.partial_ratio', 'fuzz.token_sort_ratio'. Default: fuzz.ratio",
+      "note": "Component-specific enabled flags are in component_types.json (fuzzy_matching_enabled field)"
+    },
+    "search_strategies": {
+      "cypher_weight": "Range: 0.0-1.0. Higher = prioritize compatibility-based results. Default: 0.4",
+      "lucene_weight": "Range: 0.0-1.0. Higher = prioritize text relevance results. Default: 0.6",
+      "balance_tip": "Weights should sum to 1.0 for balanced scoring. Lucene typically gets higher weight for relevance.",
+      "component_scoring": "Component-specific min_score and threshold_percent are in component_types.json"
+    },
+    "orchestration": {
+      "execution_mode": "Options: 'parallel' (faster, concurrent) or 'sequential' (safer, ordered). Default: parallel",
+      "timeout_seconds": "Max time for all strategies to complete. Default: 30s (recommended: 20-60s)",
+      "fallback_strategy": "Which strategy to use if all fail. Options: 'cypher' or 'lucene'. Default: cypher"
+    },
+    "consolidation": {
+      "deduplication_strategy": "Options: 'first_occurrence' (keep first) or 'highest_score' (keep best). Default: first_occurrence",
+      "score_normalization": "Options: 'min_max', 'z_score', or 'none'. Default: min_max",
+      "default_score": "Fallback score for products without strategy scores. Range: 0.0-1.0. Default: 0.5"
+    }
+  },
+  "IMPORTANT_NOTES": {
+    "consolidation_history": "Nov 15, 2024 - Removed search_limits, lucene_search.components, fuzzy_matching.components_enabled (moved to component_types.json)",
+    "architecture": "Two-tier system: Global settings here + Component-specific settings in component_types.json",
+    "global_vs_component": {
+      "global_in_search_config": ["fuzzy_matching algorithm/thresholds", "strategy weights", "orchestration mode", "consolidation rules"],
+      "component_in_component_types": ["lucene_enabled per component", "fuzzy_matching_enabled per component", "lucene_min_score per component", "lucene_score_threshold_percent per component", "search_limit per component"]
+    },
+    "validation": "Schema validated by search_config.schema.json - run pytest tests/unit/config/test_config_validation.py",
+    "performance_tips": [
+      "Use parallel execution for faster results (watch for race conditions)",
+      "Adjust timeout_seconds based on Neo4j performance",
+      "Lower score_cutoff if too few fuzzy matches",
+      "Increase lucene_weight if text relevance is more important than compatibility"
+    ],
+    "related_configs": [
+      "component_types.json - Component-specific search settings",
+      "llm_context.json - Product names for fuzzy matching"
+    ]
+  },
+  "fuzzy_matching": {
+    "enabled": true,
+    "score_cutoff": 80,
+    "max_matches": 1,
+    "algorithm": "fuzz.ratio",
+    "description": "Fuzzy string matching for product name recognition (component-specific enabled flags now in component_types.json)"
+  },
+  "fallback_behavior": {
+    "enabled": true,
+    "show_all_compatible_if_no_match": true,
+    "log_fallback_events": true,
+    "description": "If no exact match found, show all compatible products"
+  },
+  "search_ranking": {
+    "use_ranking": true,
+    "rank_by_relevance": true,
+    "prefer_exact_matches": true,
+    "description": "Rank search results by relevance"
+  },
+  "compatibility_checking": {
+    "enabled": true,
+    "check_power_source_compatibility": true,
+    "check_feeder_compatibility": true,
+    "strict_mode": false,
+    "description": "Validate component compatibility using Neo4j relationships"
+  },
+  "performance": {
+    "cache_search_results": true,
+    "cache_ttl_seconds": 1800,
+    "max_cache_entries": 1000,
+    "description": "Cache search results for performance"
+  },
+  "strategies": {
+    "description": "Pluggable search strategies configuration (Phase 1: Modular Architecture)",
+    "cypher": {
+      "enabled": true,
+      "weight": 0.4,
+      "description": "Neo4j Cypher graph-based compatibility search using COMPATIBLE_WITH relationships",
+      "fallback_on_error": true,
+      "timeout_seconds": 30,
+      "max_priority": 20,
+      "min_score": 0.1,
+      "default_priority": 1
+    },
+    "lucene": {
+      "enabled": true,
+      "weight": 0.6,
+      "min_score": 0.3,
+      "score_threshold_percent": 25,
+      "append_score_to_name": true,
+      "score_decimal_places": 1,
+      "limit": 3,
+      "description": "Neo4j Lucene full-text relevance search with scoring. Component-specific scoring (lucene_min_score, lucene_score_threshold_percent) now in component_types.json. Rationalized Nov 15, 2024.",
+      "fallback_on_error": true,
+      "timeout_seconds": 30
+    }
+  },
+  "orchestration": {
+    "description": "Multi-strategy search orchestration configuration",
+    "execution_mode": "parallel",
+    "timeout_seconds": 30,
+    "fallback_strategy": "cypher",
+    "zero_results_behavior": "show_all_compatible",
+    "max_concurrent_strategies": 2,
+    "notes": "execution_mode can be 'parallel' (faster, concurrent) or 'sequential' (safer, ordered). fallback_strategy is used if all strategies fail."
+  },
+  "consolidation": {
+    "description": "Multi-strategy result consolidation configuration",
+    "deduplication_strategy": "first_occurrence",
+    "score_normalization": "min_max",
+    "apply_normalization": false,
+    "default_score": 0.5,
+    "notes": "deduplication_strategy options: 'first_occurrence' (keep first), 'highest_score' (keep best). score_normalization options: 'min_max', 'z_score', 'none'."
+  }
+}

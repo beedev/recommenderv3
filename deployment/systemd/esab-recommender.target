@@ -1,0 +1,7 @@
+[Unit]
+Description=ESAB Recommender Application (Frontend + Backend)
+After=network.target postgresql.service neo4j.service
+Wants=postgresql.service neo4j.service
+
+[Install]
+WantedBy=multi-user.target

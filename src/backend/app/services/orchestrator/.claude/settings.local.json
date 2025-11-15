@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(pkill:*)",
+      "Bash(python:*)",
+      "Bash(cat:*)",
+      "Bash(find:*)",
+      "Bash(./start_servers.sh)",
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: Fixed Neo4j label configuration\n\nChanges:\n- Updated all component neo4j_label from specific labels (PowerSource, Feeder, etc.) to ''Product''\n- Root cause: Database uses single Product label with category field\n- Fixed component_types.json configuration\n- Created shared ProductResult and SearchResults models\n- Added debug logging to component search\n- Created E2E test for complete S1→SN flow\n\n🎯 Orchestrated by Bharath Devanathan (bharath.devanathan@htcinc.com)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(git rm:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nRemove documentation and large files from repo\n\nChanges:\n- Excluded /docs/ directory from repository\n- Excluded src.zip and other zip files\n- Keep only src/backend in repository\n\n🎯 Orchestrated by Bharath Devanathan (bharath.devanathan@htcinc.com)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''''EOF''''\nInitial commit: Fixed Neo4j label configuration\n\nChanges:\n- Updated all component neo4j_label from specific labels (PowerSource, Feeder, etc.) to ''''Product''''\n- Root cause: Database uses single Product label with category field\n- Fixed component_types.json configuration\n- Created shared ProductResult and SearchResults models\n- Added debug logging to component search\n- Created E2E test for complete S1→SN flow\n- Excluded docs/ and large files from repository\n\n🎯 Orchestrated by Bharath Devanathan (bharath.devanathan@htcinc.com)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

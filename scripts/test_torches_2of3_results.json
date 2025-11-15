@@ -1,0 +1,29 @@
+{
+  "category": "Torches",
+  "product_count": 24,
+  "consensus_threshold": "2 out of 3",
+  "features": {
+    "numeric_specs": [
+      {
+        "name": "Current Output",
+        "min": 270,
+        "max": 500,
+        "unit": "A",
+        "display": "270A - 500A"
+      }
+    ],
+    "categorical_features": [
+      {
+        "name": "Cooling Type",
+        "options": [
+          "Air",
+          "Water"
+        ],
+        "display": "Air, Water"
+      }
+    ],
+    "capabilities": [],
+    "key_features": []
+  },
+  "guidance": "\n📋 Torches - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Current Output: 270A - 500A\n\n  🏷️  Options:\n    • Cooling Type: Air, Water"
+}

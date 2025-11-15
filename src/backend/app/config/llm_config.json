@@ -1,0 +1,83 @@
+{
+  "version": "1.0",
+  "description": "LLM model configuration for different AI tasks in the configurator",
+  "last_updated": "2025-01-28",
+  "models": {
+    "parameter_extraction": {
+      "model": "gpt-4",
+      "temperature": 0.3,
+      "max_tokens": 2000,
+      "fallback_model": "gpt-3.5-turbo",
+      "description": "Extract welding parameters from natural language user input",
+      "cost_per_1k_tokens": 0.03,
+      "retry_config": {
+        "max_retries": 3,
+        "retry_delay_seconds": 2,
+        "exponential_backoff": true
+      }
+    },
+    "translation": {
+      "model": "gpt-3.5-turbo",
+      "temperature": 0.3,
+      "max_tokens": 1500,
+      "fallback_model": "gpt-3.5-turbo",
+      "description": "Translate responses to user's preferred language",
+      "cost_per_1k_tokens": 0.002,
+      "retry_config": {
+        "max_retries": 2,
+        "retry_delay_seconds": 1,
+        "exponential_backoff": false
+      }
+    },
+    "response_generation": {
+      "model": "gpt-4",
+      "temperature": 0.5,
+      "max_tokens": 1500,
+      "fallback_model": "gpt-3.5-turbo",
+      "description": "Generate conversational responses for complex queries",
+      "cost_per_1k_tokens": 0.03,
+      "retry_config": {
+        "max_retries": 3,
+        "retry_delay_seconds": 2,
+        "exponential_backoff": true
+      }
+    },
+    "graph_extraction": {
+      "model": "gpt-4",
+      "temperature": 0.3,
+      "max_tokens": 2000,
+      "fallback_model": "gpt-3.5-turbo",
+      "description": "LangGraph node for parameter extraction",
+      "cost_per_1k_tokens": 0.03,
+      "retry_config": {
+        "max_retries": 3,
+        "retry_delay_seconds": 2,
+        "exponential_backoff": true
+      }
+    },
+    "graph_response": {
+      "model": "gpt-4",
+      "temperature": 0.5,
+      "max_tokens": 1500,
+      "fallback_model": "gpt-3.5-turbo",
+      "description": "LangGraph node for response generation",
+      "cost_per_1k_tokens": 0.03,
+      "retry_config": {
+        "max_retries": 3,
+        "retry_delay_seconds": 2,
+        "exponential_backoff": true
+      }
+    }
+  },
+  "global_retry_config": {
+    "max_retries": 3,
+    "retry_delay_seconds": 2,
+    "exponential_backoff": true,
+    "timeout_seconds": 30
+  },
+  "monitoring": {
+    "langsmith_enabled": true,
+    "log_all_calls": true,
+    "track_costs": true
+  }
+}

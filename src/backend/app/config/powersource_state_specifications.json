@@ -1,0 +1,236 @@
+{
+  "version": "2.0",
+  "description": "Component applicability configuration for power sources with accessory categories. Defines which components are required/optional/not_applicable for each power source.",
+  "USAGE_GUIDE": {
+    "purpose": "Defines which downstream components (Feeder, Cooler, Torch, etc.) are applicable for each Power Source. Controls the dynamic S1→SN state machine flow.",
+    "loaded_by": [
+      "state_orchestrator.py - Uses applicability rules to determine which states to show/skip",
+      "conversation.py - Stores applicability in ResponseJSON after PowerSource selection",
+      "configuration_service.py - Loads applicability data for validation"
+    ],
+    "what_it_controls": [
+      "Which components appear in the configurator flow after PowerSource selection",
+      "Whether components are mandatory, conditional, optional, or not_applicable",
+      "State machine skipping logic (auto-skip not_applicable states)",
+      "Validation rules for minimum component requirements"
+    ],
+    "how_it_works": {
+      "step_1_power_source_selected": "User selects a PowerSource (e.g., Aristo 500ix with GIN 0446200880)",
+      "step_2_lookup_applicability": "System looks up power_sources['0446200880'].applicability in this file",
+      "step_3_set_rules": "Applicability rules stored in ResponseJSON.applicability",
+      "step_4_state_flow": "State machine uses rules to show/skip subsequent states (S2-S7)",
+      "example": "If Cooler: 'not_applicable', state machine auto-skips cooler_selection state"
+    }
+  },
+  "HOW_TO_MODIFY": {
+    "adding_new_power_source": {
+      "step_1": "Add new GIN as key under power_sources object",
+      "step_2": "Copy applicability template from existing power source",
+      "step_3": "Set name to match Neo4j PowerSource item_name",
+      "step_4": "Set applicability for each component: mandatory/conditional/optional/not_applicable",
+      "step_5": "Ensure min 3 'real' components (non-accessory) are not 'not_applicable'",
+      "step_6": "Test with actual power source selection in configurator"
+    },
+    "changing_applicability_rules": {
+      "mandatory": "User MUST select this component (cannot skip) - use for critical dependencies",
+      "conditional": "System asks user if they need it - use for duty-cycle dependent components (Cooler)",
+      "optional": "User can choose to skip - use for nice-to-have components",
+      "not_applicable": "Component is incompatible - state auto-skipped in flow",
+      "validation": "At least 3 core components must NOT be 'not_applicable' per power source"
+    },
+    "accessory_categories": {
+      "purpose": "Accessories are always optional - applicability determines which accessory categories to show",
+      "categories": [
+        "PowerSourceAccessories - Power source specific accessories",
+        "FeederAccessories - Feeder specific accessories (if Feeder selected)",
+        "FeederConditionalAccessories - Conditional feeder accessories",
+        "InterconnectorAccessories - Interconnector specific",
+        "Remotes - Remote control units",
+        "RemoteAccessories - Remote accessories",
+        "RemoteConditionalAccessories - Conditional remote accessories",
+        "Connectivity - Connectivity accessories"
+      ],
+      "default": "Accessories typically set to 'optional' unless power source doesn't support them"
+    }
+  },
+  "IMPORTANT_NOTES": {
+    "default_policy": "If PowerSource GIN not found, uses default_policy (all components optional except accessories)",
+    "validation_rules": {
+      "min_real_components": "At least 3 core components must be applicable (not 'not_applicable')",
+      "purpose": "Prevents invalid configurations where too many components are unavailable"
+    },
+    "state_skipping_logic": {
+      "not_applicable": "State automatically skipped, user never sees it",
+      "mandatory": "State shown, user must select (cannot skip)",
+      "conditional": "State shown with Y/N question (can skip)",
+      "optional": "State shown, user can skip"
+    },
+    "backwards_compatibility": "Legacy Y/N values converted to new applicability values: Y→mandatory, N→not_applicable",
+    "testing": "Test applicability changes by selecting the PowerSource and verifying state flow: pytest tests/integration/test_state_transitions.py",
+    "related_configs": [
+      "component_types.json - Defines component metadata and state_order",
+      "state_prompts.json - Prompts shown at each state (affected by applicability)"
+    ]
+  },
+  "validation_rules": {
+    "min_real_components": 3,
+    "valid_applicability_values": ["mandatory", "conditional", "optional", "not_applicable"],
+    "required_core_components": ["Feeder", "Cooler", "Interconnector", "Torch"],
+    "optional_accessory_components": [
+      "PowerSourceAccessories",
+      "FeederAccessories",
+      "FeederConditionalAccessories",
+      "InterconnectorAccessories",
+      "Remotes",
+      "RemoteAccessories",
+      "RemoteConditionalAccessories",
+      "Connectivity"
+    ]
+  },
+  "applicability_values": {
+    "mandatory": "Component is required and cannot be skipped",
+    "conditional": "Component is optional based on user requirements (e.g., duty cycle for cooler)",
+    "optional": "Component is optional and can be skipped",
+    "not_applicable": "Component is not applicable for this power source"
+  },
+  "default_policy": {
+    "description": "Default applicability when power source not found in database",
+    "applicability": {
+      "Feeder": "mandatory",
+      "Cooler": "conditional",
+      "Interconnector": "optional",
+      "Torch": "optional",
+      "PowerSourceAccessories": "optional",
+      "FeederAccessories": "optional",
+      "FeederConditionalAccessories": "optional",
+      "InterconnectorAccessories": "optional",
+      "Remotes": "optional",
+      "RemoteAccessories": "optional",
+      "RemoteConditionalAccessories": "optional",
+      "Connectivity": "optional"
+    }
+  },
+  "power_sources": {
+    "0446200880": {
+      "name": "Aristo 500ix CE",
+      "category": "Power Source",
+      "description": "500A Multi-Process Power Source",
+      "model_family": "Aristo 500ix",
+      "applicability": {
+        "Feeder": "mandatory",
+        "Cooler": "mandatory",
+        "Interconnector": "optional",
+        "Torch": "optional",
+        "PowerSourceAccessories": "optional",
+        "FeederAccessories": "optional",
+        "FeederConditionalAccessories": "optional",
+        "InterconnectorAccessories": "not_applicable",
+        "Remotes": "optional",
+        "RemoteAccessories": "optional",
+        "RemoteConditionalAccessories": "optional",
+        "Connectivity": "optional"
+    
+      }
+    },
+    "0445400883": {
+      "name": "Aristo Mig U5000iw, WC CE",
+      "category": "Power Source",
+      "description": "5000A Industrial MIG Power Source",
+      "model_family": "Aristo 5000iw",
+      "applicability": {
+        "Feeder": "mandatory",
+        "Cooler": "not_applicable",
+        "Interconnector": "optional",
+        "Torch": "optional",
+        "PowerSourceAccessories": "optional",
+        "FeederAccessories": "optional",
+        "FeederConditionalAccessories": "optional",
+        "InterconnectorAccessories": "optional",
+        "Remotes": "optional",
+        "RemoteAccessories": "optional",
+        "RemoteConditionalAccessories": "optional",
+        "Connectivity": "not_applicable"
+      }
+    },
+    "0445250880": {
+      "name": "Renegade ES 300i (CE) with cables",
+      "category": "Power Source",
+      "description": "300A Engine-Driven Welder/Generator",
+      "model_family": "Renegade ES300",
+      "applicability": {
+        "Feeder": "not_applicable",
+        "Cooler": "not_applicable",
+        "Interconnector": "not_applicable",
+        "Torch": "not_applicable",
+        "PowerSourceAccessories": "optional",
+        "FeederAccessories": "not_applicable",
+        "FeederConditionalAccessories": "not_applicable",
+        "InterconnectorAccessories": "not_applicable",
+        "Remotes": "optional",
+        "RemoteAccessories": "optional",
+        "RemoteConditionalAccessories": "optional",
+        "Connectivity": "not_applicable"
+      }
+    },
+    "0445100880": {
+      "name": "Renegade ES 300i (CE)",
+      "category": "Power Source",
+      "description": "300A Engine-Driven Welder/Generator",
+      "model_family": "Renegade ES300",
+      "applicability": {
+        "Feeder": "not_applicable",
+        "Cooler": "not_applicable",
+        "Interconnector": "not_applicable",
+        "Torch": "not_applicable",
+        "PowerSourceAccessories": "optional",
+        "FeederAccessories": "not_applicable",
+        "FeederConditionalAccessories": "not_applicable",
+        "InterconnectorAccessories": "not_applicable",
+        "Remotes": "optional",
+        "RemoteAccessories": "optional",
+        "RemoteConditionalAccessories": "optional",
+        "Connectivity": "not_applicable"
+      }
+    },
+    "0465350883": {
+      "name": "Warrior 500i",
+      "category": "Power Source",
+      "description": "500A Engine-Driven Welder/Generator",
+      "model_family": "Warrior 500i",
+      "applicability": {
+        "Feeder": "mandatory",
+        "Cooler": "mandatory",
+        "Interconnector": "optional",
+        "Torch": "optional",
+        "PowerSourceAccessories": "optional",
+        "FeederAccessories": "optional",
+        "FeederConditionalAccessories": "optional",
+        "InterconnectorAccessories": "not_applicable",
+        "Remotes": "optional",
+        "RemoteAccessories": "optional",
+        "RemoteConditionalAccessories": "optional",
+        "Connectivity": "optional"
+      }
+    },
+    "0465350884": {
+      "name": "Warrior 400i",
+      "category": "Power Source",
+      "description": "400A Engine-Driven Welder/Generator",
+      "model_family": "Warrior 400i",
+      "applicability": {
+        "Feeder": "mandatory",
+        "Cooler": "mandatory",
+        "Interconnector": "optional",
+        "Torch": "optional",
+        "PowerSourceAccessories": "optional",
+        "FeederAccessories": "optional",
+        "FeederConditionalAccessories": "optional",
+        "InterconnectorAccessories": "not_applicable",
+        "Remotes": "optional",
+        "RemoteAccessories": "optional",
+        "RemoteConditionalAccessories": "optional",
+        "Connectivity": "optional"
+      }
+    }
+  }
+}

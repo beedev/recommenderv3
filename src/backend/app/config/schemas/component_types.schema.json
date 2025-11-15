@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "component_types.schema.json",
+  "title": "Component Types Configuration Schema",
+  "description": "Schema for validating component_types.json - defines all components and their state machine properties",
+  "type": "object",
+  "required": ["version", "component_types", "state_sequence"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$",
+      "description": "Configuration version (e.g., '1.0')"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of this configuration"
+    },
+    "component_types": {
+      "type": "object",
+      "description": "Dictionary of all component types keyed by component_key",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "class_name",
+          "display_name",
+          "api_key",
+          "db_key",
+          "state_name",
+          "state_order",
+          "selection_type"
+        ],
+        "properties": {
+          "class_name": {
+            "type": "string",
+            "description": "Neo4j node label (e.g., 'PowerSource')",
+            "minLength": 1
+          },
+          "display_name": {
+            "type": "string",
+            "description": "User-facing component name",
+            "minLength": 1
+          },
+          "api_key": {
+            "type": "string",
+            "description": "ResponseJSON field name (e.g., 'PowerSource')",
+            "minLength": 1
+          },
+          "db_key": {
+            "type": "string",
+            "description": "Database/config lookup key (lowercase)",
+            "minLength": 1
+          },
+          "neo4j_label": {
+            "type": "string",
+            "description": "Optional Neo4j label override"
+          },
+          "icon": {
+            "type": "string",
+            "description": "Emoji or icon for UI display"
+          },
+          "state_name": {
+            "type": "string",
+            "description": "State machine identifier (e.g., 'power_source_selection')",
+            "pattern": "^[a-z_]+$"
+          },
+          "state_order": {
+            "type": "integer",
+            "description": "Numerical order in state sequence (1-based)",
+            "minimum": 1
+          },
+          "selection_type": {
+            "type": "string",
+            "description": "How selections are processed for this state",
+            "enum": ["single", "multi", "custom"]
+          },
+          "is_mandatory": {
+            "type": "boolean",
+            "description": "Whether this state must be completed (cannot be skipped)",
+            "default": false
+          },
+          "can_skip": {
+            "type": "boolean",
+            "description": "Whether user can explicitly skip this state",
+            "default": true
+          },
+          "processor_class": {
+            "type": "string",
+            "description": "Optional Python class path for custom state processor (for selection_type='custom')",
+            "pattern": "^[a-zA-Z_][a-zA-Z0-9_.]*$"
+          },
+          "default_skip_behavior": {
+            "type": "string",
+            "description": "What to do when component is not applicable",
+            "enum": ["auto_skip", "prompt_skip", "required"],
+            "default": "auto_skip"
+          },
+          "supports_search": {
+            "type": "boolean",
+            "description": "Whether this component supports product search",
+            "default": true
+          },
+          "requires_compatibility_check": {
+            "type": "boolean",
+            "description": "Whether selections must be compatible with power source",
+            "default": true
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "selection_type": {"const": "custom"}
+              }
+            },
+            "then": {
+              "required": ["processor_class"]
+            }
+          }
+        ]
+      }
+    },
+    "state_sequence": {
+      "type": "array",
+      "description": "Ordered array of state names defining the S1→SN flow",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z_]+$"
+      }
+    },
+    "finalize_state": {
+      "type": "string",
+      "description": "Special finalization state name",
+      "pattern": "^[a-z_]+$",
+      "default": "finalize"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Optional metadata about the configuration",
+      "properties": {
+        "created_at": {"type": "string"},
+        "updated_at": {"type": "string"},
+        "author": {"type": "string"},
+        "notes": {"type": "string"}
+      }
+    }
+  }
+}

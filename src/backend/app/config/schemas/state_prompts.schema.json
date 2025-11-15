@@ -1,0 +1,90 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "state_prompts.schema.json",
+  "title": "State Prompts Configuration Schema",
+  "description": "Schema for validating state_prompts.json - defines user-facing prompts for each state. Note: icon, is_required, and can_skip now loaded from component_types.json (rationalized Nov 15, 2024).",
+  "type": "object",
+  "required": ["version", "states"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$",
+      "description": "Configuration version"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description"
+    },
+    "states": {
+      "type": "object",
+      "description": "Dictionary of state prompts keyed by state_name",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": ["step_number", "title"],
+        "properties": {
+          "step_number": {
+            "type": "number",
+            "description": "Display step number (1-based, allows decimals for substeps like 6.1, 6.2)",
+            "minimum": 1
+          },
+          "title": {
+            "type": "string",
+            "description": "State title for display",
+            "minLength": 1
+          },
+          "prompt_simple": {
+            "type": "string",
+            "description": "Simple prompt text without context",
+            "minLength": 1
+          },
+          "prompt_template": {
+            "type": "string",
+            "description": "Template prompt with variable placeholders"
+          },
+          "prompt_with_context": {
+            "type": "string",
+            "description": "Contextual prompt when previous selections exist"
+          },
+          "guidance_bullets": {
+            "type": "array",
+            "description": "Bullet points for user guidance",
+            "items": {
+              "type": "string"
+            }
+          },
+          "examples": {
+            "type": "array",
+            "description": "Example user inputs",
+            "items": {
+              "type": "string"
+            }
+          },
+          "skip_message": {
+            "type": "string",
+            "description": "Message shown when state is skipped"
+          },
+          "completion_message": {
+            "type": "string",
+            "description": "Message shown when state is completed"
+          },
+          "finalize_header": {
+            "type": "string",
+            "description": "Header text for finalize state (optional, finalize state only)"
+          },
+          "finalize_footer": {
+            "type": "string",
+            "description": "Footer text for finalize state (optional, finalize state only)"
+          }
+        }
+      }
+    },
+    "template_variables": {
+      "type": "object",
+      "description": "Documentation of available template variables",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  }
+}

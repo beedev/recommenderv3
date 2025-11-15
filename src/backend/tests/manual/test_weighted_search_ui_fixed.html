@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔬 Weighted Lucene Search POC - A/B Testing (FIXED)</title>
+    <style>
+        /* Copy all styles from original file */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .error {
+            background: #fee;
+            border: 2px solid #fcc;
+            color: #c33;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 Weighted Lucene Search POC (FIXED)</h1>
+            <p>Fixed: Response validation to prevent RangeError</p>
+        </div>
+
+        <div id="error-display" class="error" style="display: none;"></div>
+
+        <!-- Rest of UI... -->
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8001';
+
+        // FIXED: Add response validation
+        async function safeCompareSearch(query, componentType) {
+            try {
+                const response = await fetch(`${API_BASE}/test/compare-search`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        component_type: componentType
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                // CRITICAL FIX: Validate response structure
+                if (!data) {
+                    throw new Error('Empty response from server');
+                }
+
+                // Validate extracted_keywords
+                if (!Array.isArray(data.extracted_keywords)) {
+                    console.warn('extracted_keywords is not an array, defaulting to []');
+                    data.extracted_keywords = [];
+                }
+
+                // Validate test_a_fulltext structure
+                if (!data.test_a_fulltext || typeof data.test_a_fulltext !== 'object') {
+                    throw new Error('test_a_fulltext is missing or invalid');
+                }
+
+                if (!Array.isArray(data.test_a_fulltext.results)) {
+                    console.warn('test_a_fulltext.results is not an array, defaulting to []');
+                    data.test_a_fulltext.results = [];
+                }
+
+                // Validate test_b_weighted structure
+                if (!data.test_b_weighted || typeof data.test_b_weighted !== 'object') {
+                    throw new Error('test_b_weighted is missing or invalid');
+                }
+
+                if (!Array.isArray(data.test_b_weighted.results)) {
+                    console.warn('test_b_weighted.results is not an array, defaulting to []');
+                    data.test_b_weighted.results = [];
+                }
+
+                // Validate comparison_metrics
+                if (!data.comparison_metrics || typeof data.comparison_metrics !== 'object') {
+                    throw new Error('comparison_metrics is missing or invalid');
+                }
+
+                return data;
+
+            } catch (error) {
+                console.error('Error in safeCompareSearch:', error);
+                displayError(error.message);
+                throw error;
+            }
+        }
+
+        function displayError(message) {
+            const errorDiv = document.getElementById('error-display');
+            errorDiv.textContent = `❌ Error: ${message}`;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // FIXED: Safe array forEach with validation
+        function displayResults(data) {
+            // Safely iterate over test_a results
+            const productsA = document.getElementById('productsA');
+            productsA.innerHTML = '';
+
+            if (!Array.isArray(data.test_a_fulltext.results) || data.test_a_fulltext.results.length === 0) {
+                productsA.innerHTML = '<div class="no-results">No results found</div>';
+            } else {
+                // Safe forEach - we already validated it's an array
+                data.test_a_fulltext.results.forEach((product, idx) => {
+                    productsA.appendChild(createProductCard(product, idx + 1));
+                });
+            }
+
+            // Safely iterate over test_b results
+            const productsB = document.getElementById('productsB');
+            productsB.innerHTML = '';
+
+            if (!Array.isArray(data.test_b_weighted.results) || data.test_b_weighted.results.length === 0) {
+                productsB.innerHTML = '<div class="no-results">No results found</div>';
+            } else {
+                // Safe forEach - we already validated it's an array
+                data.test_b_weighted.results.forEach((product, idx) => {
+                    productsB.appendChild(createProductCard(product, idx + 1));
+                });
+            }
+        }
+
+        function createProductCard(product, rank) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+
+            // Safe property access
+            const name = product.name || 'Unknown Product';
+            const gin = product.gin || 'N/A';
+            const score = typeof product.score === 'number' ? product.score.toFixed(2) : '0.00';
+            const description = product.description || 'No description available';
+
+            const maxDescLength = 150;
+            const truncatedDesc = description.length > maxDescLength
+                ? description.substring(0, maxDescLength) + '...'
+                : description;
+
+            card.innerHTML = `
+                <div>
+                    <span class="product-rank">${rank}</span>
+                    <span class="product-name">${name}</span>
+                </div>
+                <div class="product-gin">GIN: ${gin}</div>
+                <div>
+                    <span class="product-score">Score: ${score}</span>
+                </div>
+                <div class="product-description">${truncatedDesc}</div>
+            `;
+
+            return card;
+        }
+
+        console.log('✅ Fixed version loaded with response validation');
+    </script>
+</body>
+</html>

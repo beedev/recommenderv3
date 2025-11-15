@@ -1,0 +1,32 @@
+# Test dependencies for ESAB Welding Equipment Configurator
+
+# Core testing framework
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.1
+
+# Code coverage
+coverage>=7.2.7
+
+# Fixtures and mocking
+pytest-fixtures>=0.1.0
+
+# Performance testing (optional)
+pytest-benchmark>=4.0.0
+
+# Test reporting
+pytest-html>=3.2.0
+
+# Parallel test execution
+pytest-xdist>=3.3.1
+
+# Test utilities
+faker>=19.2.0
+freezegun>=1.2.2
+fakeredis>=2.20.0
+
+# Already in main requirements (ensure compatibility)
+pydantic>=2.0.0
+openai>=1.0.0
+neo4j>=5.14.0

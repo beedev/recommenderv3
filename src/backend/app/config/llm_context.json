@@ -1,0 +1,604 @@
+{
+  "version": "1.0",
+  "description": "LLM context data for parameter extraction and feature guidance (consolidated from product_names.json + category_features_llm.json)",
+  "last_updated": "2025-11-15",
+  "USAGE_GUIDE": {
+    "purpose": "Provides LLM-consumable context for parameter extraction and feature guidance. This data is fed to OpenAI GPT-4 prompts.",
+    "loaded_by": [
+      "parameter_extractor.py - Loads product_names for fuzzy matching in LLM prompts",
+      "message_generator.py - Loads category_features for intelligent feature guidance"
+    ],
+    "what_it_controls": [
+      "Product name lists used in fuzzy matching (helps LLM recognize product names)",
+      "Category feature metadata (specs, capabilities, key features)",
+      "Feature guidance text shown to users after product searches",
+      "LLM prompt context for better parameter extraction"
+    ],
+    "why_separate_from_component_types": "This data goes INTO LLM prompts (token-consuming), while component_types.json is system configuration (not sent to LLM)"
+  },
+  "HOW_TO_MODIFY": {
+    "adding_product_names": {
+      "step_1": "Add product name to appropriate component array in product_names section",
+      "step_2": "Use exact product names from Neo4j database (item_name property)",
+      "step_3": "Include common variations (e.g., 'Aristo 500ix' and 'Aristo 500ix CE')",
+      "step_4": "Keep lists updated when new products added to Neo4j",
+      "note": "Only enabled components are loaded (see component_types.json fuzzy_matching_enabled)"
+    },
+    "updating_category_features": {
+      "numeric_specs": "Add min/max/value ranges with units for measurable properties",
+      "categorical_features": "Add dropdown-style options (e.g., Cooling Type: Water/Air)",
+      "capabilities": "Add supported processes, compatibility info, performance specs",
+      "key_features": "Add marketing highlights, unique selling points, differentiators",
+      "guidance": "Pre-formatted text shown to users - use emojis and bullet points for readability"
+    },
+    "category_naming": {
+      "use_snake_case": "Category keys must match component_types.json keys (power_source, feeder, cooler, etc.)",
+      "display_name": "Use proper capitalization for UI display",
+      "consistency": "Keep category names in sync with component_types.json to avoid manual mapping"
+    },
+    "guidance_text_format": {
+      "structure": "Use sections: 📋 Header, 🔢 Specifications, 🏷️ Options, ⚡ Capabilities, ✨ Key Features",
+      "emojis": "Use consistent emojis per section for visual recognition",
+      "bullets": "Use • for bullet points, format: 'Property: Value'",
+      "multilingual_note": "Currently guidance is English-only - consider dynamic generation for i18n in future"
+    }
+  },
+  "IMPORTANT_NOTES": {
+    "consolidation_history": "Nov 15, 2024 - Consolidated product_names.json + category_features_llm.json into this file for clear LLM context separation",
+    "token_management": "This file content is included in LLM prompts - keep it concise to manage token costs",
+    "architecture": "LLM context (this file) is separate from system config (component_types.json, search_config.json)",
+    "data_source": "Product names come from Neo4j database. Category features are LLM-extracted from product database analysis.",
+    "sync_requirements": [
+      "Product names should match Neo4j item_name properties",
+      "Category keys should match component_types.json component keys",
+      "Update when new products added to Neo4j",
+      "Update when component categories change"
+    ],
+    "future_improvements": [
+      "Auto-generate product_names from Neo4j queries (eliminate manual sync)",
+      "Dynamic guidance text generation (support multilingual)",
+      "Extract category_features from Neo4j schema inspection"
+    ],
+    "related_configs": [
+      "component_types.json - Defines which components use fuzzy matching",
+      "search_config.json - Fuzzy matching algorithm and thresholds"
+    ]
+  },
+  "product_names": {
+    "power_source": [
+      "Aristo 500ix CE",
+      "Renegade ES300",
+      "Renegade ES300 with",
+      "Warrior 400i CC/CV",
+      "Warrior 500i CC/CV",
+      "Warrior 750i CC/CV"
+    ],
+    "feeder": [
+      "No Feeder Available",
+      "RobustFeed PRO",
+      "RobustFeed PRO Water",
+      "RobustFeed Pulse",
+      "RobustFeed U0",
+      "RobustFeed U6 ",
+      "RobustFeed U82 ",
+      "Warrior Feed 304w Water-Cooled"
+    ],
+    "cooler": [
+      "COOL 2 Cooling Unit",
+      "No Cooler Available"
+    ],
+    "interconnector": [
+      "Interconnection Cables - 70mm, Gas-Cooled, 20.0m, 20 m, 20m",
+      "Interconnection Cables - 70mm, Gas-Cooled, 10.0 m, 10m, 10 m",
+      "Interconnection Cables - 70mm, Gas-Cooled, 15.0 m, 15m, 15 m",
+      "Interconnection Cables - 70mm, Gas-Cooled, 5.0 m, 5m, 5 m",
+      "Interconnection Cables - 70mm, Gas-Cooled, 2.0 m, 2m, 2 m",
+      "Interconnection Cables - 70mm, Gas-Cooled, 35.0 m, 35m, 35 m",
+      "Interconnection Cables - 70mm, Liquid-Cooled, 20.0m, 20 m, 20m",
+      "Interconnection Cables - 70mm, Liquid-Cooled, 10.0 m, 10m, 10 m",
+      "Interconnection Cables - 70mm, Liquid-Cooled, 15.0 m, 15m, 15 m",
+      "Interconnection Cables - 70mm, Liquid-Cooled, 5.0 m, 5m, 5 m",
+      "Interconnection Cables - 70mm, Liquid-Cooled, 2.0 m, 2m, 2 m",
+      "Interconnection Cables - 70mm, Liquid-Cooled, 35.0 m, 35m, 35 m",
+      "Interconnection Cables - 95mm, Gas-Cooled, 20.0m, 20 m, 20m",
+      "Interconnection Cables - 95mm, Gas-Cooled, 10.0 m, 10m, 10 m",
+      "Interconnection Cables - 95mm, Gas-Cooled, 15.0 m, 15m, 15 m",
+      "Interconnection Cables - 95mm, Gas-Cooled, 5.0 m, 5m, 5 m",
+      "Interconnection Cables - 95mm, Gas-Cooled, 2.0 m, 2m, 2 m",
+      "Interconnection Cables - 95mm, Gas-Cooled, 35.0 m, 35m, 35 m",
+      "Interconnection Cables - 95mm, Liquid-Cooled, 20.0m, 20 m, 20m",
+      "Interconnection Cables - 95mm, Liquid-Cooled, 10.0 m, 10m, 10 m",
+      "Interconnection Cables - 95mm, Liquid-Cooled, 15.0 m, 15m, 15 m",
+      "Interconnection Cables - 95mm, Liquid-Cooled, 5.0 m, 5m, 5 m",
+      "Interconnection Cables - 95mm, Liquid-Cooled, 2.0 m, 2m, 2 m",
+      "Interconnection Cables - 95mm, Liquid-Cooled, 35.0 m, 35m, 35 m",
+      "No Interconnector Available"
+    ],
+    "torch": [
+      "Connecting ring Capacitor",
+      "Euro connector, ESG w/o pins",
+      "Exeor PSF 415 3 m, 3m",
+      "Exeor PSF 415 4 m, 4m",
+      "Exeor PSF 415 5 m",
+      "Exeor PSF 420W 3 m, 3m",
+      "Exeor PSF 420W 4 m, 4m",
+      "Exeor PSF 420W 5 m, 5m",
+      "Exeor PSF 430W 3 m, 3m",
+      "Exeor PSF 430W 4 m, 4m",
+      "Exeor PSF 430W 5 m, 5m",
+      "Exeor PSF 520W 3 m, 3m",
+      "Exeor PSF 520W 4 m, 4m",
+      "Exeor PSF 520W 5 m, 5m",
+      "Exeor PSF 515 3 m, 3m",
+      "Exeor PSF 515 4 m, 4m",
+      "Exeor PSF 515 5 m, 5m",
+      "MXH 315PP, swan neck, Gas, 12 m, 12m",
+      "MXH 315PP, swan neck, Gas, 6 m, 6m",
+      "MXH 315PP, swan neck, Gas, 8 m, 8m",
+      "MXH 420wPP, swan neck, Water, 12 m, 12m",
+      "MXH 420wPP, swan neck, Water, 6 m, 6m",
+      "MXH 420wPP, swan neck, Water, 8 m, 8m",
+      "No Torch Available",
+      "Ring cable lug"
+    ],
+    "accessory": [
+      "Connection cables for AT1 and AT1 CoarseFine: 10 m",
+      "Connection cables for AT1 and AT1 CoarseFine: 15 m",
+      "Connection cables for AT1 and AT1 CoarseFine: 25 m",
+      "Connection cables for AT1 and AT1 CoarseFine: 5 m",
+      "Connections for cables for remote controls: 10 m cable CAN",
+      "Connections for cables for remote controls: 5 m cable CAN",
+      "Interconnection cables AT1 and AT1 CourseFine 0.25 m",
+      "Interconnection cables AT1 and AT1 CourseFine 15 m",
+      "Interconnection cables AT1 and AT1 CourseFine 25 m",
+      "RF Pro Remote Kit - Euro",
+      "Remote Accessory 0459554980",
+      "Remote cable M1 - 10m",
+      "Remote cable M1 - 5m",
+      "Remote control adapter RA 23",
+      "Remote outlet kit feeder, 23p 1)",
+      "Remote outlet kit power source, 12p",
+      "Retrofit kit for MMA 3 Analogue Remote Control"
+    ]
+  },
+  "category_features": {
+    "connectivity": {
+      "category": "Connectivity",
+      "display_name": "Connectivity",
+      "product_count": 7,
+      "features": {
+        "numeric_specs": [
+          {
+            "name": "Cable Length",
+            "min": 0.5,
+            "max": 2,
+            "unit": "m",
+            "display": "0.5m - 2m"
+          }
+        ],
+        "categorical_features": [],
+        "capabilities": [],
+        "key_features": []
+      },
+      "guidance": "\n📋 Connectivity - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Cable Length: 0.5m - 2m"
+    },
+    "cooler": {
+      "category": "Cooler",
+      "display_name": "Cooler",
+      "product_count": 1,
+      "features": {
+        "numeric_specs": [
+          {
+            "name": "Cooling Power",
+            "value": 1.4,
+            "unit": "kW",
+            "display": "1.4 kW"
+          },
+          {
+            "name": "Maximum Water Flow",
+            "value": 2.7,
+            "unit": "l/min",
+            "display": "2.7 l/min"
+          },
+          {
+            "name": "Maximum Pressure",
+            "value": 4.5,
+            "unit": "bar",
+            "display": "4.5 bar"
+          }
+        ],
+        "categorical_features": [],
+        "capabilities": [],
+        "key_features": []
+      },
+      "guidance": "\n📋 Cooler - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Cooling Power: 1.4 kW\n    • Maximum Water Flow: 2.7 l/min\n    • Maximum Pressure: 4.5 bar"
+    },
+    "feeder": {
+      "category": "Feeder",
+      "display_name": "Feeder",
+      "product_count": 13,
+      "features": {
+        "numeric_specs": [
+          {
+            "name": "Roller Size",
+            "min": 30,
+            "max": 38,
+            "unit": "mm",
+            "display": "30mm - 38mm"
+          }
+        ],
+        "categorical_features": [
+          {
+            "name": "Cooling Type",
+            "options": [
+              "Water"
+            ],
+            "display": "Water"
+          }
+        ],
+        "capabilities": [
+          {
+            "name": "Supported Processes",
+            "values": [
+              "MIG",
+              "DC LiveTig",
+              "MMA"
+            ],
+            "display": "MIG, DC LiveTig, MMA"
+          }
+        ],
+        "key_features": [
+          "IP44 protection rating",
+          "4-wheel drive",
+          "PreciDrive technology",
+          "SpoolSafe technology",
+          "Push-pull compatibility",
+          "Gas flow meter",
+          "Heater",
+          "Euro connector"
+        ]
+      },
+      "guidance": "\n📋 Feeder - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Roller Size: 30mm - 38mm\n\n  🏷️  Options:\n    • Cooling Type: Water\n\n  ⚡ Capabilities:\n    • Supported Processes: MIG, DC LiveTig, MMA\n\n  ✨ Key Features:\n    • IP44 protection rating\n    • 4-wheel drive\n    • PreciDrive technology\n    • SpoolSafe technology\n    • Push-pull compatibility"
+    },
+    "feeder_accessories": {
+      "category": "Feeder Accessories",
+      "display_name": "Feeder Accessories",
+      "product_count": 16,
+      "features": {
+        "numeric_specs": [
+          {
+            "name": "Cable Length",
+            "min": 6,
+            "max": 7.5,
+            "unit": "m",
+            "display": "6m - 7.5m"
+          },
+          {
+            "name": "Spool Diameter",
+            "min": 440,
+            "max": 440,
+            "unit": "mm",
+            "display": "440mm"
+          }
+        ],
+        "categorical_features": [],
+        "capabilities": [],
+        "key_features": []
+      },
+      "guidance": "\n📋 Feeder Accessories - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Cable Length: 6m - 7.5m\n    • Spool Diameter: 440mm"
+    },
+    "feeder_conditional_accessories": {
+      "category": "Feeder Conditional Accessories",
+      "display_name": "Feeder Conditional Accessories",
+      "product_count": 1,
+      "features": {
+        "numeric_specs": [],
+        "categorical_features": [],
+        "capabilities": [],
+        "key_features": []
+      },
+      "guidance": "\n📋 Feeder Conditional Accessories - Available Features & Specifications:"
+    },
+    "feeder_wears": {
+      "category": "Feeder Wears",
+      "display_name": "Feeder Wears",
+      "product_count": 42,
+      "features": {
+        "numeric_specs": [
+          {
+            "name": "Diameter",
+            "min": 0.6,
+            "max": 2.4,
+            "unit": "mm",
+            "display": "0.6 mm - 2.4 mm"
+          }
+        ],
+        "categorical_features": [
+          {
+            "name": "Material Compatibility",
+            "options": [
+              "Aluminum",
+              "Flux-Cored Wire",
+              "Solid Wire"
+            ],
+            "display": "Aluminum, Flux-Cored Wire, Solid Wire"
+          }
+        ],
+        "capabilities": [
+          {
+            "name": "Wire Feeding",
+            "values": [
+              "Consistent",
+              "Reliable"
+            ],
+            "display": "Consistent and Reliable"
+          }
+        ],
+        "key_features": [
+          "Durable construction",
+          "V-groove and U-groove designs"
+        ]
+      },
+      "guidance": "\n📋 Feeder Wears - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Diameter: 0.6 mm - 2.4 mm\n\n  🏷️  Options:\n    • Material Compatibility: Aluminum, Flux-Cored Wire, Solid Wire\n\n  ⚡ Capabilities:\n    • Wire Feeding: Consistent and Reliable\n\n  ✨ Key Features:\n    • Durable construction\n    • V-groove and U-groove designs"
+    },
+    "interconnector": {
+      "category": "Interconnector",
+      "display_name": "Interconnector",
+      "product_count": 50,
+      "features": {
+        "numeric_specs": [
+          {
+            "name": "Cable Length",
+            "min": 1.7,
+            "max": 35,
+            "unit": "m",
+            "display": "1.7m - 35m"
+          },
+          {
+            "name": "Conductor Size",
+            "min": 70,
+            "max": 95,
+            "unit": "mm²",
+            "display": "70mm² - 95mm²"
+          }
+        ],
+        "categorical_features": [
+          {
+            "name": "Cooling Type",
+            "options": [
+              "Air",
+              "Water"
+            ],
+            "display": "Air, Water"
+          }
+        ],
+        "capabilities": [],
+        "key_features": []
+      },
+      "guidance": "\n📋 Interconnector - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Cable Length: 1.7m - 35m\n    • Conductor Size: 70mm² - 95mm²\n\n  🏷️  Options:\n    • Cooling Type: Air, Water"
+    },
+    "interconnector_accessories": {
+      "category": "Interconnector Accessories",
+      "display_name": "Interconnector Accessories",
+      "product_count": 1,
+      "features": {
+        "numeric_specs": [],
+        "categorical_features": [],
+        "capabilities": [],
+        "key_features": []
+      },
+      "guidance": "\n📋 Interconnector Accessories - Available Features & Specifications:"
+    },
+    "power_source": {
+      "category": "PowerSource",
+      "display_name": "Power Source",
+      "product_count": 6,
+      "features": {
+        "numeric_specs": [
+          {
+            "name": "Voltage",
+            "min": 230,
+            "max": 480,
+            "unit": "V",
+            "display": "230V - 480V"
+          },
+          {
+            "name": "Current Output",
+            "min": 300,
+            "max": 500,
+            "unit": "A",
+            "display": "300A - 500A"
+          }
+        ],
+        "categorical_features": [
+          {
+            "name": "Cooling Type",
+            "options": [
+              "Water"
+            ],
+            "display": "Water"
+          }
+        ],
+        "capabilities": [
+          {
+            "name": "Supported Processes",
+            "values": [
+              "MIG/MAG",
+              "MMA",
+              "DC TIG",
+              "Gouging"
+            ],
+            "display": "MIG/MAG, MMA, DC TIG, Gouging"
+          }
+        ],
+        "key_features": [
+          "Portable design",
+          "Dual voltage operation",
+          "Integrated cooling unit",
+          "Cloud connectivity"
+        ]
+      },
+      "guidance": "\n📋 Power Source - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Voltage: 230V - 480V\n    • Current Output: 300A - 500A\n\n  🏷️  Options:\n    • Cooling Type: Water\n\n  ⚡ Capabilities:\n    • Supported Processes: MIG/MAG, MMA, DC TIG, Gouging\n\n  ✨ Key Features:\n    • Portable design\n    • Dual voltage operation\n    • Integrated cooling unit\n    • Cloud connectivity"
+    },
+    "powersource_accessories": {
+      "category": "PowerSource Accessories",
+      "display_name": "PowerSource Accessories",
+      "product_count": 26,
+      "features": {
+        "numeric_specs": [
+          {
+            "name": "Cable Length",
+            "min": 3,
+            "max": 8,
+            "unit": "m",
+            "display": "3m - 8m"
+          },
+          {
+            "name": "Current Rating",
+            "min": 300,
+            "max": 450,
+            "unit": "A",
+            "display": "300A - 450A"
+          },
+          {
+            "name": "Voltage Compatibility",
+            "min": 208,
+            "max": 575,
+            "unit": "V",
+            "display": "208V - 575V"
+          }
+        ],
+        "categorical_features": [
+          {
+            "name": "Cooling Type",
+            "options": [
+              "Water"
+            ],
+            "display": "Water"
+          }
+        ],
+        "capabilities": [],
+        "key_features": []
+      },
+      "guidance": "\n📋 PowerSource Accessories - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Cable Length: 3m - 8m\n    • Current Rating: 300A - 450A\n    • Voltage Compatibility: 208V - 575V\n\n  🏷️  Options:\n    • Cooling Type: Water"
+    },
+    "remote": {
+      "category": "Remotes",
+      "display_name": "Remote Controls",
+      "product_count": 10,
+      "features": {
+        "numeric_specs": [
+          {
+            "name": "Cable Length",
+            "value": 10,
+            "unit": "m",
+            "display": "10m"
+          }
+        ],
+        "categorical_features": [],
+        "capabilities": [
+          {
+            "name": "Supported Processes",
+            "values": [
+              "MIG/MAG",
+              "MMA",
+              "TIG"
+            ],
+            "display": "MIG/MAG, MMA, TIG"
+          }
+        ],
+        "key_features": [
+          "Digital CAN-based multifunction remote control",
+          "Analogue standard remote control",
+          "Stepless current adjustment",
+          "Coarse and fine current adjustment",
+          "Dual-sided knob design"
+        ]
+      },
+      "guidance": "\n📋 Remote Controls - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Cable Length: 10m\n\n  ⚡ Capabilities:\n    • Supported Processes: MIG/MAG, MMA, TIG\n\n  ✨ Key Features:\n    • Digital CAN-based multifunction remote control\n    • Analogue standard remote control\n    • Stepless current adjustment\n    • Coarse and fine current adjustment\n    • Dual-sided knob design"
+    },
+    "remote_accessories": {
+      "category": "Remote Accessories",
+      "display_name": "Remote Accessories",
+      "product_count": 13,
+      "features": {
+        "numeric_specs": [
+          {
+            "name": "Cable Length",
+            "min": 0.4,
+            "max": 25,
+            "unit": "m",
+            "display": "0.4m - 25m"
+          }
+        ],
+        "categorical_features": [],
+        "capabilities": [],
+        "key_features": []
+      },
+      "guidance": "\n📋 Remote Accessories - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Cable Length: 0.4m - 25m"
+    },
+    "remote_conditional_accessories": {
+      "category": "Remote Conditional Accessories",
+      "display_name": "Remote Conditional Accessories",
+      "product_count": 7,
+      "features": {
+        "numeric_specs": [
+          {
+            "name": "Cable Length",
+            "min": 5,
+            "max": 25,
+            "unit": "m",
+            "display": "5m - 25m"
+          }
+        ],
+        "categorical_features": [],
+        "capabilities": [],
+        "key_features": []
+      },
+      "guidance": "\n📋 Remote Conditional Accessories - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Cable Length: 5m - 25m"
+    },
+    "torch": {
+      "category": "Torches",
+      "display_name": "Torches",
+      "product_count": 24,
+      "features": {
+        "numeric_specs": [
+          {
+            "name": "Current Output",
+            "min": 270,
+            "max": 500,
+            "unit": "A",
+            "display": "270A - 500A"
+          },
+          {
+            "name": "Cable Length",
+            "min": 3,
+            "max": 12,
+            "unit": "m",
+            "display": "3m - 12m"
+          },
+          {
+            "name": "Wire Size",
+            "min": 0.8,
+            "max": 1.6,
+            "unit": "mm",
+            "display": "0.8mm - 1.6mm"
+          }
+        ],
+        "categorical_features": [
+          {
+            "name": "Cooling Type",
+            "options": [
+              "Air",
+              "Water"
+            ],
+            "display": "Air, Water"
+          }
+        ],
+        "capabilities": [],
+        "key_features": []
+      },
+      "guidance": "\n📋 Torches - Available Features & Specifications:\n\n  🔢 Specifications:\n    • Current Output: 270A - 500A\n    • Cable Length: 3m - 12m\n    • Wire Size: 0.8mm - 1.6mm\n\n  🏷️  Options:\n    • Cooling Type: Air, Water"
+    }
+  }
+}
