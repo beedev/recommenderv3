@@ -152,6 +152,90 @@ class ConfigurationService:
         logger.warning(f"Component type not found in config: {component_key}, using as-is")
         return component_key
 
+    def check_dependencies_satisfied(
+        self,
+        component_type: str,
+        selected_components: Any  # ResponseJSON type
+    ) -> tuple[bool, List[str], Dict[str, str]]:
+        """
+        Check if all dependencies are satisfied for a component type.
+
+        For conditional accessories, this checks if prerequisite accessories are selected
+        and collects parent product information for attribution.
+
+        Args:
+            component_type: Component type key (e.g., "feeder_conditional_accessories")
+            selected_components: ResponseJSON object with selected products
+
+        Returns:
+            Tuple of (satisfied, missing_deps, parent_info):
+                - satisfied: True if all dependencies met
+                - missing_deps: List of missing dependency keys
+                - parent_info: Dict mapping parent GINs to names for attribution
+                  Example: {"ACC1_GIN": "RobustFeed Drive Roll Kit"}
+
+        Examples:
+            >>> satisfied, missing, parents = service.check_dependencies_satisfied(
+            ...     "feeder_conditional_accessories",
+            ...     response_json
+            ... )
+            >>> if satisfied:
+            ...     print(f"Ready to show conditional accessories for {len(parents)} parents")
+        """
+        comp_config = self.get_component_type(component_type)
+        if not comp_config:
+            logger.warning(f"Component type not found: {component_type}")
+            return (True, [], {})  # Default to satisfied if config not found
+
+        dependencies = comp_config.get("dependencies", [])
+        if not dependencies:
+            # No dependencies defined
+            return (True, [], {})
+
+        missing_deps = []
+        parent_info = {}  # {gin: name} mapping for UI display
+
+        for dep_key in dependencies:
+            # Map dependency key to ResponseJSON field name
+            field_name = self.get_response_json_field_name(dep_key)
+
+            # Get selected products for this dependency
+            dep_value = getattr(selected_components, field_name, None)
+
+            if isinstance(dep_value, list):
+                # Multi-select dependency (accessories)
+                if len(dep_value) > 0:
+                    # Extract parent info from each selected product
+                    for product in dep_value:
+                        if hasattr(product, 'gin') and hasattr(product, 'name'):
+                            parent_info[product.gin] = product.name
+                else:
+                    # Empty list - dependency not satisfied
+                    missing_deps.append(dep_key)
+
+            elif dep_value and hasattr(dep_value, 'gin'):
+                # Single-select dependency (core component)
+                parent_info[dep_value.gin] = dep_value.name
+
+            else:
+                # None or invalid - dependency not satisfied
+                missing_deps.append(dep_key)
+
+        satisfied = len(missing_deps) == 0
+
+        if satisfied:
+            logger.debug(
+                f"Dependencies satisfied for {component_type}: "
+                f"{len(parent_info)} parent product(s)"
+            )
+        else:
+            logger.debug(
+                f"Dependencies NOT satisfied for {component_type}: "
+                f"missing {missing_deps}"
+            )
+
+        return (satisfied, missing_deps, parent_info)
+
     def get_llm_config(self, purpose: str = "parameter_extraction") -> Dict[str, Any]:
         """
         Get LLM configuration for specific purpose

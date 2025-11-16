@@ -134,6 +134,11 @@ class AccessoryStateProcessor(StateProcessor):
         - Otherwise check conversation history for completion keywords
         - If neither: Stay in current state for more selections
 
+        Conditional Accessory Logic:
+        - If next state is a conditional accessory state (feeder_conditional, remote_conditional)
+        - Check if parent accessory category has any selections
+        - If no parent selections, skip conditional state and move to next state
+
         Args:
             conversation_state: Current ConversationState
             selection_made: True if orchestrator detected completion intent (done/next/skip)
@@ -155,6 +160,18 @@ class AccessoryStateProcessor(StateProcessor):
 
         # Move to next accessory state or finalize
         if self.next_accessory_state:
+            # ✅ CONDITIONAL ACCESSORY DEPENDENCY CHECK
+            # Check if next state is a conditional accessory state
+            if self._is_conditional_accessory_state(self.next_accessory_state):
+                # Check if parent accessory category has selections
+                if not self._has_parent_accessory_selections(self.next_accessory_state, conversation_state):
+                    logger.info(
+                        f"⏭️  Skipping {self.next_accessory_state} "
+                        f"(no parent accessory selections)"
+                    )
+                    # Skip conditional state by recursively finding next applicable state
+                    return self._get_next_non_conditional_state(self.next_accessory_state, conversation_state)
+
             logger.info(f"Moving to {self.next_accessory_state}")
             return self.next_accessory_state
         else:
@@ -183,6 +200,113 @@ class AccessoryStateProcessor(StateProcessor):
         completion_keywords = ["done", "next", "skip", "finish", "finalize", "proceed", "continue", "that's all"]
 
         return any(keyword in last_message for keyword in completion_keywords)
+
+    def _is_conditional_accessory_state(self, state_name: str) -> bool:
+        """
+        Check if a state is a conditional accessory state.
+
+        Conditional states depend on their parent accessory category having selections:
+        - feeder_conditional_accessories → depends on feeder_accessories
+        - remote_conditional_accessories → depends on remote_accessories
+
+        Args:
+            state_name: State name to check
+
+        Returns:
+            True if state is conditional, False otherwise
+        """
+        conditional_states = [
+            "feeder_conditional_accessories",
+            "remote_conditional_accessories"
+        ]
+        return state_name in conditional_states
+
+    def _has_parent_accessory_selections(self, conditional_state: str, conversation_state) -> bool:
+        """
+        Check if parent accessory category has any selections.
+
+        Mapping:
+        - feeder_conditional_accessories → check FeederAccessories
+        - remote_conditional_accessories → check RemoteAccessories
+
+        Args:
+            conditional_state: Conditional accessory state name
+            conversation_state: Current ConversationState
+
+        Returns:
+            True if parent has selections, False if empty or skipped
+        """
+        response_json = conversation_state.response_json
+
+        # Map conditional states to their parent accessory fields
+        parent_mapping = {
+            "feeder_conditional_accessories": "FeederAccessories",
+            "remote_conditional_accessories": "RemoteAccessories"
+        }
+
+        parent_field = parent_mapping.get(conditional_state)
+        if not parent_field:
+            logger.warning(f"Unknown conditional state: {conditional_state}")
+            return False
+
+        # Get parent accessory list from ResponseJSON
+        parent_accessories = getattr(response_json, parent_field, None)
+
+        # Check if parent has selections
+        # Parent can be: List[SelectedProduct], "skipped" literal, or None
+        if parent_accessories is None:
+            return False
+        if parent_accessories == "skipped":
+            return False
+        if isinstance(parent_accessories, list) and len(parent_accessories) == 0:
+            return False
+
+        # Parent has selections
+        logger.info(f"Parent {parent_field} has {len(parent_accessories)} selections")
+        return True
+
+    def _get_next_non_conditional_state(self, current_conditional_state: str, conversation_state) -> str:
+        """
+        Recursively find next applicable state when skipping a conditional state.
+
+        Args:
+            current_conditional_state: Current conditional state being skipped
+            conversation_state: Current ConversationState
+
+        Returns:
+            Next applicable state name (or "finalize" if no more states)
+        """
+        # Get the processor for the conditional state we're skipping
+        from app.services.config.configuration_service import get_config_service
+        config_service = get_config_service()
+        component_types = config_service.get_component_types()
+
+        # Get full state sequence
+        full_state_sequence = component_types.get("state_sequence", [])
+
+        # Find the conditional state in sequence
+        try:
+            current_index = full_state_sequence.index(current_conditional_state)
+        except ValueError:
+            logger.error(f"State {current_conditional_state} not found in state_sequence")
+            return "finalize"
+
+        # Get next state in sequence
+        if current_index + 1 < len(full_state_sequence):
+            next_state = full_state_sequence[current_index + 1]
+            logger.info(f"Next state after skipping {current_conditional_state}: {next_state}")
+
+            # Check if the next state is also conditional (recursive check)
+            if self._is_conditional_accessory_state(next_state):
+                if not self._has_parent_accessory_selections(next_state, conversation_state):
+                    logger.info(f"⏭️  Next state {next_state} also needs skipping (no parent selections)")
+                    return self._get_next_non_conditional_state(next_state, conversation_state)
+
+            return next_state
+        else:
+            # No more states, go to finalize
+            logger.info("No more states after skipped conditional, moving to finalize")
+            return "finalize"
 
     def is_multi_select(self) -> bool:
         """

@@ -101,10 +101,13 @@ class Neo4jQueryBuilder:
         params: Dict[str, Any],
         component_type: str,
         selected_components: Dict[str, Any],
-        node_alias: str = "target"
-    ) -> Tuple[str, Dict[str, Any]]:
+        node_alias: str = "target",
+        collect_parent_gins: bool = False
+    ) -> Tuple[str, Dict[str, Any], Optional[str]]:
         """
         Add COMPATIBLE_WITH relationship filters for dependent components.
+
+        Supports both single-select (core components) and multi-select (accessories) dependencies.
 
         Args:
             query: Existing query string
@@ -112,49 +115,102 @@ class Neo4jQueryBuilder:
             component_type: Type of component being searched
             selected_components: Already selected components (ResponseJSON)
             node_alias: Alias for the target node
+            collect_parent_gins: If True, collect parent GINs for attribution (conditional accessories)
 
         Returns:
-            Tuple of (updated_query, updated_params)
+            Tuple of (updated_query, updated_params, parent_alias):
+                - updated_query: Query with compatibility filters
+                - updated_params: Parameters with GINs
+                - parent_alias: Alias for parent node (if collect_parent_gins=True), else None
 
-        Example:
+        Example (Single-select - Core Components):
             For feeder search with selected power_source:
             >>> query = "MATCH (target:Feeder)"
-            >>> query, params = builder.add_compatibility_filters(
+            >>> query, params, _ = builder.add_compatibility_filters(
             ...     query, {}, "feeder", {"PowerSource": selected_ps}, "target"
             ... )
             >>> # Adds: MATCH (ps:PowerSource {gin: $ps_gin})
             >>> #       MATCH (target)-[:COMPATIBLE_WITH]->(ps)
+
+        Example (Multi-select - Accessories):
+            For feeder_conditional_accessories with 3 selected feeder_accessories:
+            >>> query = "MATCH (target:Product)"
+            >>> query, params, parent_alias = builder.add_compatibility_filters(
+            ...     query, {}, "feeder_conditional_accessories",
+            ...     {"FeederAccessories": [acc1, acc2, acc3]}, "target", collect_parent_gins=True
+            ... )
+            >>> # Adds: MATCH (fe_dep:Product)
+            >>> #       WHERE fe_dep.gin IN [$feeder_accessories_gin_0, $feeder_accessories_gin_1, ...]
+            >>> #       MATCH (target)-[:COMPATIBLE_WITH]->(fe_dep)
+            >>> # Returns parent_alias = "fe_dep" for COLLECT(DISTINCT fe_dep.gin) in caller
         """
         config = self.component_config.get(component_type)
+        requires_compat = config.get("requires_compatibility") if config else None
+        logger.info(f"🔍 add_compatibility_filters called for {component_type}")
+        logger.info(f"   requires_compatibility: {requires_compat}")
+        logger.info(f"   config exists: {config is not None}")
+
         if not config or not config.get("requires_compatibility"):
-            return query, params
+            logger.info(f"   ⏭️  SKIPPING compatibility filters (requires_compatibility=False or no config)")
+            return query, params, None
 
         dependencies = config.get("dependencies", [])
+        logger.info(f"   dependencies: {dependencies}")
         if not dependencies:
-            return query, params
+            return query, params, None
+
+        # 🔧 FIX: Extract WHERE clause from query to re-add after MATCH clauses
+        # Cypher requires: MATCH ... MATCH ... WHERE ... (not MATCH WHERE MATCH)
+        where_clause = None
+        query_lines = query.split('\n')
+        match_lines = []
+        for line in query_lines:
+            if line.strip().startswith('WHERE'):
+                where_clause = line
+            else:
+                match_lines.append(line)
+
+        query = '\n'.join(match_lines)  # Query without WHERE clause
 
         compatibility_clauses = []
+        parent_alias = None  # Track parent alias for GIN collection
+        rel_counter = 0  # Counter for unique relationship variables
 
         for dep in dependencies:
             # Map dependency key to ResponseJSON key
             dep_key_map = {
                 "power_source": "PowerSource",
                 "feeder": "Feeder",
-                "cooler": "Cooler"
+                "cooler": "Cooler",
+                "feeder_accessories": "FeederAccessories",
+                "remote_accessories": "RemoteAccessories"
             }
             response_key = dep_key_map.get(dep)
+            logger.info(f"   Processing dependency: {dep} → {response_key}")
 
-            if not response_key or response_key not in selected_components:
+            if not response_key:
+                logger.info(f"     ⏭️  No response_key mapping for {dep}")
                 continue
 
-            selected = selected_components[response_key]
+            # Support both dict and Pydantic model access
+            if hasattr(selected_components, response_key):
+                selected = getattr(selected_components, response_key)
+            elif isinstance(selected_components, dict) and response_key in selected_components:
+                selected = selected_components[response_key]
+            else:
+                # 🔍 DEBUG: Log when dependency is missing with diagnostic info
+                logger.debug(f"🔍 DEPENDENCY MISSING: {response_key} not found in selected_components. Type: {type(selected_components)}, Has __dict__: {hasattr(selected_components, '__dict__')}")
+                logger.info(f"     ⏭️  {response_key} not found in selected_components")
+                continue
+
             if not selected:
+                logger.info(f"     ⏭️  {response_key} is None/empty")
                 continue
 
-            # Get GIN from selected component
-            gin = selected.get("gin") if isinstance(selected, dict) else getattr(selected, "gin", None)
-            if not gin:
-                continue
+            # 🔍 DEBUG: Log when dependency is found
+            gin_value = selected.get("gin") if isinstance(selected, dict) else getattr(selected, "gin", None) if not isinstance(selected, list) else [getattr(item, 'gin', None) if hasattr(item, 'gin') else item.get("gin") for item in selected]
+            logger.debug(f"🔍 DEPENDENCY FOUND: {response_key} = GIN:{gin_value}")
+            logger.info(f"     ✅ Found selected component: {response_key} = {selected}")
 
             # Get dependency config
             dep_config = self.component_config.get(dep)
@@ -162,27 +218,87 @@ class Neo4jQueryBuilder:
                 continue
 
             dep_label = dep_config["neo4j_label"]
-            dep_alias = f"{dep[:2]}_dep"  # e.g., "po_dep" for power_source
+            dep_alias = f"{dep[:2]}_dep"  # e.g., "po_dep" for power_source, "fe_dep" for feeder_accessories
 
-            param_name = f"{dep}_gin"
-            params[param_name] = gin
+            # Check if this is a list (multi-select) or single item
+            if isinstance(selected, list):
+                # Multi-select dependency (accessories)
+                if len(selected) == 0:
+                    continue
 
-            # Add MATCH clause for dependency
-            compatibility_clauses.append(
-                f"MATCH ({dep_alias}:{dep_label} {{gin: ${param_name}}})"
-            )
+                # Extract GINs from all selected accessories
+                gins = []
+                for item in selected:
+                    gin = item.get("gin") if isinstance(item, dict) else getattr(item, "gin", None)
+                    if gin:
+                        gins.append(gin)
 
-            # Add COMPATIBLE_WITH relationship
-            compatibility_clauses.append(
-                f"MATCH ({node_alias})-[:COMPATIBLE_WITH]->({dep_alias})"
-            )
+                if not gins:
+                    continue
 
-            logger.info(f"Added compatibility filter: {component_type} -> {dep} (GIN: {gin})")
+                # Create parameter list for WHERE IN clause
+                param_names = []
+                for idx, gin in enumerate(gins):
+                    param_name = f"{dep}_gin_{idx}"
+                    params[param_name] = gin
+                    param_names.append(f"${param_name}")
 
+                # Add MATCH clause with WHERE IN for multiple GINs
+                compatibility_clauses.append(
+                    f"MATCH ({dep_alias}:{dep_label})"
+                )
+                compatibility_clauses.append(
+                    f"WHERE {dep_alias}.gin IN [{', '.join(param_names)}]"
+                )
+
+                # Add COMPATIBLE_WITH relationship - target compatible with ANY parent
+                rel_counter += 1
+                compatibility_clauses.append(
+                    f"MATCH ({node_alias})-[r{rel_counter}:COMPATIBLE_WITH]->({dep_alias})"
+                )
+
+                # Track parent alias for GIN collection
+                if collect_parent_gins:
+                    parent_alias = dep_alias
+
+                logger.info(
+                    f"Added multi-product compatibility filter: {component_type} -> {dep} "
+                    f"({len(gins)} products: {gins})"
+                )
+
+            else:
+                # Single-select dependency (core component)
+                gin = selected.get("gin") if isinstance(selected, dict) else getattr(selected, "gin", None)
+                if not gin:
+                    continue
+
+                param_name = f"{dep}_gin"
+                params[param_name] = gin
+
+                # Add MATCH clause for dependency
+                compatibility_clauses.append(
+                    f"MATCH ({dep_alias}:{dep_label} {{gin: ${param_name}}})"
+                )
+
+                # Add COMPATIBLE_WITH relationship
+                rel_counter += 1
+                compatibility_clauses.append(
+                    f"MATCH ({node_alias})-[r{rel_counter}:COMPATIBLE_WITH]->({dep_alias})"
+                )
+
+                logger.info(f"Added single-product compatibility filter: {component_type} -> {dep} (GIN: {gin})")
+
+        # Build final query with correct Cypher syntax: MATCH ... MATCH ... WHERE ...
         if compatibility_clauses:
-            query = "\n".join([query] + compatibility_clauses)
+            query_parts = [query] + compatibility_clauses
+            if where_clause:
+                query_parts.append(where_clause)  # WHERE goes after all MATCH clauses
+            query = "\n".join(query_parts)
+        elif where_clause:
+            # No compatibility clauses but WHERE clause exists - re-add it
+            query = "\n".join([query, where_clause])
 
-        return query, params
+        return query, params, parent_alias
 
     def add_search_term_filters(
         self,
@@ -238,7 +354,12 @@ class Neo4jQueryBuilder:
 
         if conditions:
             query_stripped = query.strip()
-            if "WHERE" in query_stripped.upper():
+            # Check if the last clause is a MATCH - if so, use WHERE
+            # Otherwise, if WHERE exists earlier, use AND
+            last_line = query_stripped.split('\n')[-1].strip().upper()
+            if last_line.startswith('MATCH'):
+                query += "\nWHERE (" + " OR ".join(conditions) + ")"
+            elif "WHERE" in query_stripped.upper():
                 query += " AND (" + " OR ".join(conditions) + ")"
             else:
                 query += " WHERE (" + " OR ".join(conditions) + ")"
@@ -283,15 +404,42 @@ class Neo4jQueryBuilder:
         Args:
             query: Existing query string
             node_alias: Alias for the product node
-            relationship_alias: Alias for the relationship (if exists)
+            relationship_alias: Alias for the relationship (DEPRECATED - now auto-detected from query)
 
         Returns:
             Updated query string
+
+        Note:
+            🔧 FIX: Auto-detects relationship variable (r1, r2, etc.) from query
+            - If one relationship exists, orders by that relationship's priority first, then product name
+            - If multiple relationships exist, uses alphabetical ordering only (can't order by multiple priorities)
+            - If no relationships, orders by product name only
         """
-        # Check if query has relationship with priority
-        if "COMPATIBLE_WITH" in query and relationship_alias in query:
-            query += f"\nORDER BY MIN({relationship_alias}.priority), {node_alias}.item_name"
+        # 🔧 FIX: Auto-detect relationship variable from query instead of using hardcoded parameter
+        import re
+
+        if "COMPATIBLE_WITH" in query:
+            # Extract all relationship variables from COMPATIBLE_WITH clauses
+            # Pattern: [r1:COMPATIBLE_WITH], [r2:COMPATIBLE_WITH], etc.
+            pattern = r'\[(\w+):COMPATIBLE_WITH\]'
+            matches = re.findall(pattern, query)
+
+            if matches:
+                if len(matches) == 1:
+                    # Single relationship - use its priority
+                    rel_var = matches[0]
+                    query += f"\nORDER BY {rel_var}.priority, {node_alias}.item_name"
+                    logger.debug(f"🔧 ORDER BY using detected relationship variable: {rel_var}")
+                else:
+                    # Multiple relationships - skip relationship priority (can't order by multiple priorities)
+                    query += f"\nORDER BY {node_alias}.item_name"
+                    logger.debug(f"🔧 ORDER BY skipping relationship priority (multiple relationships: {matches})")
+            else:
+                # COMPATIBLE_WITH found but no match pattern - fallback to alphabetical
+                query += f"\nORDER BY {node_alias}.item_name"
+                logger.debug(f"🔧 ORDER BY fallback to alphabetical (no relationship variable detected)")
         else:
+            # No COMPATIBLE_WITH - alphabetical ordering only
             query += f"\nORDER BY {node_alias}.item_name"
 
         return query

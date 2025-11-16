@@ -129,7 +129,7 @@ class ComponentSearchService:
 
             # Add compatibility filters if needed
             if config.get("requires_compatibility"):
-                query, params = self.query_builder.add_compatibility_filters(
+                query, params, _ = self.query_builder.add_compatibility_filters(
                     query, params, component_type, selected_components, "p"
                 )
 
@@ -173,7 +173,7 @@ class ComponentSearchService:
 
         # Add compatibility filters if needed
         if config.get("requires_compatibility"):
-            primary_query, primary_params = self.query_builder.add_compatibility_filters(
+            primary_query, primary_params, _ = self.query_builder.add_compatibility_filters(
                 primary_query, primary_params, component_type, selected_components, "p"
             )
 
@@ -198,7 +198,7 @@ class ComponentSearchService:
 
         # Add compatibility filters
         if config.get("requires_compatibility"):
-            fallback_query, fallback_params = self.query_builder.add_compatibility_filters(
+            fallback_query, fallback_params, _ = self.query_builder.add_compatibility_filters(
                 fallback_query, fallback_params, component_type, selected_components, "p"
             )
 
@@ -270,7 +270,7 @@ class ComponentSearchService:
 
         # Add compatibility filters if needed
         if config.get("requires_compatibility"):
-            query, params = self.query_builder.add_compatibility_filters(
+            query, params, _ = self.query_builder.add_compatibility_filters(
                 query, params, component_type, selected_components, "p"
             )
 

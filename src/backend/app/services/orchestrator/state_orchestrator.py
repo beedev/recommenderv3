@@ -29,6 +29,7 @@ from app.services.response.message_generator import MessageGenerator
 from app.services.processors.registry import StateProcessorRegistry
 from app.services.search.orchestrator import SearchOrchestrator
 from app.services.config.configuration_service import get_config_service
+from app.services.orchestrator.auto_skip_service import AutoSkipService
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +71,9 @@ class StateByStateOrchestrator:
             search_orchestrator=search_orchestrator,
         )
 
+        # Initialize auto-skip service for unified skip decision logic
+        self.auto_skip_service = AutoSkipService()
+
         logger.info("✅ StateByStateOrchestrator initialized with processor registry")
         logger.info(f"   Processors loaded: {len(self.registry._processors)} states")
 
@@ -99,6 +103,48 @@ class StateByStateOrchestrator:
                 f"   PowerSource {power_source_gin} not in config - using default applicability: {applicability_data}"
             )
             return ComponentApplicability(**applicability_data)
+
+    def _add_parent_attribution_to_products(
+        self,
+        products: List[Dict[str, Any]],
+        processor,
+        selected_components: Any
+    ) -> None:
+        """
+        Add parent attribution to conditional accessory product names.
+
+        Modifies product names in-place to append "(for Parent1, Parent2)" suffix
+        showing which parent accessories they're compatible with.
+
+        Args:
+            products: List of product dicts to modify
+            processor: State processor instance
+            selected_components: ResponseJSON with selected components
+
+        Example:
+            Input: "Wire Liner 0.030-0.035"
+            Output: "Wire Liner 0.030-0.035 (for RobustFeed Drive Roll Kit)"
+        """
+        if not processor.is_conditional_accessory():
+            return
+
+        satisfied, missing_deps, parent_info = processor.check_dependencies_satisfied(
+            selected_components
+        )
+
+        if satisfied and parent_info:
+            # Append parent names to product names
+            parent_names = list(parent_info.values())
+            parent_attribution = f" (for {', '.join(parent_names)})"
+
+            for product in products:
+                if "name" in product:
+                    product["name"] += parent_attribution
+
+            logger.info(
+                f"   Added parent attribution to {len(products)} conditional accessories: "
+                f"'{parent_attribution}'"
+            )
 
     @traceable(name="orchestrator_process_message", run_type="chain")
     async def process_message(
@@ -261,16 +307,116 @@ class StateByStateOrchestrator:
                     limit=10,  # Regular search limit (not preview limit)
                 )
                 remaining_products = search_results.get("products", [])
-                logger.info(f"   Found {len(remaining_products)} remaining products")
+                logger.info(f"   Found {len(remaining_products)} compatible products")
 
+                # Get already-selected products for this component and filter them out
+                config_service = get_config_service()
+                field_name = config_service.get_response_json_field_name(processor.component_type)
+                already_selected = getattr(conversation_state.response_json, field_name, [])
+
+                # Extract GINs of already-selected products
+                already_selected_gins = set()
+                if isinstance(already_selected, list):
+                    already_selected_gins = {product.gin for product in already_selected if hasattr(product, 'gin')}
+                    logger.debug(f"   Already selected {len(already_selected_gins)} products: {already_selected_gins}")
+
+                # Filter out already-selected products from remaining_products
+                remaining_products = [
+                    product for product in remaining_products
+                    if product.get("gin") not in already_selected_gins
+                ]
+                logger.info(f"   Remaining after filtering: {len(remaining_products)} products")
+
+                # 🔍 DEBUG: Track ResponseJSON state before STAGE 4 check
+                ps_gin = getattr(conversation_state.response_json.PowerSource, 'gin', None) if conversation_state.response_json.PowerSource else None
+                fe_gin = getattr(conversation_state.response_json.Feeder, 'gin', None) if conversation_state.response_json.Feeder else None
+                logger.debug(f"🔍 STAGE 4 CHECK: remaining_products={len(remaining_products)}, ResponseJSON.PowerSource={ps_gin}, ResponseJSON.Feeder={fe_gin}")
+
+                # ===== STAGE 4: AUTO-ADVANCE WHEN NO MORE PRODUCTS =====
+                # If no remaining products (user selected the only/last product), auto-advance to next state
+                # This eliminates the need for users to type "done" when there's nothing left to select
+                if len(remaining_products) == 0:
+                    logger.info("⏭️  STAGE 4 AUTO-ADVANCE: No remaining products in multi-select state. Auto-advancing to next state.")
+
+                    # Advance to next state
+                    next_state = processor.get_next_state(conversation_state, selection_made=True)
+                    conversation_state.current_state = next_state
+                    logger.info(f"   State transition: → {next_state}")
+
+                    # 🔍 DEBUG: Track ResponseJSON inside STAGE 4 auto-advance
+                    ps_gin_st4 = getattr(conversation_state.response_json.PowerSource, 'gin', None) if conversation_state.response_json.PowerSource else None
+                    fe_gin_st4 = getattr(conversation_state.response_json.Feeder, 'gin', None) if conversation_state.response_json.Feeder else None
+                    logger.debug(f"🔍 STAGE 4 TRIGGERED: PowerSource={ps_gin_st4}, Feeder={fe_gin_st4}, next_state={next_state}")
+
+                    # Search for products in next state (proactive display)
+                    next_products = []
+                    if next_state != ConfiguratorState.FINALIZE:
+                        next_processor = self.registry.get_processor(next_state)
+                        if next_processor and next_processor.should_show_proactive_preview():
+                            logger.info(f"🔍 Proactive search for next state: {next_state}")
+
+                            # 🔍 DEBUG: Track selected_components before next state search
+                            ps_gin_search = getattr(conversation_state.response_json.PowerSource, 'gin', None) if conversation_state.response_json.PowerSource else None
+                            fe_gin_search = getattr(conversation_state.response_json.Feeder, 'gin', None) if conversation_state.response_json.Feeder else None
+                            logger.debug(f"🔍 CALLING NEXT STATE SEARCH: next_state={next_state}, selected_components.PowerSource={ps_gin_search}, selected_components.Feeder={fe_gin_search}")
+
+                            next_search_results = await next_processor.search_products(
+                                user_message="",
+                                master_parameters=conversation_state.master_parameters,
+                                selected_components=conversation_state.response_json,
+                                limit=5,  # Preview limit
+                            )
+                            next_products = next_search_results.get("products", [])
+                            logger.info(f"   Found {len(next_products)} products for proactive display")
+
+                            # Check STAGE 2 & 3 for next state
+                            post_search_decision = self.auto_skip_service.should_auto_skip_post_search(
+                                processor=next_processor,
+                                search_results=next_search_results,
+                                current_state=next_state
+                            )
+
+                            if post_search_decision.should_skip:
+                                return await self._auto_skip_to_next_state(
+                                    skip_reason=post_search_decision.skip_reason,
+                                    skip_message=post_search_decision.skip_message,
+                                    user_message="",
+                                    master_parameters=conversation_state.master_parameters,
+                                    conversation_state=conversation_state,
+                                    language=language,
+                                    force_parent_attribution=post_search_decision.force_parent_attribution
+                                )
+
+                    # Generate response for next state
+                    response_message = await self.message_generator.generate_response(
+                        message_type="selection",
+                        state=next_state,
+                        products=next_products,
+                        selected_product=selected_product,
+                        language=language,
+                        custom_message=selection_message,
+                    )
+
+                    return {
+                        "session_id": conversation_state.session_id,
+                        "message": response_message,
+                        "current_state": next_state,
+                        "master_parameters": conversation_state.master_parameters,
+                        "response_json": conversation_state.response_json,
+                        "products": next_products,
+                        "awaiting_selection": len(next_products) > 0,
+                        "can_finalize": self._can_finalize(conversation_state),
+                    }
+
+                # Still have remaining products, continue multi-select
                 return {
                     "session_id": conversation_state.session_id,
                     "message": selection_message,
                     "current_state": conversation_state.current_state,
                     "master_parameters": conversation_state.master_parameters,
                     "response_json": conversation_state.response_json,
-                    "products": remaining_products,  # ✅ FIX: Return remaining products
-                    "awaiting_selection": len(remaining_products) > 0,  # ✅ FIX: Update awaiting flag
+                    "products": remaining_products,
+                    "awaiting_selection": True,
                     "can_finalize": self._can_finalize(conversation_state),
                 }
 
@@ -293,6 +439,26 @@ class StateByStateOrchestrator:
                     )
                     next_products = search_results.get("products", [])
                     logger.info(f"   Found {len(next_products)} products for proactive display")
+
+                    # ===== STAGE 2 & 3: POST-SEARCH ZERO-RESULTS CHECKS (PROACTIVE) =====
+                    # Use AutoSkipService for unified post-search checks
+                    post_search_decision = self.auto_skip_service.should_auto_skip_post_search(
+                        processor=next_processor,
+                        search_results=search_results,
+                        current_state=next_state  # next_state is already a string from get_next_state()
+                    )
+
+                    if post_search_decision.should_skip:
+                        # Either STAGE 2 (conditional accessory) or STAGE 3 (compatibility) triggered skip
+                        return await self._auto_skip_to_next_state(
+                            skip_reason=post_search_decision.skip_reason,
+                            skip_message=post_search_decision.skip_message,
+                            user_message="",  # No user message in proactive flow
+                            master_parameters=conversation_state.master_parameters,
+                            conversation_state=conversation_state,
+                            language=language,
+                            force_parent_attribution=post_search_decision.force_parent_attribution
+                        )
 
             # Generate full response
             response_message = await self.message_generator.generate_response(
@@ -367,6 +533,26 @@ class StateByStateOrchestrator:
 
         logger.info(f"🔧 Delegating to processor: {processor.__class__.__name__}")
 
+        # ===== STAGE 1: PRE-SEARCH DEPENDENCY CHECK =====
+        # Use AutoSkipService for unified dependency check logic
+        stage1_decision = self.auto_skip_service.should_auto_skip_pre_search(
+            processor=processor,
+            selected_components=conversation_state.response_json,
+            current_state=current_state.value
+        )
+
+        if stage1_decision.should_skip:
+            # Dependencies not satisfied - auto-skip to next state
+            return await self._auto_skip_to_next_state(
+                skip_reason=stage1_decision.skip_reason,
+                skip_message=stage1_decision.skip_message,
+                user_message=user_message,
+                master_parameters=master_parameters,
+                conversation_state=conversation_state,
+                language=language,
+                force_parent_attribution=stage1_decision.force_parent_attribution
+            )
+
         # Delegate search to processor
         search_results = await processor.search_products(
             user_message=user_message,
@@ -377,6 +563,29 @@ class StateByStateOrchestrator:
 
         products = search_results.get("products", [])
         logger.info(f"   Search returned {len(products)} products")
+
+        # Add parent attribution for conditional accessories
+        self._add_parent_attribution_to_products(products, processor, conversation_state.response_json)
+
+        # ===== STAGE 2 & 3: POST-SEARCH ZERO-RESULTS CHECKS =====
+        # Use AutoSkipService for unified post-search checks (STAGE 2 & 3)
+        post_search_decision = self.auto_skip_service.should_auto_skip_post_search(
+            processor=processor,
+            search_results=search_results,
+            current_state=current_state.value
+        )
+
+        if post_search_decision.should_skip:
+            # Either STAGE 2 (conditional accessory) or STAGE 3 (compatibility) triggered skip
+            return await self._auto_skip_to_next_state(
+                skip_reason=post_search_decision.skip_reason,
+                skip_message=post_search_decision.skip_message,
+                user_message=user_message,
+                master_parameters=master_parameters,
+                conversation_state=conversation_state,
+                language=language,
+                force_parent_attribution=post_search_decision.force_parent_attribution
+            )
 
         # Always show products for user selection (no auto-selection)
         # User must manually confirm even when only 1 match found
@@ -526,6 +735,11 @@ class StateByStateOrchestrator:
             if next_state != ConfiguratorState.FINALIZE:
                 next_processor = self.registry.get_processor(next_state)
                 if next_processor and next_processor.should_show_proactive_preview():
+                    # 🔍 DEBUG: Track ResponseJSON in "done" command handler
+                    ps_gin_done = getattr(conversation_state.response_json.PowerSource, 'gin', None) if conversation_state.response_json.PowerSource else None
+                    fe_gin_done = getattr(conversation_state.response_json.Feeder, 'gin', None) if conversation_state.response_json.Feeder else None
+                    logger.debug(f"🔍 DONE COMMAND: next_state={next_state}, ResponseJSON.PowerSource={ps_gin_done}, ResponseJSON.Feeder={fe_gin_done}")
+
                     search_results = await next_processor.search_products(
                         user_message="",
                         master_parameters=conversation_state.master_parameters,
@@ -533,6 +747,26 @@ class StateByStateOrchestrator:
                         limit=5,
                     )
                     next_products = search_results.get("products", [])
+
+                    # ===== STAGE 2 & 3: POST-SEARCH ZERO-RESULTS CHECKS (MESSAGE/SKIP FLOW) =====
+                    # Use AutoSkipService for unified post-search checks
+                    post_search_decision = self.auto_skip_service.should_auto_skip_post_search(
+                        processor=next_processor,
+                        search_results=search_results,
+                        current_state=next_state  # next_state is already a string from get_next_state()
+                    )
+
+                    if post_search_decision.should_skip:
+                        # Either STAGE 2 (conditional accessory) or STAGE 3 (compatibility) triggered skip
+                        return await self._auto_skip_to_next_state(
+                            skip_reason=post_search_decision.skip_reason,
+                            skip_message=post_search_decision.skip_message,
+                            user_message="",
+                            master_parameters=conversation_state.master_parameters,
+                            conversation_state=conversation_state,
+                            language=language,
+                            force_parent_attribution=post_search_decision.force_parent_attribution
+                        )
 
             # Generate response
             response_message = await self.message_generator.generate_response(
@@ -791,6 +1025,154 @@ class StateByStateOrchestrator:
                     return state
 
         return ConfiguratorState.FINALIZE
+
+    async def _auto_skip_to_next_state(
+        self,
+        skip_reason: str,
+        skip_message: Optional[str],
+        user_message: str,
+        master_parameters: Dict[str, Any],
+        conversation_state: ConversationState,
+        language: str,
+        force_parent_attribution: bool = False
+    ) -> Dict[str, Any]:
+        """
+        Unified auto-skip logic for STAGE 2 and STAGE 3.
+
+        Handles graceful state advancement when zero results are found:
+        - STAGE 2: Conditional accessories with no parent accessories selected
+        - STAGE 3: Compatibility validation yielding no compatible products
+
+        Args:
+            skip_reason: Log message explaining why we're skipping (for debugging)
+            skip_message: Optional user-facing message to prepend to response
+            user_message: User's message for next state search
+            master_parameters: LLM-extracted parameters
+            conversation_state: Current conversation state
+            language: User's language
+            force_parent_attribution: If True, always add parent attribution
+                                      If False, only add for conditional accessories
+
+        Returns:
+            Response dict with next state's products and metadata
+        """
+        logger.info(f"⏭️  AUTO-SKIP: {skip_reason}")
+
+        # Advance to next state
+        next_state = conversation_state.get_next_state()
+        conversation_state.current_state = next_state
+
+        # Get next state's products
+        if next_state != ConfiguratorState.FINALIZE:
+            next_processor = self.registry.get_processor(next_state)
+            if next_processor:
+                next_search_results = await next_processor.search_products(
+                    user_message=user_message,
+                    master_parameters=master_parameters,
+                    selected_components=conversation_state.response_json,
+                    limit=10,
+                )
+                next_products = next_search_results.get("products", [])
+
+                # ===== STAGE 2: RECURSIVE DEPENDENCY CHECK =====
+                # Check if next state has unsatisfied dependencies (FIX: Properly unpack tuple)
+                satisfied, missing_deps, parent_info = next_processor.check_dependencies_satisfied(
+                    conversation_state.response_json
+                )
+                logger.info(f"🔍 STAGE 2 RECURSIVE DEBUG: satisfied={satisfied}, "
+                            f"missing_deps={missing_deps}, "
+                            f"next_state={next_state}, is_conditional={next_processor.is_conditional_accessory()}")
+
+                if not satisfied:
+                    # Dependencies not satisfied - recursively auto-skip
+                    component_name = next_state.replace("_", " ").title()
+                    dependency_skip_message = (
+                        f"{component_name} requires other components to be selected first. "
+                        f"Moving to the next step."
+                    )
+
+                    # Recursively call auto-skip to continue to the next applicable state
+                    return await self._auto_skip_to_next_state(
+                        skip_reason=(
+                            f"STAGE 2 (Recursive): Dependencies not satisfied for {next_state}. "
+                            f"Missing: {missing_deps}"
+                        ),
+                        skip_message=dependency_skip_message,
+                        user_message=user_message,
+                        master_parameters=master_parameters,
+                        conversation_state=conversation_state,
+                        language=language,
+                        force_parent_attribution=False
+                    )
+
+                # ===== STAGE 2 & 3: POST-SEARCH ZERO-RESULTS CHECKS (RECURSIVE) =====
+                # Use AutoSkipService for unified post-search checks
+                post_search_decision = self.auto_skip_service.should_auto_skip_post_search(
+                    processor=next_processor,
+                    search_results=next_search_results,
+                    current_state=next_state  # next_state is already a string from get_next_state()
+                )
+
+                if post_search_decision.should_skip:
+                    # Either STAGE 2 (conditional accessory) or STAGE 3 (compatibility) triggered skip
+                    return await self._auto_skip_to_next_state(
+                        skip_reason=post_search_decision.skip_reason + " (Recursive)",
+                        skip_message=post_search_decision.skip_message,
+                        user_message=user_message,
+                        master_parameters=master_parameters,
+                        conversation_state=conversation_state,
+                        language=language,
+                        force_parent_attribution=post_search_decision.force_parent_attribution
+                    )
+
+                # ===== PARENT ATTRIBUTION STRATEGY =====
+                # Determine which skip stage we're in for parent attribution logic
+                skip_stage = "STAGE2" if force_parent_attribution else "NONE"
+
+                if self.auto_skip_service.should_add_parent_attribution(next_processor, skip_stage):
+                    self._add_parent_attribution_to_products(
+                        next_products, next_processor, conversation_state.response_json
+                    )
+
+                response_message = await self.message_generator.generate_response(
+                    message_type="search_results",
+                    state=next_state,
+                    products=next_products,
+                    language=language,
+                    zero_results_message=next_search_results.get("zero_results_message"),
+                    compatibility_skip_message=skip_message,
+                )
+
+                return {
+                    "session_id": conversation_state.session_id,
+                    "message": response_message,
+                    "current_state": next_state,
+                    "master_parameters": master_parameters,
+                    "response_json": conversation_state.response_json,
+                    "products": next_products,
+                    "awaiting_selection": len(next_products) > 0,
+                    "can_finalize": self._can_finalize(conversation_state),
+                }
+
+        # Next state is FINALIZE
+        response_message = await self.message_generator.generate_response(
+            message_type="finalize",
+            state=ConfiguratorState.FINALIZE,
+            language=language,
+            response_json=conversation_state.response_json,
+            compatibility_skip_message=skip_message,
+        )
+
+        return {
+            "session_id": conversation_state.session_id,
+            "message": response_message,
+            "current_state": ConfiguratorState.FINALIZE,
+            "master_parameters": master_parameters,
+            "response_json": conversation_state.response_json,
+            "products": [],
+            "awaiting_selection": False,
+            "can_finalize": True,
+        }
 
     def _can_finalize(self, conversation_state: ConversationState) -> bool:
         """Check if configuration can be finalized (PowerSource selected)."""

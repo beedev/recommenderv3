@@ -7,8 +7,10 @@ Each state in the S1→SN flow has a dedicated processor.
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Tuple
 from enum import Enum
+
+from app.services.config.configuration_service import get_config_service
 
 logger = logging.getLogger(__name__)
 
@@ -286,4 +288,60 @@ class StateProcessor(ABC):
         logger.info(
             f"{self.__class__.__name__} search completed: "
             f"{total_count} products in {execution_time_ms:.2f}ms"
+        )
+
+    def is_conditional_accessory(self) -> bool:
+        """
+        Check if this state processor handles conditional accessories.
+
+        Conditional accessories are accessories that depend on other accessories being selected:
+        - feeder_conditional_accessories: Depends on feeder_accessories
+        - remote_conditional_accessories: Depends on remote_accessories
+
+        Returns:
+            True if this is a conditional accessory state, False otherwise
+
+        Examples:
+            >>> processor.component_type
+            'feeder_conditional_accessories'
+            >>> processor.is_conditional_accessory()
+            True
+        """
+        conditional_types = {
+            "feeder_conditional_accessories",
+            "remote_conditional_accessories"
+        }
+        return self.component_type in conditional_types
+
+    def check_dependencies_satisfied(
+        self,
+        selected_components: Any
+    ) -> Tuple[bool, List[str], Dict[str, str]]:
+        """
+        Check if dependencies for this state are satisfied.
+
+        For conditional accessories, validates that prerequisite accessories are selected
+        and collects parent product information for attribution.
+
+        Args:
+            selected_components: ResponseJSON object with selected products
+
+        Returns:
+            Tuple of (satisfied, missing_deps, parent_info):
+                - satisfied: True if all dependencies met
+                - missing_deps: List of missing dependency keys
+                - parent_info: Dict mapping parent GINs to names for attribution
+                  Example: {"ACC1_GIN": "RobustFeed Drive Roll Kit"}
+
+        Examples:
+            >>> satisfied, missing, parents = processor.check_dependencies_satisfied(response_json)
+            >>> if not satisfied:
+            ...     print(f"Missing dependencies: {missing}")
+            >>> elif len(parents) > 0:
+            ...     print(f"Ready to show conditional accessories for {len(parents)} parents")
+        """
+        config_service = get_config_service()
+        return config_service.check_dependencies_satisfied(
+            self.component_type,
+            selected_components
         )

@@ -194,16 +194,43 @@ class SearchOrchestrator:
 
             # Check for zero results
             if not paginated_results:
+                # Check if component requires compatibility validation
+                requires_compatibility = False
+                try:
+                    # Normalize component_type to lowercase for config lookup
+                    normalized_type = component_type.lower() if component_type else component_type
+                    comp_config = config_service.get_component_type(normalized_type)
+                    if comp_config:
+                        requires_compatibility = comp_config.get("requires_compatibility", False)
+                except Exception:
+                    pass
+
                 return self._build_zero_results_response(
                     component_type,
                     selected_components,
                     None,  # Will generate context-aware message
                     execution_time_ms=execution_time_ms,
-                    strategies_executed=[s.strategy_name for s in successful_results]
+                    strategies_executed=[s.strategy_name for s in successful_results],
+                    requires_compatibility=requires_compatibility
                 )
 
             # Generate consolidation report
             consolidation_report = self.consolidator.get_strategy_coverage_report(consolidated)
+
+            # Check if component requires compatibility validation
+            # If yes, set compatibility_validated flag for auto-skip logic
+            requires_compatibility = False
+            try:
+                # Normalize component_type to lowercase for config lookup
+                normalized_type = component_type.lower() if component_type else component_type
+                comp_config = config_service.get_component_type(normalized_type)
+                if comp_config:
+                    requires_compatibility = comp_config.get("requires_compatibility", False)
+                    logger.debug(
+                        f"Component '{component_type}' (normalized: '{normalized_type}') requires_compatibility = {requires_compatibility}"
+                    )
+            except Exception as e:
+                logger.warning(f"Failed to check requires_compatibility for {component_type}: {e}")
 
             response = {
                 "products": [r.to_dict() for r in paginated_results],
@@ -211,6 +238,7 @@ class SearchOrchestrator:
                 "offset": offset,
                 "limit": limit,
                 "has_more": (offset + limit) < total_count,
+                "compatibility_validated": requires_compatibility,  # NEW: Auto-skip flag for compatibility failures
                 "metadata": {
                     "strategies_executed": [s.get_name() for s in enabled_strategies],
                     "strategies_succeeded": [r.strategy_name for r in successful_results],
@@ -334,7 +362,8 @@ class SearchOrchestrator:
         selected_components: Dict[str, Any],
         error_message: Optional[str] = None,
         execution_time_ms: Optional[float] = None,
-        strategies_executed: Optional[List[str]] = None
+        strategies_executed: Optional[List[str]] = None,
+        requires_compatibility: bool = False
     ) -> Dict[str, Any]:
         """
         Build response for zero results with context-aware helpful message.
@@ -345,9 +374,10 @@ class SearchOrchestrator:
             error_message: Optional error message (if strategies failed)
             execution_time_ms: Optional execution time
             strategies_executed: Optional list of strategies that ran
+            requires_compatibility: Whether this component requires compatibility validation
 
         Returns:
-            Response dict with zero_results_message
+            Response dict with zero_results_message and compatibility_validated flag
         """
         # Generate context-aware message
         if error_message:
@@ -364,6 +394,7 @@ class SearchOrchestrator:
             "offset": 0,
             "limit": 0,
             "has_more": False,
+            "compatibility_validated": requires_compatibility,  # NEW: Auto-skip flag for compatibility failures
             "zero_results_message": message,
             "metadata": {
                 "strategies_executed": strategies_executed or [],

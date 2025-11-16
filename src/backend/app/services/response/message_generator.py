@@ -78,6 +78,7 @@ Be concise, factual, and stay strictly within ESAB's ecosystem.
         details: str = "",
         response_json: Dict[str, Any] = None,
         zero_results_message: str = None,
+        compatibility_skip_message: str = None,
     ) -> str:
         """
         Unified response generation router - maps message types to appropriate methods.
@@ -93,6 +94,7 @@ Be concise, factual, and stay strictly within ESAB's ecosystem.
             details: Error details (for error messages)
             response_json: Response JSON (for finalize)
             zero_results_message: Message to display when no products found
+            compatibility_skip_message: Message explaining compatibility validation yielded no results
 
         Returns:
             Generated message string
@@ -116,6 +118,9 @@ Be concise, factual, and stay strictly within ESAB's ecosystem.
                 return "Selection confirmed."
 
         elif message_type == "search_results":
+            # Prepend compatibility skip message if provided
+            prefix = f"{compatibility_skip_message}\n\n" if compatibility_skip_message else ""
+
             # Generate search results message from product list
             if products and len(products) > 0:
                 # Format product list (simplified version)
@@ -127,11 +132,12 @@ Be concise, factual, and stay strictly within ESAB's ecosystem.
                     message += f"{idx}. **{product.get('name', 'Unknown')}** (GIN: {product.get('gin', 'N/A')})\n"
 
                 message += f"\n✅ Please select a {component_name} or say 'skip' if not needed."
-                return message
+                return prefix + message
             elif zero_results_message:
-                return zero_results_message
+                return prefix + zero_results_message
             else:
-                return await self.generate_state_prompt(state, response_json or {}, language)
+                state_prompt = await self.generate_state_prompt(state, response_json or {}, language)
+                return prefix + state_prompt
 
         elif message_type == "error":
             # Generate error message
@@ -139,7 +145,13 @@ Be concise, factual, and stay strictly within ESAB's ecosystem.
 
         elif message_type == "finalize":
             # Generate finalization message
-            return await self.generate_state_prompt("finalize", response_json or {}, language)
+            finalize_prompt = await self.generate_state_prompt("finalize", response_json or {}, language)
+
+            # Prepend compatibility skip message if provided
+            if compatibility_skip_message:
+                return f"{compatibility_skip_message}\n\n{finalize_prompt}"
+
+            return finalize_prompt
 
         elif message_type == "skip":
             # Generate skip confirmation
