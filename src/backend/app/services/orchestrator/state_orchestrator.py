@@ -22,11 +22,13 @@ from app.models.conversation import (
     ConversationState,
     ConfiguratorState,
     SelectedProduct,
+    ComponentApplicability,
 )
 from app.services.intent.parameter_extractor import ParameterExtractor
 from app.services.response.message_generator import MessageGenerator
 from app.services.processors.registry import StateProcessorRegistry
 from app.services.search.orchestrator import SearchOrchestrator
+from app.services.config.configuration_service import get_config_service
 
 logger = logging.getLogger(__name__)
 
@@ -54,11 +56,13 @@ class StateByStateOrchestrator:
         message_generator: MessageGenerator,
         search_orchestrator: SearchOrchestrator,
         state_config_path: str = "app/config/state_config.json",
+        powersource_applicability_config: Optional[Dict[str, Any]] = None,
     ):
         """Initialize orchestrator with modular processor registry."""
         self.parameter_extractor = parameter_extractor
         self.message_generator = message_generator
         self.search_orchestrator = search_orchestrator
+        self.powersource_applicability_config = powersource_applicability_config or {}
 
         # Initialize processor registry - handles all 13 state processors
         self.registry = StateProcessorRegistry(
@@ -68,6 +72,33 @@ class StateByStateOrchestrator:
 
         logger.info("✅ StateByStateOrchestrator initialized with processor registry")
         logger.info(f"   Processors loaded: {len(self.registry._processors)} states")
+
+    def _load_applicability_for_powersource(self, power_source_gin: str) -> ComponentApplicability:
+        """
+        Load component applicability from configuration for a specific PowerSource.
+
+        Args:
+            power_source_gin: GIN of the selected PowerSource
+
+        Returns:
+            ComponentApplicability with Y/N/O rules for each component
+        """
+        power_sources = self.powersource_applicability_config.get("power_sources", {})
+        ps_config = power_sources.get(power_source_gin)
+
+        if ps_config:
+            # Found config for this specific PowerSource
+            applicability_data = ps_config.get("applicability", {})
+            logger.info(f"   Loaded applicability for {ps_config.get('name', power_source_gin)}: {applicability_data}")
+            return ComponentApplicability(**applicability_data)
+        else:
+            # PowerSource not in config - use default policy
+            default_policy = self.powersource_applicability_config.get("default_policy", {})
+            applicability_data = default_policy.get("applicability", {})
+            logger.warning(
+                f"   PowerSource {power_source_gin} not in config - using default applicability: {applicability_data}"
+            )
+            return ComponentApplicability(**applicability_data)
 
     @traceable(name="orchestrator_process_message", run_type="chain")
     async def process_message(
@@ -117,9 +148,11 @@ class StateByStateOrchestrator:
 
             # Log extracted parameters for debugging
             import json
+            # Convert Pydantic model to dict for iteration (if it's a model)
+            master_params_dict = master_parameters.model_dump() if hasattr(master_parameters, 'model_dump') else master_parameters
             non_empty_params = {
-                k: v for k, v in master_parameters.items()
-                if v and v != {} and v != []
+                k: v for k, v in master_params_dict.items()
+                if k != "last_updated" and v and v != {} and v != []  # Exclude datetime field
             }
             if non_empty_params:
                 logger.info(f"🔍 LLM EXTRACTED PARAMETERS:\n{json.dumps(non_empty_params, indent=2)}")
@@ -187,18 +220,30 @@ class StateByStateOrchestrator:
             # Add to response_json based on component type
             component_key = processor.component_type
 
+            # Map component_key to ResponseJSON field name (snake_case → CamelCase)
+            # e.g., "powersource_accessories" → "PowerSourceAccessories"
+            config_service = get_config_service()
+            field_name = config_service.get_response_json_field_name(component_key)
+            logger.debug(f"   Mapped component_key '{component_key}' → field_name '{field_name}'")
+
             if processor.is_multi_select():
                 # Multi-select: Add to list
-                current_list = getattr(conversation_state.response_json, component_key, [])
+                current_list = getattr(conversation_state.response_json, field_name, [])
                 if not isinstance(current_list, list):
                     current_list = []
                 current_list.append(selected_product)
-                setattr(conversation_state.response_json, component_key, current_list)
-                logger.info(f"   Added to multi-select: {component_key} (count: {len(current_list)})")
+                setattr(conversation_state.response_json, field_name, current_list)
+                logger.info(f"   Added to multi-select: {field_name} (count: {len(current_list)})")
             else:
                 # Single-select: Replace
-                setattr(conversation_state.response_json, component_key, selected_product)
-                logger.info(f"   Set single-select: {component_key}")
+                setattr(conversation_state.response_json, field_name, selected_product)
+                logger.info(f"   Set single-select: {field_name}")
+
+            # If PowerSource was selected, load and set applicability
+            if component_key == "PowerSource":
+                applicability = self._load_applicability_for_powersource(product_gin)
+                conversation_state.set_applicability(applicability)
+                logger.info(f"   ✅ Applicability loaded and set for PowerSource {product_gin}")
 
             # Generate selection confirmation message
             selection_message = processor.generate_selection_message(
@@ -207,15 +252,25 @@ class StateByStateOrchestrator:
 
             # Check for multi-select continuation
             if processor.is_multi_select():
-                # User may want to add more products in this state
+                # Re-search for remaining compatible products
+                logger.info(f"🔍 Re-searching for remaining {processor.component_type} products")
+                search_results = await processor.search_products(
+                    user_message="",
+                    master_parameters=conversation_state.master_parameters,
+                    selected_components=conversation_state.response_json,
+                    limit=10,  # Regular search limit (not preview limit)
+                )
+                remaining_products = search_results.get("products", [])
+                logger.info(f"   Found {len(remaining_products)} remaining products")
+
                 return {
                     "session_id": conversation_state.session_id,
                     "message": selection_message,
                     "current_state": conversation_state.current_state,
                     "master_parameters": conversation_state.master_parameters,
                     "response_json": conversation_state.response_json,
-                    "products": [],
-                    "awaiting_selection": False,
+                    "products": remaining_products,  # ✅ FIX: Return remaining products
+                    "awaiting_selection": len(remaining_products) > 0,  # ✅ FIX: Update awaiting flag
                     "can_finalize": self._can_finalize(conversation_state),
                 }
 
@@ -285,6 +340,26 @@ class StateByStateOrchestrator:
         """
         current_state = conversation_state.current_state
 
+        # Special handling for FINALIZE state (terminal state, no processor)
+        if current_state == ConfiguratorState.FINALIZE:
+            logger.info("📋 Already in FINALIZE state - generating final summary")
+            response_message = await self.message_generator.generate_response(
+                message_type="finalize",
+                state=ConfiguratorState.FINALIZE,
+                language=language,
+                response_json=conversation_state.response_json,
+            )
+            return {
+                "session_id": conversation_state.session_id,
+                "message": response_message,
+                "current_state": ConfiguratorState.FINALIZE,
+                "master_parameters": master_parameters,
+                "response_json": conversation_state.response_json,
+                "products": [],
+                "awaiting_selection": False,
+                "can_finalize": True,
+            }
+
         # Get processor for current state
         processor = self.registry.get_processor(current_state)
         if not processor:
@@ -303,47 +378,8 @@ class StateByStateOrchestrator:
         products = search_results.get("products", [])
         logger.info(f"   Search returned {len(products)} products")
 
-        # Auto-select if exactly 1 product found
-        if len(products) == 1 and not processor.is_multi_select():
-            product = products[0]
-            logger.info(f"🎯 Auto-selecting single product: {product['gin']}")
-
-            # Create selected product
-            selected_product = SelectedProduct(
-                gin=product["gin"],
-                name=product["name"],
-                category=product.get("category", ""),
-                description=product.get("description", ""),
-            )
-
-            # Add to response_json
-            setattr(conversation_state.response_json, processor.component_type, selected_product)
-
-            # Move to next state
-            next_state = processor.get_next_state(conversation_state, selection_made=True)
-            conversation_state.current_state = next_state
-
-            # Generate response with auto-selection
-            response_message = await self.message_generator.generate_response(
-                message_type="auto_selection",
-                state=next_state,
-                products=[],
-                selected_product=selected_product,
-                language=language,
-            )
-
-            return {
-                "session_id": conversation_state.session_id,
-                "message": response_message,
-                "current_state": next_state,
-                "master_parameters": master_parameters,
-                "response_json": conversation_state.response_json,
-                "products": [],
-                "awaiting_selection": False,
-                "can_finalize": self._can_finalize(conversation_state),
-            }
-
-        # Multiple products or multi-select: Show products for user selection
+        # Always show products for user selection (no auto-selection)
+        # User must manually confirm even when only 1 match found
         response_message = await self.message_generator.generate_response(
             message_type="search_results",
             state=current_state,
@@ -390,6 +426,26 @@ class StateByStateOrchestrator:
         current_state = conversation_state.current_state
 
         logger.info(f"🎮 Special command: '{command}' in state {current_state}")
+
+        # Special handling for FINALIZE state (terminal state, no processor)
+        if current_state == ConfiguratorState.FINALIZE:
+            logger.info("📋 Already in FINALIZE state - generating final summary")
+            response_message = await self.message_generator.generate_response(
+                message_type="finalize",
+                state=ConfiguratorState.FINALIZE,
+                language=language,
+                response_json=conversation_state.response_json,
+            )
+            return {
+                "session_id": conversation_state.session_id,
+                "message": response_message,
+                "current_state": ConfiguratorState.FINALIZE,
+                "master_parameters": conversation_state.master_parameters,
+                "response_json": conversation_state.response_json,
+                "products": [],
+                "awaiting_selection": False,
+                "can_finalize": True,
+            }
 
         # Get processor for current state
         processor = self.registry.get_processor(current_state)
@@ -522,7 +578,7 @@ class StateByStateOrchestrator:
 
         # Convert Pydantic model to dict if needed
         if not isinstance(master_parameters, dict):
-            master_parameters = master_parameters.dict() if hasattr(master_parameters, 'dict') else master_parameters
+            master_parameters = master_parameters.model_dump() if hasattr(master_parameters, 'model_dump') else master_parameters
 
         # Count components with specifications
         specified_components = 0
@@ -613,24 +669,12 @@ class StateByStateOrchestrator:
             products = search_results.get("products", [])
             logger.info(f"   {component_key}: {len(products)} products found")
 
-            if len(products) == 1:
-                # Exact match - auto-select
-                product = products[0]
-                selected_product = SelectedProduct(
-                    gin=product["gin"],
-                    name=product["name"],
-                    category=product.get("category", ""),
-                    description=product.get("description", ""),
-                )
-                setattr(conversation_state.response_json, processor.component_type, selected_product)
-                auto_selected[component_key] = selected_product
-                logger.info(f"   ✅ Auto-selected: {product['name']}")
-            elif len(products) > 1:
-                # Multiple matches - needs disambiguation
+            if len(products) >= 1:
+                # Show products for user confirmation (no auto-selection)
                 component_results[component_key] = products
                 if first_disambiguation_state is None:
                     first_disambiguation_state = state
-                logger.info(f"   ⚠️  Disambiguation needed: {len(products)} options")
+                logger.info(f"   👤 User confirmation needed: {len(products)} option(s)")
             else:
                 # No matches - will show in response
                 component_results[component_key] = []
@@ -652,25 +696,36 @@ class StateByStateOrchestrator:
         # Generate compound response
         response_parts = []
 
-        # Show auto-selections
-        if auto_selected:
-            for component_key, product in auto_selected.items():
-                response_parts.append(f"✅ {component_key.replace('_', ' ').title()}: {product.name} (GIN: {product.gin}) - Auto-selected")
-
-        # Show current package
+        # Show current package if any selections made
         if conversation_state.response_json:
-            response_parts.append("\nCurrent Package:")
-            for key, value in conversation_state.response_json.items():
-                if isinstance(value, SelectedProduct):
-                    response_parts.append(f"• {key}: {value.name}")
+            has_selections = any(
+                isinstance(getattr(conversation_state.response_json, key, None), (SelectedProduct, list))
+                for key in ["PowerSource", "Feeder", "Cooler", "Interconnector", "Torch", "Accessories"]
+            )
+            if has_selections:
+                response_parts.append("Current Package:")
+                for key in ["PowerSource", "Feeder", "Cooler", "Interconnector", "Torch"]:
+                    value = getattr(conversation_state.response_json, key, None)
+                    if isinstance(value, SelectedProduct):
+                        response_parts.append(f"• {key}: {value.name}")
 
-        # Show disambiguation or next step
+        # Show products for user selection
         if first_disambiguation_state:
             component_key = self._state_to_component_key(first_disambiguation_state)
-            response_parts.append(f"\nFor {component_key.replace('_', ' ').title()}, I found multiple options:")
+            num_products = len(products_to_show)
+
+            if num_products == 1:
+                response_parts.append(f"\n🔍 For {component_key.replace('_', ' ').title()}, I found 1 option:")
+            else:
+                response_parts.append(f"\n🔍 For {component_key.replace('_', ' ').title()}, I found {num_products} options:")
+
             for idx, product in enumerate(products_to_show[:5], 1):
                 response_parts.append(f"{idx}. {product['name']} (GIN: {product['gin']})")
-            response_parts.append("\nWhich would you like?")
+
+            if num_products > 5:
+                response_parts.append(f"... and {num_products - 5} more")
+
+            response_parts.append("\nPlease select one by typing the number or product name.")
         else:
             response_parts.append(f"\nNext: Would you like to add a {conversation_state.current_state.replace('_', ' ').title()}? [Y/N/skip]")
 
@@ -699,22 +754,41 @@ class StateByStateOrchestrator:
         return mapping.get(state, state.replace("_selection", ""))
 
     def _get_next_unhandled_state(self, conversation_state: ConversationState) -> str:
-        """Get next state that hasn't been handled yet."""
-        # State sequence
-        sequence = [
-            ConfiguratorState.FEEDER_SELECTION,
-            ConfiguratorState.COOLER_SELECTION,
-            ConfiguratorState.INTERCONNECTOR_SELECTION,
-            ConfiguratorState.TORCH_SELECTION,
-            ConfiguratorState.POWERSOURCE_ACCESSORIES_SELECTION,
-            ConfiguratorState.FINALIZE,
-        ]
+        """Get next state that hasn't been handled yet (configuration-driven)."""
+        # Load state sequence from component_types.json
+        config_service = get_config_service()
+        state_sequence = config_service.get_state_sequence()
+
+        # Exclude power_source_selection (already completed)
+        # Keep all other states from config
+        sequence = [state for state in state_sequence if state != "power_source_selection"]
+
+        # Add finalize at the end if not already present
+        if "finalize" not in sequence:
+            sequence.append(ConfiguratorState.FINALIZE)
+
+        logger.debug(f"State sequence from config: {sequence}")
 
         # Find first state not in response_json
         for state in sequence:
             processor = self.registry.get_processor(state)
-            if processor and processor.component_type not in conversation_state.response_json:
-                return state
+            if processor:
+                # Map component_key to ResponseJSON field name
+                field_name = config_service.get_response_json_field_name(processor.component_type)
+
+                # Check if this component has been handled
+                current_value = getattr(conversation_state.response_json, field_name, None)
+
+                # For multi-select (lists), check if it's an empty list or None
+                # For single-select, check if it's None
+                if processor.is_multi_select():
+                    is_handled = isinstance(current_value, list) and len(current_value) > 0
+                else:
+                    is_handled = current_value is not None and current_value != "skipped"
+
+                if not is_handled:
+                    logger.debug(f"Next unhandled state: {state} (field: {field_name})")
+                    return state
 
         return ConfiguratorState.FINALIZE
 

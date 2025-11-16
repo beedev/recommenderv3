@@ -559,6 +559,70 @@
             ESAB.CartManager.updateCart(responseJson);
         }
 
+        // ===== PRODUCT FILTERING =====
+        /**
+         * Filter out already-selected products from the product list
+         * @param {Array} products - Array of products to filter
+         * @returns {Array} - Filtered array without already-selected products
+         */
+        function filterUnselectedProducts(products) {
+            if (!products || products.length === 0) {
+                return products;
+            }
+
+            const selectedGINs = new Set();
+
+            console.log('🔍 FILTER DEBUG: Starting product filtering');
+            console.log('🔍 FILTER DEBUG: responseJson =', JSON.stringify(responseJson, null, 2));
+            console.log('🔍 FILTER DEBUG: products to filter =', products.length);
+
+            // Collect all selected GINs from responseJson
+            if (responseJson && typeof responseJson === 'object') {
+                // Check all component keys in responseJson
+                for (const key in responseJson) {
+                    const component = responseJson[key];
+
+                    // Skip the 'applicability' key and null/undefined values
+                    if (key === 'applicability' || !component) continue;
+
+                    console.log(`🔍 FILTER DEBUG: Checking key "${key}":`, component);
+
+                    // Handle arrays (multi-select components like Accessories)
+                    if (Array.isArray(component)) {
+                        console.log(`🔍 FILTER DEBUG: "${key}" is array with ${component.length} items`);
+                        component.forEach(item => {
+                            if (item && item.gin) {
+                                selectedGINs.add(item.gin);
+                                console.log(`🔍 FILTER DEBUG: Added GIN from array: ${item.gin} (${item.name})`);
+                            }
+                        });
+                    }
+                    // Handle single objects (single-select components)
+                    else if (component.gin) {
+                        selectedGINs.add(component.gin);
+                        console.log(`🔍 FILTER DEBUG: Added GIN from single object: ${component.gin} (${component.name})`);
+                    }
+                }
+            }
+
+            console.log(`🔍 FILTER DEBUG: Total selected items across ALL components: ${selectedGINs.size}`, Array.from(selectedGINs));
+            console.log(`🔍 FILTER DEBUG: Current state: ${currentState || 'unknown'}`);
+
+            // Filter out products that are already selected
+            const filteredProducts = products.filter(p => {
+                const isFiltered = selectedGINs.has(p.gin);
+                if (isFiltered) {
+                    console.log(`🔍 FILTER DEBUG: Filtering out ${p.name} (${p.gin})`);
+                }
+                return !isFiltered;
+            });
+
+            // Log filtering results
+            console.log(`🔍 FILTER DEBUG: Result: ${products.length} products → ${filteredProducts.length} after filtering (${selectedGINs.size} total selected items across config)`);
+
+            return filteredProducts;
+        }
+
         // ===== MESSAGE DISPLAY (uses ESAB.UIHelpers for formatting) =====
         function addMessage(text, isUser = false, products = null, pagination = null) {
             const chatContainer = document.getElementById('chatContainer');
@@ -581,6 +645,9 @@
                     console.log('🎯 NUGGET DEBUG: First product:', products[0]);
                 }
             }
+
+            // Filter out already-selected products (multi-select UI improvement)
+            products = filterUnselectedProducts(products);
 
             if (products && products.length > 0) {
                 console.log('🎯 NUGGET DEBUG: Rendering', products.length, 'product cards');

@@ -12,9 +12,7 @@ import sys
 import os
 import logging
 
-# Add config path for schema loader
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from config.schema_loader import get_component_list
+from app.config.schema_loader import get_component_list
 
 logger = logging.getLogger(__name__)
 

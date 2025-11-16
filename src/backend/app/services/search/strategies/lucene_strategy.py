@@ -91,9 +91,18 @@ class LuceneSearchStrategy(SearchStrategy):
             products = []
             scores = {}
 
-            for p in search_results.products:
+            for i, p in enumerate(search_results.products, 1):
                 # Extract Lucene score if present (appended to name or in specifications)
                 score = self._extract_lucene_score(p)
+
+                # DEBUG: Log specifications from first product
+                if i == 1:
+                    logger.debug(f"[Lucene Debug] First product specifications type: {type(p.specifications)}")
+                    if p.specifications:
+                        logger.debug(f"[Lucene Debug] Specifications keys: {list(p.specifications.keys())[:15] if isinstance(p.specifications, dict) else 'Not a dict'}")
+                        logger.debug(f"[Lucene Debug] Has competitor_brand_product_pairs: {'competitor_brand_product_pairs' in p.specifications if isinstance(p.specifications, dict) else False}")
+                    else:
+                        logger.debug(f"[Lucene Debug] Specifications is None or empty")
 
                 products.append({
                     "gin": p.gin,

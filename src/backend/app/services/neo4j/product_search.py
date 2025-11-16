@@ -6,7 +6,6 @@ Eliminates code duplication through configuration-driven approach
 
 import logging
 from typing import Dict, List, Optional, Any
-from neo4j import AsyncGraphDatabase
 
 from app.models.product_search import ProductResult, SearchResults
 from app.services.search.components import ComponentSearchService
@@ -43,15 +42,20 @@ class Neo4jProductSearch:
     - search_feeder_wears (removed - not required)
     """
 
-    def __init__(self, uri: str, username: str, password: str):
-        """Initialize Neo4j connection and ComponentSearchService"""
-        self.driver = AsyncGraphDatabase.driver(uri, auth=(username, password))
-        self.component_service = ComponentSearchService(self.driver)
-        logger.info(f"Neo4jProductSearch initialized - URI: {uri}")
+    def __init__(self, driver):
+        """
+        Initialize Neo4jProductSearch with shared driver.
 
-    async def close(self):
-        """Close Neo4j connection"""
-        await self.driver.close()
+        Args:
+            driver: Neo4j AsyncDriver instance from neo4j_manager
+
+        Note:
+            Driver is managed externally by neo4j_manager - this class does not own it.
+            Do not close the driver from this class.
+        """
+        self.driver = driver
+        self.component_service = ComponentSearchService(self.driver)
+        logger.info("Neo4jProductSearch initialized with shared driver")
 
     # ============================================================================
     # Core Component Search Methods (S1→S5)

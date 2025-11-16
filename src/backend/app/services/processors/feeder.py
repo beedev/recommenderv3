@@ -51,7 +51,9 @@ class FeederStateProcessor(StateProcessor):
             search_limit = self._get_search_limit(limit)
 
             # Validate PowerSource selected
-            if not selected_components.get("PowerSource"):
+            # Convert Pydantic model to dict if needed
+            selected_dict = selected_components.model_dump() if hasattr(selected_components, 'model_dump') else selected_components
+            if not selected_dict.get("PowerSource"):
                 logger.error("FeederStateProcessor: PowerSource not selected")
                 return {
                     "products": [],
@@ -124,21 +126,25 @@ class FeederStateProcessor(StateProcessor):
             return "feeder_selection"
 
         response_json = conversation_state.response_json
-        applicability = response_json.get("applicability", {})
+        # Convert Pydantic model to dict for .get() access
+        applicability = response_json.applicability.model_dump() if response_json.applicability else {}
 
-        # Check if Cooler is applicable
-        if applicability.get("Cooler") == "Y":
-            logger.info("Next state: cooler_selection")
+        # Check if Cooler is applicable (mandatory or optional)
+        cooler_status = applicability.get("Cooler")
+        if cooler_status in ["mandatory", "optional", "Y"]:
+            logger.info(f"Next state: cooler_selection (Cooler status: {cooler_status})")
             return "cooler_selection"
 
         # Cooler not applicable, check Interconnector
-        if applicability.get("Interconnector") == "Y":
-            logger.info("Next state: interconnector_selection (Cooler skipped)")
+        interconnector_status = applicability.get("Interconnector")
+        if interconnector_status in ["mandatory", "optional", "Y"]:
+            logger.info(f"Next state: interconnector_selection (Cooler skipped, Interconnector status: {interconnector_status})")
             return "interconnector_selection"
 
         # Interconnector not applicable, check Torch
-        if applicability.get("Torch") == "Y":
-            logger.info("Next state: torch_selection")
+        torch_status = applicability.get("Torch")
+        if torch_status in ["mandatory", "optional", "Y"]:
+            logger.info(f"Next state: torch_selection (Torch status: {torch_status})")
             return "torch_selection"
 
         # No more primary components, go to accessories

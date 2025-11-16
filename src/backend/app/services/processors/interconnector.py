@@ -54,8 +54,14 @@ class InterconnectorStateProcessor(StateProcessor):
             return "interconnector_selection"
 
         response_json = conversation_state.response_json
-        applicability = response_json.get("applicability", {})
+        # Convert Pydantic model to dict for .get() access
+        applicability = response_json.applicability.model_dump() if response_json.applicability else {}
 
-        if applicability.get("Torch") == "Y":
+        # Check if Torch is applicable (mandatory or optional)
+        torch_status = applicability.get("Torch")
+        if torch_status in ["mandatory", "optional", "Y"]:
+            logger.info(f"Next state: torch_selection (Torch status: {torch_status})")
             return "torch_selection"
+
+        logger.info("Next state: powersource_accessories_selection")
         return "powersource_accessories_selection"

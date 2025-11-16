@@ -117,6 +117,32 @@
       "description": "Neo4j Lucene full-text relevance search with scoring. Component-specific scoring (lucene_min_score, lucene_score_threshold_percent) now in component_types.json. Rationalized Nov 15, 2024.",
       "fallback_on_error": true,
       "timeout_seconds": 30
+    },
+    "vector": {
+      "enabled": false,
+      "weight": 0.5,
+      "min_score": 0.6,
+      "description": "Vector-based semantic search using OpenAI embeddings. Currently disabled - enable in production.",
+      "fallback_on_error": true,
+      "timeout_seconds": 30
+    },
+    "llm": {
+      "enabled": false,
+      "weight": 0.3,
+      "description": "LLM-based intelligent product matching. Currently disabled - enable for advanced semantic matching.",
+      "fallback_on_error": true,
+      "timeout_seconds": 60
+    }
+  },
+  "context_based_strategies": {
+    "description": "Strategy selection based on search context (proactive vs user intent)",
+    "proactive_display": {
+      "enabled_strategies": ["cypher"],
+      "description": "Proactive display uses only Cypher for fast compatibility checking when entering a new state"
+    },
+    "user_intent": {
+      "enabled_strategies": ["cypher", "lucene", "vector", "llm"],
+      "description": "User intent uses all strategies for comprehensive semantic matching when user provides search requirements."
     }
   },
   "orchestration": {

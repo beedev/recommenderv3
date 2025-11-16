@@ -13,6 +13,15 @@ from typing import Dict, Any, Tuple, List, Optional
 
 logger = logging.getLogger(__name__)
 
+# Stop words to remove from search queries for better Lucene matching
+# Nov 15, 2024: Imported from old product_search.py pattern
+STOP_WORDS = {
+    'i', 'need', 'want', 'looking', 'for', 'a', 'an', 'the', 'is', 'am',
+    'are', 'do', 'does', 'can', 'could', 'would', 'should', 'my', 'me',
+    'we', 'our', 'us', 'show', 'find', 'get', 'give', 'have', 'has', 'had',
+    'with', 'without', 'please', 'thanks', 'thank', 'you', 'like', 'this', 'that'
+}
+
 
 class Neo4jQueryBuilder:
     """
@@ -206,14 +215,14 @@ class Neo4jQueryBuilder:
 
         conditions = []
 
-        # 1. If product_name exists: Match on item_name using CONTAINS
+        # 1. If product_name exists: Match on item_name using CONTAINS (space-insensitive)
         if product_name:
             param_name = "product_name_filter"
             conditions.append(
-                f"toLower({node_alias}.item_name) CONTAINS toLower(${param_name})"
+                f"replace(toLower({node_alias}.item_name), ' ', '') CONTAINS replace(toLower(${param_name}), ' ', '')"
             )
             params[param_name] = product_name
-            logger.info(f"Added item_name filter for product_name: '{product_name}'")
+            logger.info(f"Added space-insensitive item_name filter for product_name: '{product_name}'")
 
         # 2. For all feature terms: Match on clean_description or attribute_ruleset using CONTAINS
         if feature_terms:
@@ -296,6 +305,14 @@ class Neo4jQueryBuilder:
         """
         Build Lucene full-text search query for component type.
 
+        Uses OLD PRODUCT_SEARCH PATTERN:
+        1. Remove stop words ("I", "need", "want", etc.)
+        2. Normalize text (units, spaces)
+        3. Build UNION query:
+           - Query 1: Normalized text (better precision)
+           - Query 2: Stop-words-removed text (better recall)
+        4. Combine results with DISTINCT and order by score DESC
+
         Args:
             component_type: Type of component
             user_message: User's search message
@@ -306,9 +323,11 @@ class Neo4jQueryBuilder:
 
         Example:
             >>> query, params = builder.build_lucene_query(
-            ...     "power_source", "500A MIG welder", "ps"
+            ...     "power_source", "I need a 500A MIG welder", "p"
             ... )
-            >>> # Returns Lucene query for full-text search on power sources
+            >>> # Returns UNION query searching both:
+            >>> # - Normalized: "500A MIG welder"
+            >>> # - Original: "500A MIG welder" (stop words removed)
         """
         config = self.component_config.get(component_type)
         if not config:
@@ -320,21 +339,74 @@ class Neo4jQueryBuilder:
         neo4j_label = config["neo4j_label"]
         category = config["category"]
 
-        # Build Lucene query
-        # Use db.index.fulltext.queryNodes for full-text search
-        query = f"""
-        CALL db.index.fulltext.queryNodes('productIndex', $search_text)
-        YIELD node AS {node_alias}, score
-        WHERE {node_alias}:{neo4j_label}
-        """
+        # 🔧 ENHANCEMENT (Nov 15, 2024): Multi-step query processing from old product_search.py
+        # Step 1: Remove stop words
+        stopwords_removed = self._remove_stopwords(user_message)
+        logger.info(f"Step 1 - Stopwords removed: '{user_message}' → '{stopwords_removed}'")
 
-        if category:
-            query += f" AND {node_alias}.category = $category"
+        # Step 2: Normalize text (units, spaces, etc.)
+        normalized_text = self._normalize_search_text(stopwords_removed)
+        logger.info(f"Step 2 - Normalized: '{stopwords_removed}' → '{normalized_text}'")
 
-        params = {
-            "search_text": user_message,
-            "category": category
-        }
+        # Step 3: Escape Lucene special characters
+        escaped_normalized = self._escape_lucene_special_chars(normalized_text)
+        escaped_stopwords = self._escape_lucene_special_chars(stopwords_removed)
+
+        # Step 4: Build UNION query if normalized differs from stopwords-removed
+        # This provides better recall by searching both versions
+        if normalized_text != stopwords_removed:
+            logger.info(f"Building UNION query: normalized vs stopwords-removed")
+
+            # Neo4j 5.x requires UNION queries to be wrapped in CALL subquery
+            # with each part having its own RETURN clause
+            query = f"""
+            CALL {{
+                CALL db.index.fulltext.queryNodes('productIndex', $normalized_text)
+                YIELD node AS {node_alias}, score
+                WITH *
+                WHERE {node_alias}:{neo4j_label}
+            """
+            if category:
+                query += f" AND {node_alias}.category = $category"
+
+            query += f"""
+                RETURN {node_alias}, score
+                UNION
+                CALL db.index.fulltext.queryNodes('productIndex', $stopwords_text)
+                YIELD node AS {node_alias}, score
+                WITH *
+                WHERE {node_alias}:{neo4j_label}
+            """
+            if category:
+                query += f" AND {node_alias}.category = $category"
+
+            query += f"""
+                RETURN {node_alias}, score
+            }}
+            """
+
+            params = {
+                "normalized_text": escaped_normalized,
+                "stopwords_text": escaped_stopwords,
+                "category": category
+            }
+        else:
+            # Single query when no normalization happened
+            logger.info(f"Building single query: '{stopwords_removed}'")
+
+            query = f"""
+            CALL db.index.fulltext.queryNodes('productIndex', $search_text)
+            YIELD node AS {node_alias}, score
+            WITH *
+            WHERE {node_alias}:{neo4j_label}
+            """
+            if category:
+                query += f" AND {node_alias}.category = $category"
+
+            params = {
+                "search_text": escaped_stopwords,
+                "category": category
+            }
 
         logger.debug(f"Built Lucene query for {component_type}")
         return query, params
@@ -356,7 +428,14 @@ class Neo4jQueryBuilder:
         Returns:
             RETURN clause string
         """
-        return_items = [f"{node_alias}"]
+        # Return individual fields that component_service._execute_search expects
+        return_items = [
+            f"{node_alias}.gin as gin",
+            f"{node_alias}.item_name as name",
+            f"{node_alias}.category as category",
+            f"{node_alias}.clean_description as description",
+            f"{node_alias} as specifications"
+        ]
 
         if include_score:
             return_items.append("score")
@@ -517,6 +596,10 @@ class Neo4jQueryBuilder:
          use CONTAINS against clean_description or attribute_ruleset.
          If product_name exists, also match on item_name."
 
+        ENHANCED (Nov 15, 2024): Split comma-separated values for better matching
+        - Process field: "MIG (GMAW), MAG, MMA/Stick" → ["MIG (GMAW)", "MAG", "MMA/Stick"]
+        - Each individual term searched separately for ANY match (OR logic)
+
         Returns dict with:
         - "product_name": Original product_name for item_name CONTAINS matching (if exists)
         - "feature_terms": All extracted feature values (normalized) for description/attribute matching
@@ -546,9 +629,22 @@ class Neo4jQueryBuilder:
                 keywords = self.extract_and_normalize_keywords(value_stripped)
                 result["feature_terms"].extend(keywords)
             else:
-                # Normalize parameter value using comprehensive mappings
-                normalized_terms = self._normalize_parameter_value(value_stripped, component_type)
-                result["feature_terms"].extend(normalized_terms)
+                # 🔧 FIX (Nov 15, 2024): Split comma-separated values for better matching
+                # Root cause: "MIG (GMAW), MAG, MMA/Stick, DC TIG (GTAW)" searched as single string
+                # Solution: Split by comma and search each process individually
+                if "," in value_stripped:
+                    logger.info(f"Splitting comma-separated value for '{key}': {value_stripped}")
+                    # Split by comma and process each term individually
+                    individual_terms = [term.strip() for term in value_stripped.split(",")]
+                    for term in individual_terms:
+                        if term:  # Skip empty strings
+                            normalized_terms = self._normalize_parameter_value(term, component_type)
+                            result["feature_terms"].extend(normalized_terms)
+                    logger.info(f"  → Split into {len(individual_terms)} individual terms")
+                else:
+                    # Single value - normalize as before
+                    normalized_terms = self._normalize_parameter_value(value_stripped, component_type)
+                    result["feature_terms"].extend(normalized_terms)
 
         logger.info(
             f"Extracted search terms: product_name='{result['product_name']}', "
@@ -556,3 +652,215 @@ class Neo4jQueryBuilder:
         )
 
         return result
+
+    def _escape_lucene_special_chars(self, text: str) -> str:
+        """
+        Escape Lucene special characters in search text.
+
+        Lucene query parser has special characters that need escaping:
+        + - && || ! ( ) { } [ ] ^ " ~ * ? : \ /
+
+        Nov 15, 2024: Added to fix parsing errors when user queries contain
+        special characters like "MIG/MAG" or "MMA (Stick)".
+
+        Args:
+            text: Raw search text
+
+        Returns:
+            Text with Lucene special characters escaped
+
+        Example:
+            >>> self._escape_lucene_special_chars("MIG/MAG welding")
+            "MIG\\/MAG welding"
+            >>> self._escape_lucene_special_chars("MMA (Stick) welding")
+            "MMA \\(Stick\\) welding"
+        """
+        # Lucene special characters that need escaping with backslash
+        special_chars = ['+', '-', '&', '|', '!', '(', ')', '{', '}', '[', ']',
+                        '^', '"', '~', '*', '?', ':', '\\', '/']
+
+        escaped_text = text
+        for char in special_chars:
+            # Escape each special character with backslash
+            escaped_text = escaped_text.replace(char, f'\\{char}')
+
+        return escaped_text
+
+    def _remove_stopwords(self, text: str) -> str:
+        """
+        Remove stop words from search text.
+
+        Stop words are common English words that don't contribute to search relevance
+        (e.g., "I", "need", "want", "for", "a", "the", etc.).
+
+        Nov 15, 2024: Imported from old product_search.py pattern for better Lucene matching.
+
+        Args:
+            text: Raw search text
+
+        Returns:
+            Text with stop words removed
+
+        Example:
+            >>> self._remove_stopwords("I need a 500A MIG welder")
+            "500A MIG welder"
+            >>> self._remove_stopwords("I want to find a machine for welding")
+            "machine welding"
+        """
+        if not text or not isinstance(text, str):
+            return text
+
+        # Convert to lowercase and normalize whitespace
+        clean = text.lower().strip()
+        clean = re.sub(r'\s+', ' ', clean)
+
+        # Split into words
+        words = clean.split()
+
+        # Remove stop words
+        keywords = [
+            w for w in words
+            if w not in STOP_WORDS and len(w) > 1
+        ]
+
+        # If all words were stop words, keep words with length > 1
+        if not keywords and words:
+            keywords = [w for w in words if len(w) > 1]
+
+        result = ' '.join(keywords)
+        return result
+
+    def _normalize_search_text(self, text: str) -> str:
+        """
+        Normalize measurement units in search text.
+
+        Converts various unit formats to standardized forms that match database content.
+        This preprocessing step improves Lucene search accuracy by ensuring consistent
+        terminology between user queries and product descriptions.
+
+        Nov 15, 2024: Imported from old product_search.py pattern.
+
+        Args:
+            text: Search text (typically after stop words removed)
+
+        Returns:
+            Normalized search text with standardized units
+
+        Examples:
+            >>> self._normalize_search_text("500 Amps MIG welder")
+            "500 A MIG welder"
+            >>> self._normalize_search_text("380 Volts 30mm wire")
+            "380 V 30 mm wire"
+            >>> self._normalize_search_text("18mm wire 3ph power")
+            "18 mm wire 3 phase power"
+
+        Normalization Rules:
+            - Amperage: Amps/Ampere/Ampères → A
+            - Voltage: Volts/Volt/Voltios → V
+            - Length: meters/metres → m, millimeters/millimetres → mm
+            - Power: Watts → W, kilowatts → kW
+            - Pressure: Bar/BAR → bar
+            - Flow: l/min, liters/minute → l/minute
+            - Phase: 3ph, 1-phase → 3 phase, 1 phase
+        """
+        normalized = text
+
+        # Rule 1: Add space between numbers and units if missing
+        # "500A" → "500 A", "30mm" → "30 mm"
+        normalized = re.sub(r'(\d+)([A-Za-z]+)', r'\1 \2', normalized)
+
+        # Rule 2: Amperage - normalize to "A"
+        # "500 Amps" → "500 A", "500 Ampere" → "500 A", "500 Ampères" → "500 A"
+        normalized = re.sub(
+            r'(\d+)\s*(Amps?|Amperes?|Ampères?)\b',
+            r'\1 A',
+            normalized,
+            flags=re.IGNORECASE
+        )
+
+        # Rule 3: Voltage - normalize to "V"
+        # "380 Volts" → "380 V", "460 Volt" → "460 V", "380 Voltios" → "380 V"
+        normalized = re.sub(
+            r'(\d+)\s*(Volts?|Voltios?)\b',
+            r'\1 V',
+            normalized,
+            flags=re.IGNORECASE
+        )
+
+        # Rule 4: Power (Watts) - normalize to "W"
+        # "500 Watts" → "500 W", "500 watt" → "500 W"
+        normalized = re.sub(
+            r'(\d+)\s*Watts?\b',
+            r'\1 W',
+            normalized,
+            flags=re.IGNORECASE
+        )
+
+        # Rule 5: Power (Kilowatts) - normalize to "kW"
+        # "4 kilowatt" → "4 kW", "4 kilowatts" → "4 kW"
+        normalized = re.sub(
+            r'(\d+)\s*kilowatts?\b',
+            r'\1 kW',
+            normalized,
+            flags=re.IGNORECASE
+        )
+
+        # Rule 6: Length (meters) - normalize to "m"
+        # "15 meters" → "15 m", "5 metre" → "5 m"
+        normalized = re.sub(
+            r'(\d+)\s*(meters?|metres?)\b',
+            r'\1 m',
+            normalized,
+            flags=re.IGNORECASE
+        )
+
+        # Rule 7: Length (millimeters) - normalize to "mm"
+        # "30 millimeters" → "30 mm", "1.2 millimetres" → "1.2 mm"
+        normalized = re.sub(
+            r'(\d+(?:\.\d+)?)\s*(millimeters?|millimetres?)\b',
+            r'\1 mm',
+            normalized,
+            flags=re.IGNORECASE
+        )
+
+        # Rule 8: Length (inches) - normalize to "inch"
+        # '32"' → "32 inch", "32 inches" → "32 inch"
+        normalized = re.sub(
+            r'(\d+)\s*(?:inches?|")\b',
+            r'\1 inch',
+            normalized,
+            flags=re.IGNORECASE
+        )
+
+        # Rule 9: Pressure (bar) - normalize to lowercase "bar"
+        # "5 Bar" → "5 bar", "5 BAR" → "5 bar"
+        normalized = re.sub(
+            r'(\d+)\s*bar\b',
+            r'\1 bar',
+            normalized,
+            flags=re.IGNORECASE
+        )
+
+        # Rule 10: Flow rate - normalize to "l/minute"
+        # "7 l/min" → "7 l/minute", "7 liters/minute" → "7 l/minute"
+        normalized = re.sub(
+            r'(\d+)\s*(?:l/min|liters?/min(?:ute)?|lpm)\b',
+            r'\1 l/minute',
+            normalized,
+            flags=re.IGNORECASE
+        )
+
+        # Rule 11: Phase - normalize to "phase"
+        # "3ph" → "3 phase", "1-phase" → "1 phase"
+        normalized = re.sub(
+            r'(\d+)[-\s]*ph\b',
+            r'\1 phase',
+            normalized,
+            flags=re.IGNORECASE
+        )
+
+        # Rule 12: Duty cycle percent - preserve as-is
+        # Already in correct format: "60%", "@60%", "at 60%"
+        # No normalization needed for duty cycle
+
+        return normalized.strip()

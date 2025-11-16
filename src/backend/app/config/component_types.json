@@ -258,7 +258,7 @@
       "supports_search": true,
       "requires_compatibility_check": true,
       "proactive_display": true,
-      "search_limit": 10,
+      "search_limit": 20,
       "preview_limit": 5,
       "description": "Accessories specifically for power sources",
       "typical_features": [
@@ -293,7 +293,7 @@
       "supports_search": true,
       "requires_compatibility_check": true,
       "proactive_display": true,
-      "search_limit": 10,
+      "search_limit": 20,
       "preview_limit": 5,
       "description": "Accessories specifically for wire feeders",
       "typical_features": [
@@ -328,7 +328,7 @@
       "supports_search": true,
       "requires_compatibility_check": true,
       "proactive_display": true,
-      "search_limit": 10,
+      "search_limit": 20,
       "preview_limit": 5,
       "description": "Conditional accessories for wire feeders",
       "typical_features": [
@@ -363,7 +363,7 @@
       "supports_search": true,
       "requires_compatibility_check": true,
       "proactive_display": true,
-      "search_limit": 10,
+      "search_limit": 20,
       "preview_limit": 5,
       "description": "Accessories for interconnector cables",
       "typical_features": [
@@ -398,7 +398,7 @@
       "supports_search": true,
       "requires_compatibility_check": true,
       "proactive_display": true,
-      "search_limit": 10,
+      "search_limit": 20,
       "preview_limit": 5,
       "description": "Remote controls for welding systems",
       "typical_features": [
@@ -434,7 +434,7 @@
       "supports_search": true,
       "requires_compatibility_check": true,
       "proactive_display": true,
-      "search_limit": 10,
+      "search_limit": 20,
       "preview_limit": 5,
       "description": "Accessories for remote controls",
       "typical_features": [
@@ -469,7 +469,7 @@
       "supports_search": true,
       "requires_compatibility_check": true,
       "proactive_display": true,
-      "search_limit": 10,
+      "search_limit": 20,
       "preview_limit": 5,
       "description": "Conditional accessories for remote controls",
       "typical_features": [
@@ -479,7 +479,7 @@
       ],
       "category": "Remote Conditional Accessories",
       "dependencies": [
-        "remote"
+        "remote_accessories"
       ],
       "master_param_key": "remote_conditional_accessories",
       "lucene_enabled": true,
@@ -504,7 +504,7 @@
       "supports_search": true,
       "requires_compatibility_check": true,
       "proactive_display": true,
-      "search_limit": 10,
+      "search_limit": 20,
       "preview_limit": 5,
       "description": "Connectivity and communication options",
       "typical_features": [

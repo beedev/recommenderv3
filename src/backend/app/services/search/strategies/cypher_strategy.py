@@ -184,8 +184,7 @@ class CypherSearchStrategy(SearchStrategy):
             "powersource_accessories": "powersource_accessories",
             "feeder_accessories": "feeder_accessories",
             "feeder_conditional_accessories": "feeder_conditional_accessories",
-            "interconnector_accessories": "interconn_accessories",
-            "interconn_accessories": "interconn_accessories",
+            "interconnector_accessories": "interconnector_accessories",
             "remote_accessories": "remote_accessories",
             "remote_conditional_accessories": "remote_conditional_accessories"
         }

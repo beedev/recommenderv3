@@ -17,10 +17,8 @@ from openai import AsyncOpenAI
 from langsmith import traceable
 import sys
 
-# Add config path for schema loader
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
-from config.schema_loader import get_component_list
-from ..config.configuration_service import get_config_service
+from app.config.schema_loader import get_component_list
+from app.services.config.configuration_service import get_config_service
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +73,7 @@ class ParameterExtractor:
             def get_fuzzy_match_config(self):
                 # Rationalized Nov 15, 2024: components_enabled no longer in search_config
                 # Load from component_types.json instead
-                from config.schema_loader import load_component_config
+                from app.config.schema_loader import load_component_config
                 component_types = load_component_config()
                 enabled_components = [
                     key for key, data in component_types.items()
@@ -119,7 +117,7 @@ class ParameterExtractor:
             # For backward compatibility, try to get from fuzzy_config first, else load from component_types
             components_enabled = fuzzy_config.get("components_enabled")
             if not components_enabled:
-                from config.schema_loader import load_component_config
+                from app.config.schema_loader import load_component_config
                 component_types = load_component_config()
                 components_enabled = [
                     key for key, data in component_types.items()
@@ -159,6 +157,7 @@ class ParameterExtractor:
             Updated complete MasterParameterJSON dict with optional _selection_metadata
 
         ENHANCED: Added selection intent detection for numbers and product names
+        FIXED (Nov 15, 2024): Clear current state component before extraction to prevent accumulation
         """
 
         try:
@@ -173,11 +172,19 @@ class ParameterExtractor:
                 result["_selection_metadata"] = selection_metadata
                 return result
 
+            # 🔧 FIX (Nov 15, 2024): Clear current state's component to prevent accumulation
+            # User requirement: "Within a state, each new query should REPLACE parameters, not accumulate"
+            # Example: In PowerSource state, "Aristo" then "Renegade" → show only Renegade
+            master_parameters_cleared = self._clear_current_state_component(
+                master_parameters,
+                current_state
+            )
+
             # Build extraction prompt based on current state
             prompt = self._build_extraction_prompt(
                 user_message,
                 current_state,
-                master_parameters
+                master_parameters_cleared
             )
 
             # ORIGINAL: Get LLM config for parameter extraction
@@ -263,6 +270,61 @@ class ParameterExtractor:
                     }
 
         return None
+
+    def _clear_current_state_component(
+        self,
+        master_parameters: Dict[str, Any],
+        current_state: str
+    ) -> Dict[str, Any]:
+        """
+        Clear the component corresponding to current state to prevent accumulation.
+
+        User requirement (Nov 15, 2024): "Within a state, each new query should REPLACE
+        parameters, not accumulate. For example, in PowerSource state, asking for 'Aristo'
+        then 'Renegade' should show only Renegade, not both."
+
+        Args:
+            master_parameters: Existing MasterParameterJSON dict
+            current_state: Current state (e.g., "power_source_selection")
+
+        Returns:
+            Modified master_parameters with current state's component cleared
+        """
+        # Map state to component
+        state_to_component = {
+            "power_source_selection": "power_source",
+            "feeder_selection": "feeder",
+            "cooler_selection": "cooler",
+            "interconnector_selection": "interconnector",
+            "torch_selection": "torch",
+            "accessories_selection": "accessories",
+            "powersource_accessories_selection": "powersource_accessories",
+            "feeder_accessories_selection": "feeder_accessories",
+            "feeder_conditional_accessories_selection": "feeder_conditional_accessories",
+            "interconnector_accessories_selection": "interconnector_accessories",
+            "remote_selection": "remote",
+            "remote_accessories_selection": "remote_accessories",
+            "remote_conditional_accessories_selection": "remote_conditional_accessories",
+            "connectivity_selection": "connectivity"
+        }
+
+        # Get component for current state
+        component_to_clear = state_to_component.get(current_state)
+
+        if component_to_clear:
+            # Make a copy to avoid modifying original
+            cleared_params = dict(master_parameters)
+
+            # Clear the component
+            if component_to_clear in cleared_params:
+                logger.info(f"🔄 Clearing '{component_to_clear}' parameters for state '{current_state}' (preventing accumulation)")
+                cleared_params[component_to_clear] = {}
+
+            return cleared_params
+        else:
+            # State doesn't map to a component (e.g., finalize), return as-is
+            logger.debug(f"State '{current_state}' does not map to a component, keeping all parameters")
+            return master_parameters
 
     def _build_extraction_prompt(
         self,

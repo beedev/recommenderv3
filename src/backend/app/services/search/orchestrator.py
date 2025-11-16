@@ -108,8 +108,34 @@ class SearchOrchestrator:
                 f"(limit={limit}, offset={offset}, mode={self.execution_mode})"
             )
 
-            # Filter enabled strategies
-            enabled_strategies = [s for s in self.strategies if s.is_enabled()]
+            # Detect proactive vs user-intent mode
+            command_keywords = ["skip", "done", "next", "finalize", "yes", "no", ""]
+            is_proactive_display = user_message.lower().strip() in command_keywords
+
+            # Load context-based strategy configuration
+            from app.services.config.configuration_service import get_config_service
+            config_service = get_config_service()
+            search_config = config_service.get_search_config()
+            context_config = search_config.get("context_based_strategies", {})
+
+            if is_proactive_display:
+                # Proactive display: Use only fast compatibility strategies
+                context_strategies = context_config.get("proactive_display", {}).get(
+                    "enabled_strategies", ["cypher"]
+                )
+                logger.info(f"🔍 Proactive display mode - using strategies: {context_strategies}")
+            else:
+                # User intent: Use all semantic matching strategies
+                context_strategies = context_config.get("user_intent", {}).get(
+                    "enabled_strategies", ["cypher", "lucene"]
+                )
+                logger.info(f"🎯 User intent mode - using strategies: {context_strategies}")
+
+            # Filter strategies by: (1) enabled in strategy config AND (2) enabled for this context
+            enabled_strategies = [
+                s for s in self.strategies
+                if s.is_enabled() and s.get_name() in context_strategies
+            ]
 
             if not enabled_strategies:
                 logger.warning("No enabled search strategies found")

@@ -89,7 +89,9 @@ class ComponentSearchService:
             raise ValueError(f"Unknown component type: {component_type}")
 
         master_param_key = config["master_param_key"]
-        component_dict = master_parameters.get(master_param_key, {})
+        # Convert Pydantic model to dict if needed
+        master_params_dict = master_parameters.model_dump() if hasattr(master_parameters, 'model_dump') else master_parameters
+        component_dict = master_params_dict.get(master_param_key, {})
 
         # STEP 1: Check for GIN direct lookup
         detected_gin = component_dict.get("_detected_gin")
@@ -118,9 +120,12 @@ class ComponentSearchService:
             # Build name-based query
             query, params = self.query_builder.build_base_query(component_type, "p")
 
-            # Add product name filter
-            query += f"\nAND toLower(p.item_name) CONTAINS toLower($product_name)"
+            # Add product name filter (SPACE-INSENSITIVE - Nov 15, 2024)
+            # Removes all spaces before comparison to handle "Renegade ES 300i" vs "Renegade ES300i"
+            query += f"\nAND replace(toLower(p.item_name), ' ', '') CONTAINS replace(toLower($product_name), ' ', '')"
             params["product_name"] = product_name.strip()
+
+            logger.info(f"Added SPACE-INSENSITIVE product_name filter: '{product_name}'")
 
             # Add compatibility filters if needed
             if config.get("requires_compatibility"):
@@ -387,9 +392,12 @@ class ComponentSearchService:
         Returns:
             List of ProductResult objects
         """
-        # DEBUG: Always log query for troubleshooting
-        logger.debug(f"Executing query: {query}")
-        logger.debug(f"Query params: {params}")
+        # DETAILED LOGGING for query troubleshooting (Nov 15, 2024)
+        logger.info("=" * 80)
+        logger.info("🔍 EXECUTING NEO4J CYPHER QUERY")
+        logger.info(f"Query:\n{query}")
+        logger.info(f"Params: {params}")
+        logger.info("=" * 80)
 
         try:
             async with self.driver.session() as session:
@@ -402,6 +410,14 @@ class ComponentSearchService:
                     if hasattr(specs, "__dict__"):
                         specs = dict(specs)
                     specs = self._clean_neo4j_types(specs)
+
+                    # 🔧 FIX (Nov 15, 2024): Preserve native Lucene fulltext scores
+                    # Root cause: Lucene queries return score field but it was being discarded
+                    # Solution: Extract score from Neo4j result and store in specifications
+                    if "score" in record:
+                        lucene_score = float(record["score"])
+                        specs["lucene_score"] = lucene_score
+                        logger.info(f"  → Product {record['gin']} native Lucene score: {lucene_score}")
 
                     product = ProductResult(
                         gin=record["gin"],

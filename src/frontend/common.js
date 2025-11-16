@@ -397,25 +397,47 @@
          */
         generateCartHTML: function(responseJson) {
             let html = '';
-            const componentOrder = ['PowerSource', 'Feeder', 'Cooler', 'Interconnector', 'Torch', 'Accessories'];
+            // Core components (single selection)
+            const coreComponents = ['PowerSource', 'Feeder', 'Cooler', 'Interconnector', 'Torch'];
+            // Accessory categories (multi-select) - all possible accessory types
+            const accessoryCategories = [
+                'PowerSourceAccessories',
+                'FeederAccessories',
+                'FeederConditionalAccessories',
+                'InterconnectorAccessories',
+                'Remotes',
+                'RemoteAccessories',
+                'RemoteConditionalAccessories',
+                'Connectivity',
+                'FeederWears',
+                'Accessories'  // Legacy
+            ];
 
-            for (const key of componentOrder) {
+            // Display core components first
+            for (const key of coreComponents) {
                 const item = responseJson[key];
-
-                if (key === 'Accessories' && Array.isArray(item) && item.length > 0) {
-                    html += `<div class="cart-item">
-                        <h4>🔧 Accessories (${item.length})</h4>
-                        ${item.map(acc => `
-                            <p><strong>${UIHelpers.escapeHtml(acc.name)}</strong></p>
-                            <p style="font-size: 12px;">GIN: ${UIHelpers.escapeHtml(acc.gin)}</p>
-                        `).join('')}
-                    </div>`;
-                } else if (item && typeof item === 'object' && item.name) {
+                if (item && typeof item === 'object' && item.name) {
                     const icon = this.getComponentIcon(key);
                     html += `<div class="cart-item">
                         <h4>${icon} ${key}</h4>
                         <p><strong>${UIHelpers.escapeHtml(item.name)}</strong></p>
                         <p>GIN: ${UIHelpers.escapeHtml(item.gin)}</p>
+                    </div>`;
+                }
+            }
+
+            // Display accessory categories
+            for (const key of accessoryCategories) {
+                const item = responseJson[key];
+                if (Array.isArray(item) && item.length > 0) {
+                    const icon = this.getComponentIcon(key);
+                    const displayName = key.replace(/([A-Z])/g, ' $1').trim();  // "PowerSourceAccessories" → "Power Source Accessories"
+                    html += `<div class="cart-item">
+                        <h4>${icon} ${displayName} (${item.length})</h4>
+                        ${item.map(acc => `
+                            <p><strong>${UIHelpers.escapeHtml(acc.name)}</strong></p>
+                            <p style="font-size: 12px;">GIN: ${UIHelpers.escapeHtml(acc.gin)}</p>
+                        `).join('')}
                     </div>`;
                 }
             }
@@ -430,16 +452,32 @@
          */
         getComponentCount: function(responseJson) {
             let count = 0;
-            const components = ['PowerSource', 'Feeder', 'Cooler', 'Interconnector', 'Torch'];
+            const coreComponents = ['PowerSource', 'Feeder', 'Cooler', 'Interconnector', 'Torch'];
+            const accessoryCategories = [
+                'PowerSourceAccessories',
+                'FeederAccessories',
+                'FeederConditionalAccessories',
+                'InterconnectorAccessories',
+                'Remotes',
+                'RemoteAccessories',
+                'RemoteConditionalAccessories',
+                'Connectivity',
+                'FeederWears',
+                'Accessories'
+            ];
 
-            for (const key of components) {
+            // Count core components
+            for (const key of coreComponents) {
                 if (responseJson[key] && responseJson[key].name) {
                     count++;
                 }
             }
 
-            if (Array.isArray(responseJson.Accessories)) {
-                count += responseJson.Accessories.length;
+            // Count all accessories from all categories
+            for (const key of accessoryCategories) {
+                if (Array.isArray(responseJson[key])) {
+                    count += responseJson[key].length;
+                }
             }
 
             return count;
@@ -452,12 +490,23 @@
          */
         getComponentIcon: function(componentKey) {
             const icons = {
+                // Core components
                 'PowerSource': '⚡',
                 'Feeder': '🔄',
                 'Cooler': '❄️',
                 'Interconnector': '🔌',
                 'Torch': '🔥',
-                'Accessories': '🔧'
+                // Accessory categories
+                'PowerSourceAccessories': '🔧',
+                'FeederAccessories': '🔧',
+                'FeederConditionalAccessories': '🔧',
+                'InterconnectorAccessories': '🔧',
+                'Remotes': '📡',
+                'RemoteAccessories': '🔧',
+                'RemoteConditionalAccessories': '🔧',
+                'Connectivity': '📶',
+                'FeederWears': '⚙️',
+                'Accessories': '🔧'  // Legacy
             };
             return icons[componentKey] || '📦';
         }

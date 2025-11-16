@@ -30,9 +30,12 @@ from .services.orchestrator.state_orchestrator import StateByStateOrchestrator
 from .database.database import (
     init_redis,
     init_postgresql,
+    init_neo4j,
     close_redis,
     close_postgresql,
+    close_neo4j,
     get_redis_client,
+    get_neo4j_driver,
     Base
 )
 from .database.redis_session_storage import init_redis_session_storage
@@ -274,49 +277,67 @@ async def lifespan(app: FastAPI):
         logger.error(f"Dynamic state machine initialization failed: {e}")
         logger.warning("Falling back to hardcoded state machine")
 
+    # Initialize Neo4j driver (centralized connection management)
+    await init_neo4j(neo4j_uri, neo4j_username, neo4j_password)
+    neo4j_driver = await get_neo4j_driver()
+    logger.info("✓ Neo4j driver initialized")
+
     # Initialize services
     parameter_extractor = ParameterExtractor(openai_api_key)
-    neo4j_search = Neo4jProductSearch(neo4j_uri, neo4j_username, neo4j_password)
+    neo4j_search = Neo4jProductSearch(driver=neo4j_driver)
     message_generator = MessageGenerator()
 
-    # Phase 1: Initialize Pluggable Search Architecture
-    from .services.search.strategies.cypher_strategy import CypherSearchStrategy
-    from .services.search.strategies.lucene_strategy import LuceneSearchStrategy
+    # Phase 1: Initialize Pluggable Search Architecture (Configuration-Driven)
+    from .services.search.strategy_factory import StrategyFactory
     from .services.search.consolidator import ResultConsolidator
     from .services.search.orchestrator import SearchOrchestrator
+    from .services.config.configuration_service import get_config_service
+    from openai import AsyncOpenAI
 
-    # Create search strategies
-    cypher_strategy = CypherSearchStrategy(
-        config={"enabled": True, "weight": 0.4},
-        neo4j_product_search=neo4j_search
+    # Load search configuration
+    config_service = get_config_service()
+    search_config = config_service.get_search_config()
+
+    # Initialize OpenAI client for vector and LLM strategies
+    openai_client = AsyncOpenAI(api_key=openai_api_key)
+
+    # Create all strategies automatically from search_config.json
+    strategy_factory = StrategyFactory(
+        search_config=search_config,
+        neo4j_product_search=neo4j_search,
+        openai_client=openai_client
     )
-    lucene_strategy = LuceneSearchStrategy(
-        config={"enabled": True, "weight": 0.6, "min_score": 0.3},
-        neo4j_product_search=neo4j_search
-    )
+    all_strategies = strategy_factory.create_all_strategies()
+
+    # Build consolidator config from search_config.json
+    strategy_weights = {
+        name: cfg.get("weight", 0.5)
+        for name, cfg in search_config.get("strategies", {}).items()
+        if isinstance(cfg, dict)  # Filter out description fields
+    }
+    consolidator_config = search_config.get("consolidation", {})
+    consolidator_config["strategy_weights"] = strategy_weights
+    consolidator_config.setdefault("default_score_for_unscored", 0.5)
+    consolidator_config.setdefault("score_normalization", "none")
 
     # Create result consolidator
-    consolidator = ResultConsolidator(
-        config={
-            "strategy_weights": {"cypher": 0.4, "lucene": 0.6},
-            "default_score_for_unscored": 0.5,
-            "score_normalization": "none"
-        }
-    )
+    consolidator = ResultConsolidator(config=consolidator_config)
 
-    # Create search orchestrator
+    # Build orchestrator config from search_config.json
+    orchestration_config = search_config.get("orchestration", {})
+    orchestration_config.setdefault("execution_mode", "parallel")
+    orchestration_config.setdefault("timeout_seconds", 30)
+    orchestration_config.setdefault("fallback_on_error", True)
+    orchestration_config.setdefault("require_at_least_one_success", True)
+
+    # Create search orchestrator with all strategies
     search_orchestrator = SearchOrchestrator(
-        strategies=[cypher_strategy, lucene_strategy],
+        strategies=all_strategies,
         consolidator=consolidator,
-        config={
-            "execution_mode": "parallel",
-            "timeout_seconds": 30,
-            "fallback_on_error": True,
-            "require_at_least_one_success": True
-        }
+        config=orchestration_config
     )
 
-    logger.info("✓ SearchOrchestrator initialized")
+    logger.info(f"✓ SearchOrchestrator initialized with {len(all_strategies)} strategies: {[s.get_name() for s in all_strategies]}")
 
     # Phase 2: Initialize streamlined orchestrator (creates its own processor registry)
     # No longer need separate registry initialization - orchestrator handles it internally
@@ -324,7 +345,8 @@ async def lifespan(app: FastAPI):
         parameter_extractor=parameter_extractor,
         message_generator=message_generator,
         search_orchestrator=search_orchestrator,
-        state_config_path="app/config/state_config.json"
+        state_config_path="app/config/state_config.json",
+        powersource_applicability_config=powersource_state_specifications_config
     )
 
     logger.info("✓ Orchestrator initialized")
@@ -358,10 +380,12 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Error closing PostgreSQL: {e}")
 
-    # Close Neo4j
-    if neo4j_search:
-        await neo4j_search.close()
-        logger.info("✓ Neo4j closed")
+    # Close Neo4j (centralized driver management)
+    try:
+        await close_neo4j()
+        logger.info("✓ Neo4j driver closed")
+    except Exception as e:
+        logger.error(f"Error closing Neo4j: {e}")
 
     logger.info("Shutdown complete")
 

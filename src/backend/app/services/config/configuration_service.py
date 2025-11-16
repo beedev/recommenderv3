@@ -124,6 +124,34 @@ class ConfigurationService:
                 return {**comp_data, "key": comp_key}
         return None
 
+    def get_response_json_field_name(self, component_key: str) -> str:
+        """
+        Get ResponseJSON field name from component key
+
+        Maps snake_case component keys to CamelCase ResponseJSON field names
+        using the class_name property from component_types.json
+
+        Args:
+            component_key: Component key (e.g., "powersource_accessories")
+
+        Returns:
+            ResponseJSON field name (e.g., "PowerSourceAccessories")
+            Falls back to component_key if not found in config
+
+        Examples:
+            >>> config_service.get_response_json_field_name("powersource_accessories")
+            "PowerSourceAccessories"
+            >>> config_service.get_response_json_field_name("power_source")
+            "PowerSource"
+        """
+        comp_config = self.get_component_type(component_key)
+        if comp_config:
+            return comp_config.get("class_name", component_key)
+
+        # Fallback: return component_key if not found in config
+        logger.warning(f"Component type not found in config: {component_key}, using as-is")
+        return component_key
+
     def get_llm_config(self, purpose: str = "parameter_extraction") -> Dict[str, Any]:
         """
         Get LLM configuration for specific purpose
@@ -244,6 +272,16 @@ class ConfigurationService:
 
         logger.warning(f"Component type '{component_type}' not found, using default limit: 10")
         return 10
+
+    def get_state_sequence(self) -> List[str]:
+        """
+        Get state sequence from component_types.json
+
+        Returns:
+            List of state names in order (e.g., ["power_source_selection", "feeder_selection", ...])
+        """
+        config = self.get_component_types()
+        return config.get("state_sequence", [])
 
     def get_cache_config(self) -> Dict[str, Any]:
         """Get cache configuration"""

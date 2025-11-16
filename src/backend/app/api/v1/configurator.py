@@ -827,9 +827,9 @@ async def select_product(
 
         # Select product through orchestrator
         result = await orchestrator.select_product(
-            conversation_state,
             request.product_gin,
-            request.product_data
+            request.product_data,
+            conversation_state
         )
 
         # ===== Store products for next turn (same as /message endpoint) =====

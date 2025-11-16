@@ -193,6 +193,16 @@ class ResultConsolidator:
                 reverse=True
             )
 
+            # DEBUG: Log all products BEFORE threshold filtering
+            logger.info(f"📊 PRE-THRESHOLD: {len(sorted_results)} products before filtering:")
+            for idx, result in enumerate(sorted_results[:10], 1):  # Show top 10
+                strategy_scores_str = ", ".join([f"{s}: {sc:.2f}" for s, sc in result.strategy_scores.items()])
+                logger.info(
+                    f"   {idx}. {result.name} (GIN: {result.gin}) | "
+                    f"Consolidated: {result.consolidated_score:.2f} | "
+                    f"Strategies: {strategy_scores_str}"
+                )
+
             # Step 3.5: Apply score threshold filtering
             if component_type:
                 sorted_results = self._apply_score_threshold(sorted_results, component_type)
@@ -277,18 +287,22 @@ class ResultConsolidator:
             if not product_name:
                 return
 
-            # Simple exact/substring matching (legacy behavior)
+            # Space-insensitive exact/substring matching
             for gin, result in products_by_gin.items():
                 result_name = result.name.strip().lower()
 
-                # Exact match or substring match
-                if result_name == product_name or product_name in result_name:
+                # Remove spaces for comparison (space-insensitive)
+                result_name_no_spaces = result_name.replace(' ', '')
+                product_name_no_spaces = product_name.replace(' ', '')
+
+                # Exact match or substring match (space-insensitive)
+                if result_name_no_spaces == product_name_no_spaces or product_name_no_spaces in result_name_no_spaces:
                     original_score = result.consolidated_score
                     result.consolidated_score = original_score * 100.0
 
                     logger.info(
                         f"✨ BOOSTED: '{result.name}' (GIN: {gin}) | "
-                        f"Matched: '{product_name}' | "
+                        f"Matched: '{product_name}' (space-insensitive) | "
                         f"Score: {original_score:.4f} → {result.consolidated_score:.4f} (100x)"
                     )
 
@@ -383,7 +397,7 @@ class ResultConsolidator:
                 if r.consolidated_score >= min_score
             ]
 
-            # Log filtering
+            # Log filtering with details
             filtered_count = len(results) - len(filtered_results)
             if filtered_count > 0:
                 logger.info(
@@ -393,6 +407,15 @@ class ResultConsolidator:
                     f"Min Score: {min_score:.2f} | "
                     f"Kept: {len(filtered_results)}/{len(results)}"
                 )
+
+                # DEBUG: Show filtered products
+                filtered_products = [r for r in results if r.consolidated_score < min_score]
+                logger.info(f"❌ FILTERED OUT ({len(filtered_products)} products):")
+                for idx, product in enumerate(filtered_products[:5], 1):  # Show first 5
+                    logger.info(
+                        f"   {idx}. {product.name} (GIN: {product.gin}) | "
+                        f"Score: {product.consolidated_score:.2f} (< {min_score:.2f})"
+                    )
             else:
                 logger.debug(
                     f"All {len(results)} products meet threshold "
