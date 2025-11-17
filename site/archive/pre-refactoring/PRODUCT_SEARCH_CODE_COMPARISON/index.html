@@ -1,0 +1,2037 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="AI-powered welding equipment configurator - Technical documentation">
+      
+      
+        <meta name="author" content="ESAB Development Team">
+      
+      
+        <link rel="canonical" href="https://esab-configurator.readthedocs.io/archive/pre-refactoring/PRODUCT_SEARCH_CODE_COMPARISON/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Product Search Code Comparison Analysis - ESAB Configurator Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#product-search-code-comparison-analysis" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="ESAB Configurator Documentation" class="md-header__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ESAB Configurator Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Product Search Code Comparison Analysis
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../CODE_ARCHITECTURE_OVERVIEW/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../deployment/README.md" class="md-tabs__link">
+          
+  
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ESAB Configurator Documentation" class="md-nav__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ESAB Configurator Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CODE_ARCHITECTURE_OVERVIEW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CORRECTED_STATE_FLOW_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ORCHESTRATOR_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestrator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTEXT_BASED_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Search Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MASTER_PARAMETER_JSON_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Parameter JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MULTILINGUAL_FLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multilingual Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    System Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONFIGURATION_SYSTEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OBSERVABILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deployment/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../testing-guide.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/runbook.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="product-search-code-comparison-analysis">Product Search Code Comparison Analysis<a class="headerlink" href="#product-search-code-comparison-analysis" title="Permanent link">&para;</a></h1>
+<p><strong>Date</strong>: 2025-01-10
+<strong>Compared Files</strong>:
+- <strong>Current</strong>: <code>/Users/bharath/Desktop/Ayna_ESAB_Nov7/src/backend/app/services/neo4j/product_search.py</code> (3,343 lines)
+- <strong>Downloaded</strong>: <code>/Users/bharath/Downloads/product_search.py</code> (1,914 lines)</p>
+<p><strong>Size Difference</strong>: +1,429 lines (+75% larger)</p>
+<hr />
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>The current version is <strong>significantly more advanced</strong> than the downloaded version, containing a complete <strong>LLM-powered feature-based filtering system</strong> (325+ lines) that doesn't exist in the downloaded version. This is <strong>NOT about removed features</strong> - it's about <strong>major additions</strong> that enhance search intelligence.</p>
+<p><strong>Key Finding</strong>: The downloaded version appears to be an <strong>earlier/simpler baseline version</strong>, while the current version represents a <strong>major enhancement</strong> with intelligent post-filtering capabilities.</p>
+<hr />
+<h2 id="part-1-major-feature-addition-llm-filtering-system">Part 1: Major Feature Addition - LLM Filtering System<a class="headerlink" href="#part-1-major-feature-addition-llm-filtering-system" title="Permanent link">&para;</a></h2>
+<h3 id="overview">🎯 Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h3>
+<p><strong>Location</strong>: Current Lines 106-431 (325 lines)
+<strong>Status</strong>: <strong>COMPLETELY NEW</strong> in current version
+<strong>Impact</strong>: 🔴 <strong>CRITICAL ENHANCEMENT</strong></p>
+<p>The current version includes an entire feature-based filtering system that enables intelligent product matching based on user requirements and LLM-extracted product features.</p>
+<h3 id="new-components">📦 New Components<a class="headerlink" href="#new-components" title="Permanent link">&para;</a></h3>
+<h4 id="1-_load_category_features-lines-106-136">1. <strong><code>_load_category_features()</code> (Lines 106-136)</strong><a class="headerlink" href="#1-_load_category_features-lines-106-136" title="Permanent link">&para;</a></h4>
+<p><strong>Purpose</strong>: Load LLM-extracted product features from JSON configuration file.</p>
+<p><strong>Code</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_load_category_features</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load category features from JSON file&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;config&quot;</span> <span class="o">/</span> <span class="s2">&quot;category_features_llm.json&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Category features file not found: </span><span class="si">{</span><span class="n">config_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{}</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">features</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Loaded category features for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">)</span><span class="si">}</span><span class="s2"> categories&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">features</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading category features: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{}</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Dependency</strong>: Requires <code>app/config/category_features_llm.json</code></p>
+<p><strong>Fallback</strong>: Returns empty dict if file missing (graceful degradation)</p>
+<hr />
+<h4 id="2-_get_category_features-lines-137-172">2. <strong><code>_get_category_features()</code> (Lines 137-172)</strong><a class="headerlink" href="#2-_get_category_features-lines-137-172" title="Permanent link">&para;</a></h4>
+<p><strong>Purpose</strong>: Map component types to Neo4j categories and retrieve feature data.</p>
+<p><strong>Code</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_get_category_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get features for a specific component type&quot;&quot;&quot;</span>
+
+    <span class="c1"># Map component types to category names</span>
+    <span class="n">category_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;power_source&quot;</span><span class="p">:</span> <span class="s2">&quot;Powersource&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;feeder&quot;</span><span class="p">:</span> <span class="s2">&quot;Feeder&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cooler&quot;</span><span class="p">:</span> <span class="s2">&quot;Cooler&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;interconnector&quot;</span><span class="p">:</span> <span class="s2">&quot;Interconn&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;torch&quot;</span><span class="p">:</span> <span class="s2">&quot;Torches&quot;</span><span class="p">,</span>
+        <span class="c1"># ... all accessory categories</span>
+    <span class="p">}</span>
+
+    <span class="n">category</span> <span class="o">=</span> <span class="n">category_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">component_type</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">category</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">category_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">category_features</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">category</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">category_data</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">category_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;features&quot;</span><span class="p">,</span> <span class="p">{})</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Mapping</strong>: Orchestrator component names → Neo4j category names</p>
+<hr />
+<h4 id="3-_parse_numeric_value-lines-177-204">3. <strong><code>_parse_numeric_value()</code> (Lines 177-204)</strong><a class="headerlink" href="#3-_parse_numeric_value-lines-177-204" title="Permanent link">&para;</a></h4>
+<p><strong>Purpose</strong>: Extract numeric values from strings with units.</p>
+<p><strong>Examples</strong>:
+- <code>"500A"</code> → <code>500.0</code>
+- <code>"380V"</code> → <code>380.0</code>
+- <code>"1.6mm"</code> → <code>1.6</code>
+- <code>"2.5 kW"</code> → <code>2.5</code></p>
+<p><strong>Code</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_parse_numeric_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract numeric value from string like &#39;500A&#39;, &#39;380V&#39;, &#39;1.6mm&#39;&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">value_str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Remove common units and whitespace</span>
+    <span class="n">cleaned</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[^\d.-]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">value_str</span><span class="p">))</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">cleaned</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Use Case</strong>: Parse product specifications and user requirements</p>
+<hr />
+<h4 id="4-_in_tolerance-lines-206-229">4. <strong><code>_in_tolerance()</code> (Lines 206-229)</strong><a class="headerlink" href="#4-_in_tolerance-lines-206-229" title="Permanent link">&para;</a></h4>
+<p><strong>Purpose</strong>: Check if a value is within a tolerance range (default ±20%).</p>
+<p><strong>Code</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_in_tolerance</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">target</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">tolerance_percent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">20.0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if value is within tolerance% of target&quot;&quot;&quot;</span>
+    <span class="n">lower_bound</span> <span class="o">=</span> <span class="n">target</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">tolerance_percent</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">upper_bound</span> <span class="o">=</span> <span class="n">target</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">tolerance_percent</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lower_bound</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="n">upper_bound</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Example</strong>:
+- Target: <code>500A</code>
+- Tolerance: <code>±20%</code>
+- Range: <code>400A - 600A</code>
+- <code>450A</code> → ✅ Within tolerance
+- <code>350A</code> → ❌ Outside tolerance</p>
+<hr />
+<h4 id="5-_matches_numeric_constraint-lines-231-344">5. <strong><code>_matches_numeric_constraint()</code> (Lines 231-344)</strong><a class="headerlink" href="#5-_matches_numeric_constraint-lines-231-344" title="Permanent link">&para;</a></h4>
+<p><strong>Purpose</strong>: Check if a product value matches user requirement with operator support.</p>
+<p><strong>Dual-Mode Support</strong>:</p>
+<p><strong>Mode 1: Dict format with operators</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">requirement</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+    <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;lte&quot;</span>  <span class="c1"># ≤</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Mode 2: String format (backward compat)</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">requirement</span> <span class="o">=</span> <span class="s2">&quot;300A&quot;</span>  <span class="c1"># Defaults to ±20% tolerance (approx)</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Supported Operators</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Meaning</th>
+<th>Keywords</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lte</code></td>
+<td>≤</td>
+<td>max, maximum, up to</td>
+<td>"up to 500A"</td>
+</tr>
+<tr>
+<td><code>gte</code></td>
+<td>≥</td>
+<td>min, minimum, at least</td>
+<td>"at least 300A"</td>
+</tr>
+<tr>
+<td><code>lt</code></td>
+<td>&lt;</td>
+<td>less than, below</td>
+<td>"below 500A"</td>
+</tr>
+<tr>
+<td><code>gt</code></td>
+<td>&gt;</td>
+<td>more than, above</td>
+<td>"above 300A"</td>
+</tr>
+<tr>
+<td><code>eq</code></td>
+<td>=</td>
+<td>exactly, only</td>
+<td>"exactly 500A"</td>
+</tr>
+<tr>
+<td><code>range</code></td>
+<td>between</td>
+<td>between, from...to</td>
+<td>"300-500A"</td>
+</tr>
+<tr>
+<td><code>approx</code></td>
+<td>≈</td>
+<td>around, roughly, approximately</td>
+<td>"around 500A" (±20%)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Code Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_matches_numeric_constraint</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">product_value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+    <span class="n">requirement</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if product value matches requirement with operator support&quot;&quot;&quot;</span>
+
+    <span class="c1"># Parse product value</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">product_value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">product_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_numeric_value</span><span class="p">(</span><span class="n">product_value</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">product_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">product_value</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">product_val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># Handle dict format with operators</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">requirement</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">req_value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">requirement</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+        <span class="n">operator</span> <span class="o">=</span> <span class="n">requirement</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;operator&quot;</span><span class="p">,</span> <span class="s2">&quot;approx&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;lte&quot;</span><span class="p">:</span>  <span class="c1"># ≤</span>
+            <span class="k">return</span> <span class="n">product_val</span> <span class="o">&lt;=</span> <span class="n">req_value</span>
+        <span class="k">elif</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;gte&quot;</span><span class="p">:</span>  <span class="c1"># ≥</span>
+            <span class="k">return</span> <span class="n">product_val</span> <span class="o">&gt;=</span> <span class="n">req_value</span>
+        <span class="k">elif</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;lt&quot;</span><span class="p">:</span>  <span class="c1"># &lt;</span>
+            <span class="k">return</span> <span class="n">product_val</span> <span class="o">&lt;</span> <span class="n">req_value</span>
+        <span class="k">elif</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;gt&quot;</span><span class="p">:</span>  <span class="c1"># &gt;</span>
+            <span class="k">return</span> <span class="n">product_val</span> <span class="o">&gt;</span> <span class="n">req_value</span>
+        <span class="k">elif</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;eq&quot;</span><span class="p">:</span>  <span class="c1"># =</span>
+            <span class="k">return</span> <span class="n">product_val</span> <span class="o">==</span> <span class="n">req_value</span>
+        <span class="k">elif</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;range&quot;</span><span class="p">:</span>
+            <span class="n">min_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">requirement</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">max_val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">requirement</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)))</span>
+            <span class="k">return</span> <span class="n">min_val</span> <span class="o">&lt;=</span> <span class="n">product_val</span> <span class="o">&lt;=</span> <span class="n">max_val</span>
+        <span class="k">elif</span> <span class="n">operator</span> <span class="o">==</span> <span class="s2">&quot;approx&quot;</span><span class="p">:</span>  <span class="c1"># ≈</span>
+            <span class="n">tolerance</span> <span class="o">=</span> <span class="n">requirement</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tolerance&quot;</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_tolerance</span><span class="p">(</span><span class="n">product_val</span><span class="p">,</span> <span class="n">req_value</span><span class="p">,</span> <span class="n">tolerance</span><span class="p">)</span>
+
+    <span class="c1"># Handle string format (backward compat)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">req_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_numeric_value</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">requirement</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">req_value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_in_tolerance</span><span class="p">(</span><span class="n">product_val</span><span class="p">,</span> <span class="n">req_value</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Real-World Examples</strong>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># User: &quot;I need a welder with max 500A&quot;</span>
+<span class="n">requirement</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;lte&quot;</span><span class="p">}</span>
+<span class="n">product_value</span> <span class="o">=</span> <span class="s2">&quot;450A&quot;</span>  <span class="c1"># ✅ Matches (450 ≤ 500)</span>
+
+<span class="c1"># User: &quot;I need at least 300A&quot;</span>
+<span class="n">requirement</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;gte&quot;</span><span class="p">}</span>
+<span class="n">product_value</span> <span class="o">=</span> <span class="s2">&quot;350A&quot;</span>  <span class="c1"># ✅ Matches (350 ≥ 300)</span>
+
+<span class="c1"># User: &quot;I need around 500A&quot;</span>
+<span class="n">requirement</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;approx&quot;</span><span class="p">}</span>
+<span class="n">product_value</span> <span class="o">=</span> <span class="s2">&quot;480A&quot;</span>  <span class="c1"># ✅ Matches (within ±20%)</span>
+
+<span class="c1"># User: &quot;I need between 300-500A&quot;</span>
+<span class="n">requirement</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;range&quot;</span><span class="p">}</span>
+<span class="n">product_value</span> <span class="o">=</span> <span class="s2">&quot;400A&quot;</span>  <span class="c1"># ✅ Matches (300 ≤ 400 ≤ 500)</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h4 id="6-_matches_feature_requirements-lines-346-431">6. <strong><code>_matches_feature_requirements()</code> (Lines 346-431)</strong><a class="headerlink" href="#6-_matches_feature_requirements-lines-346-431" title="Permanent link">&para;</a></h4>
+<p><strong>Purpose</strong>: Main filtering logic - check if a product matches ALL user requirements.</p>
+<p><strong>Logic Flow</strong>:
+1. Extract user requirements from MasterParameterJSON
+2. Get product features from category data
+3. Check categorical features (fuzzy matching)
+4. Check numeric specifications (operator-based)
+5. Return True only if ALL requirements match</p>
+<p><strong>Code Structure</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_matches_feature_requirements</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">product</span><span class="p">:</span> <span class="n">ProductResult</span><span class="p">,</span>
+    <span class="n">master_parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">feature_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if product matches user requirements&quot;&quot;&quot;</span>
+
+    <span class="n">component_params</span> <span class="o">=</span> <span class="n">master_parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">component_key</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">component_params</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># No requirements = all match</span>
+
+    <span class="c1"># 1. Check categorical features</span>
+    <span class="n">categorical_features</span> <span class="o">=</span> <span class="n">feature_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;categorical_features&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">categorical_features</span><span class="p">:</span>
+        <span class="n">feature_name</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="n">user_value</span> <span class="o">=</span> <span class="n">component_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">feature_name_key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">user_value</span><span class="p">:</span>
+            <span class="c1"># Fuzzy match against product&#39;s categorical features</span>
+            <span class="n">product_options</span> <span class="o">=</span> <span class="n">feature</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;options&quot;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">user_value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">product_options</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Mismatch</span>
+
+    <span class="c1"># 2. Check numeric specifications</span>
+    <span class="n">numeric_specs</span> <span class="o">=</span> <span class="n">feature_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;numeric_specs&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">for</span> <span class="n">spec</span> <span class="ow">in</span> <span class="n">numeric_specs</span><span class="p">:</span>
+        <span class="n">spec_name</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="n">user_requirement</span> <span class="o">=</span> <span class="n">component_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">spec_name_key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">user_requirement</span><span class="p">:</span>
+            <span class="c1"># Get product value (could be single value or range)</span>
+            <span class="n">product_value</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Check constraint with operator support</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matches_numeric_constraint</span><span class="p">(</span><span class="n">product_value</span><span class="p">,</span> <span class="n">user_requirement</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># Mismatch</span>
+
+    <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># All requirements matched</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Example Scenario</strong>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># User Requirements</span>
+<span class="n">master_parameters</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;power_source&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;current_output&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;lte&quot;</span><span class="p">},</span>
+        <span class="s2">&quot;process&quot;</span><span class="p">:</span> <span class="s2">&quot;MIG&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cooling_type&quot;</span><span class="p">:</span> <span class="s2">&quot;Water&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1"># Product Features (from category_features_llm.json)</span>
+<span class="n">feature_data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;numeric_specs&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Current Output&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">450</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;categorical_features&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Process&quot;</span><span class="p">,</span> <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;MIG&quot;</span><span class="p">,</span> <span class="s2">&quot;TIG&quot;</span><span class="p">,</span> <span class="s2">&quot;MMA&quot;</span><span class="p">]},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Cooling Type&quot;</span><span class="p">,</span> <span class="s2">&quot;options&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;Water&quot;</span><span class="p">,</span> <span class="s2">&quot;Air&quot;</span><span class="p">]}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+<span class="c1"># Product</span>
+<span class="n">product</span> <span class="o">=</span> <span class="n">ProductResult</span><span class="p">(</span>
+    <span class="n">gin</span><span class="o">=</span><span class="s2">&quot;0446200880&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Aristo 500ix&quot;</span><span class="p">,</span>
+    <span class="n">category</span><span class="o">=</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span>
+    <span class="o">...</span>
+<span class="p">)</span>
+
+<span class="c1"># Matching Logic</span>
+<span class="err">✅</span> <span class="n">Current</span><span class="p">:</span> <span class="mi">450</span><span class="n">A</span> <span class="err">≤</span> <span class="mi">500</span><span class="n">A</span> <span class="p">(</span><span class="n">lte</span> <span class="n">operator</span><span class="p">)</span>
+<span class="err">✅</span> <span class="n">Process</span><span class="p">:</span> <span class="s2">&quot;MIG&quot;</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;MIG&quot;</span><span class="p">,</span> <span class="s2">&quot;TIG&quot;</span><span class="p">,</span> <span class="s2">&quot;MMA&quot;</span><span class="p">]</span>
+<span class="err">✅</span> <span class="n">Cooling</span><span class="p">:</span> <span class="s2">&quot;Water&quot;</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Water&quot;</span><span class="p">,</span> <span class="s2">&quot;Air&quot;</span><span class="p">]</span>
+
+<span class="n">Result</span><span class="p">:</span> <span class="err">✅</span> <span class="n">Product</span> <span class="n">matches</span> <span class="nb">all</span> <span class="n">requirements</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h3 id="integration-point">🔗 Integration Point<a class="headerlink" href="#integration-point" title="Permanent link">&para;</a></h3>
+<p><strong>Location</strong>: Applied to all search methods after Neo4j query execution</p>
+<p><strong>Pattern</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Inside search_power_source(), search_feeder(), etc.</span>
+
+<span class="c1"># 1. Execute Neo4j query</span>
+<span class="n">products_with_scores</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_search_with_fallback</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="c1"># 2. NEW: Apply LLM feature-based post-filtering</span>
+<span class="k">if</span> <span class="n">products_with_scores</span> <span class="ow">and</span> <span class="n">master_parameters</span><span class="p">:</span>
+    <span class="n">feature_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_category_features</span><span class="p">(</span><span class="n">component_type</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">feature_data</span><span class="p">:</span>
+        <span class="c1"># Convert to ProductResult objects</span>
+        <span class="n">product_results</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">ProductResult</span><span class="p">(</span>
+                <span class="n">gin</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">][</span><span class="s2">&quot;gin&quot;</span><span class="p">],</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">][</span><span class="s2">&quot;item_name&quot;</span><span class="p">],</span>
+                <span class="n">category</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="p">][</span><span class="s2">&quot;category&quot;</span><span class="p">],</span>
+                <span class="o">...</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">products_with_scores</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Apply feature-based filtering</span>
+        <span class="n">filtered_by_features</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">product</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">product_results</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matches_feature_requirements</span><span class="p">(</span><span class="n">product</span><span class="p">,</span> <span class="n">master_parameters</span><span class="p">,</span> <span class="n">feature_data</span><span class="p">):</span>
+                <span class="n">filtered_by_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">products_with_scores</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="c1"># Use filtered results if any, otherwise keep original</span>
+        <span class="k">if</span> <span class="n">filtered_by_features</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✨ LLM feature filter: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">products_with_scores</span><span class="p">)</span><span class="si">}</span><span class="s2"> → </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">filtered_by_features</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">products_with_scores</span> <span class="o">=</span> <span class="n">filtered_by_features</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠️ All products filtered out - keeping original </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">products_with_scores</span><span class="p">)</span><span class="si">}</span><span class="s2"> results&quot;</span><span class="p">)</span>
+
+<span class="c1"># 3. Continue with pagination and return</span>
+<span class="o">...</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Applied To</strong>:
+- <code>search_power_source()</code> (Line ~2980)
+- <code>search_feeder()</code> (Line ~1596)
+- <code>search_cooler()</code> (Line ~1701)
+- <code>search_interconnector()</code> (Line ~1813)
+- <code>search_torch()</code> (Line ~1934)
+- <code>search_accessories()</code> (Line ~2039)
+- All advanced search methods (remotes, connectivity, wears, etc.)</p>
+<p><strong>Fallback Logic</strong>:
+- ✅ If feature file missing → No filtering (graceful degradation)
+- ✅ If all products filtered out → Keep original results
+- ✅ If no requirements specified → All products match</p>
+<hr />
+<h2 id="part-2-other-code-changes">Part 2: Other Code Changes<a class="headerlink" href="#part-2-other-code-changes" title="Permanent link">&para;</a></h2>
+<h3 id="type-import-addition">🔧 Type Import Addition<a class="headerlink" href="#type-import-addition" title="Permanent link">&para;</a></h3>
+<p><strong>Location</strong>: Line 14
+<strong>Risk</strong>: 🟡 MEDIUM</p>
+<p><strong>Before (Downloaded)</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>After (Current)</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Purpose</strong>: Required for <code>_matches_numeric_constraint()</code> dual-mode support (Dict OR str)</p>
+<p><strong>Impact</strong>: Breaking change if reverted</p>
+<hr />
+<h3 id="data-model-changes">🔧 Data Model Changes<a class="headerlink" href="#data-model-changes" title="Permanent link">&para;</a></h3>
+<h4 id="1-removed-product-alias">1. Removed <code>Product</code> Alias<a class="headerlink" href="#1-removed-product-alias" title="Permanent link">&para;</a></h4>
+<p><strong>Location</strong>: Line 40 (Downloaded)
+<strong>Risk</strong>: 🟢 LOW</p>
+<p><strong>Before (Downloaded)</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ProductResult</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="n">Product</span> <span class="o">=</span> <span class="n">ProductResult</span>  <span class="c1"># ← Alias removed in current version</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>After (Current)</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ProductResult</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="o">...</span>
+<span class="c1"># No alias</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Impact</strong>: Alias was not used anywhere in codebase</p>
+<hr />
+<h4 id="2-searchresults-default-limit-changed">2. SearchResults Default Limit Changed<a class="headerlink" href="#2-searchresults-default-limit-changed" title="Permanent link">&para;</a></h4>
+<p><strong>Location</strong>: Line 48 (Current), Line 50 (Downloaded)
+<strong>Risk</strong>: 🟢 LOW</p>
+<p><strong>Before (Downloaded)</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SearchResults</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># ← Zero default</span>
+    <span class="n">has_more</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>After (Current)</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">SearchResults</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># ← Changed to 10</span>
+    <span class="n">has_more</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Purpose</strong>: More sensible default (0 was likely a bug)</p>
+<p><strong>Impact</strong>: Cosmetic improvement</p>
+<hr />
+<h3 id="constructor-enhancement">🔧 Constructor Enhancement<a class="headerlink" href="#constructor-enhancement" title="Permanent link">&para;</a></h3>
+<p><strong>Location</strong>: Line 67 (Current), Line 68 (Downloaded)
+<strong>Risk</strong>: 🔴 HIGH</p>
+<p><strong>Before (Downloaded)</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">AsyncGraphDatabase</span><span class="o">.</span><span class="n">driver</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">product_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_product_names</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Neo4j Product Search initialized - URI: </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>After (Current)</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">password</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">AsyncGraphDatabase</span><span class="o">.</span><span class="n">driver</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">product_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_product_names</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">category_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_category_features</span><span class="p">()</span>  <span class="c1"># ← NEW LINE</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Neo4j Product Search initialized - URI: </span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Purpose</strong>: Load feature data at initialization for post-filtering</p>
+<p><strong>Impact</strong>:
+- Loads <code>category_features_llm.json</code> at startup
+- Graceful degradation if file missing (empty dict)
+- Required for LLM post-filtering to work</p>
+<hr />
+<h2 id="part-3-unchanged-core-logic">Part 3: Unchanged Core Logic<a class="headerlink" href="#part-3-unchanged-core-logic" title="Permanent link">&para;</a></h2>
+<h3 id="identical-components">✅ Identical Components<a class="headerlink" href="#identical-components" title="Permanent link">&para;</a></h3>
+<p>All core search logic remains <strong>IDENTICAL</strong> between versions:</p>
+<ol>
+<li><strong>GIN Detection</strong> (<code>_detect_gin()</code>) - IDENTICAL</li>
+<li><strong>Natural Language Preprocessing</strong> (<code>_preprocess_natural_language()</code>) - IDENTICAL</li>
+<li><strong>Fuzzy Product Name Matching</strong> (<code>_normalize_product_name()</code>) - IDENTICAL</li>
+<li><strong>Exact Model Search</strong> (<code>_search_by_exact_model()</code>) - IDENTICAL</li>
+<li><strong>Search Term Expansion</strong> (<code>_expand_measurement_terms()</code>) - IDENTICAL</li>
+<li><strong>LLM Search Filter Builder</strong> (<code>_add_search_term_filters()</code>) - IDENTICAL</li>
+<li><strong>Cypher Query Construction</strong> - IDENTICAL for all search methods</li>
+<li><strong>Compatibility Validation</strong> - IDENTICAL (PowerSource, Feeder, Cooler)</li>
+<li><strong>Priority Ranking</strong> - IDENTICAL</li>
+<li><strong>Pagination Logic</strong> - IDENTICAL</li>
+<li><strong>Neo4j Communication</strong> (<code>_execute_search()</code>) - IDENTICAL</li>
+<li><strong>Result Cleaning</strong> (<code>_clean_neo4j_types()</code>) - IDENTICAL</li>
+</ol>
+<p><strong>Conclusion</strong>: All base functionality is preserved. The enhancement is purely <strong>additive</strong>.</p>
+<hr />
+<h2 id="part-4-impact-analysis">Part 4: Impact Analysis<a class="headerlink" href="#part-4-impact-analysis" title="Permanent link">&para;</a></h2>
+<h3 id="feature-comparison-matrix">📊 Feature Comparison Matrix<a class="headerlink" href="#feature-comparison-matrix" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Downloaded Version</th>
+<th>Current Version</th>
+<th>Enhancement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Size</strong></td>
+<td>1,914 lines</td>
+<td>3,343 lines</td>
+<td>+75%</td>
+</tr>
+<tr>
+<td><strong>GIN Detection</strong></td>
+<td>✅ Yes</td>
+<td>✅ Yes</td>
+<td>Same</td>
+</tr>
+<tr>
+<td><strong>Fuzzy Matching</strong></td>
+<td>✅ Yes</td>
+<td>✅ Yes</td>
+<td>Same</td>
+</tr>
+<tr>
+<td><strong>Neo4j Search</strong></td>
+<td>✅ Yes</td>
+<td>✅ Yes</td>
+<td>Same</td>
+</tr>
+<tr>
+<td><strong>Compatibility Checks</strong></td>
+<td>✅ Yes</td>
+<td>✅ Yes</td>
+<td>Same</td>
+</tr>
+<tr>
+<td><strong>Priority Ranking</strong></td>
+<td>✅ Yes</td>
+<td>✅ Yes</td>
+<td>Same</td>
+</tr>
+<tr>
+<td><strong>LLM Post-Filtering</strong></td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+<td><strong>NEW</strong></td>
+</tr>
+<tr>
+<td><strong>Operator Constraints</strong></td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+<td><strong>NEW</strong></td>
+</tr>
+<tr>
+<td><strong>Categorical Matching</strong></td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+<td><strong>NEW</strong></td>
+</tr>
+<tr>
+<td><strong>Tolerance Checking</strong></td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+<td><strong>NEW</strong></td>
+</tr>
+<tr>
+<td><strong>Feature Config</strong></td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+<td><strong>NEW</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="use-case-comparison">🎯 Use Case Comparison<a class="headerlink" href="#use-case-comparison" title="Permanent link">&para;</a></h3>
+<h4 id="scenario-1-basic-product-search"><strong>Scenario 1: Basic Product Search</strong><a class="headerlink" href="#scenario-1-basic-product-search" title="Permanent link">&para;</a></h4>
+<p><strong>User Query</strong>: "I need a 500A MIG welder"</p>
+<p><strong>Downloaded Version</strong>:
+1. Parse query → Extract "500A", "MIG"
+2. Search Neo4j with Lucene filters
+3. Return top results ranked by priority
+4. Result: ~10 products matching criteria</p>
+<p><strong>Current Version</strong>:
+1. Parse query → Extract "500A", "MIG"
+2. Search Neo4j with Lucene filters (same as downloaded)
+3. <strong>NEW</strong>: Apply feature-based post-filtering
+   - Check numeric: Current Output ≤ 500A
+   - Check categorical: Process = "MIG"
+4. Return filtered results
+5. Result: ~3-5 products (more accurate)</p>
+<p><strong>Improvement</strong>: ✨ More precise results</p>
+<hr />
+<h4 id="scenario-2-range-based-search"><strong>Scenario 2: Range-Based Search</strong><a class="headerlink" href="#scenario-2-range-based-search" title="Permanent link">&para;</a></h4>
+<p><strong>User Query</strong>: "I need a welder between 300-500A for aluminum"</p>
+<p><strong>Downloaded Version</strong>:
+1. Parse query → Extract "300", "500", "aluminum"
+2. Search Neo4j (may not handle range properly)
+3. Return products that vaguely match
+4. Result: May include 250A or 600A products</p>
+<p><strong>Current Version</strong>:
+1. Parse query → Extract "300-500", "aluminum"
+2. Search Neo4j (same initial query)
+3. <strong>NEW</strong>: Apply range operator filtering
+   - <code>{"min": 300, "max": 500, "operator": "range"}</code>
+   - Filter out anything &lt; 300A or &gt; 500A
+4. Return only products in range
+5. Result: Only 300-500A products</p>
+<p><strong>Improvement</strong>: ✨ Accurate range filtering</p>
+<hr />
+<h4 id="scenario-3-approximate-matching"><strong>Scenario 3: Approximate Matching</strong><a class="headerlink" href="#scenario-3-approximate-matching" title="Permanent link">&para;</a></h4>
+<p><strong>User Query</strong>: "I need around 500A for water-cooled operation"</p>
+<p><strong>Downloaded Version</strong>:
+1. Parse query → Extract "500", "water"
+2. Search Neo4j
+3. May return 200A or 800A products (no tolerance logic)
+4. Result: Wide range of results</p>
+<p><strong>Current Version</strong>:
+1. Parse query → Extract "500A", "water-cooled"
+2. Search Neo4j (same)
+3. <strong>NEW</strong>: Apply approx operator with ±20% tolerance
+   - Range: 400A - 600A
+   - Categorical: cooling_type = "water"
+4. Return only products within tolerance
+5. Result: 400-600A water-cooled products</p>
+<p><strong>Improvement</strong>: ✨ Intelligent tolerance matching</p>
+<hr />
+<h3 id="risk-assessment">⚠️ Risk Assessment<a class="headerlink" href="#risk-assessment" title="Permanent link">&para;</a></h3>
+<h4 id="critical-risks-if-reverting-to-downloaded">🔴 CRITICAL RISKS (If Reverting to Downloaded)<a class="headerlink" href="#critical-risks-if-reverting-to-downloaded" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Remove Feature Filtering System</strong> → Lose intelligent search capability</li>
+<li><strong>Remove Type Union Import</strong> → Type errors in constraint matching</li>
+<li><strong>Remove Constructor Enhancement</strong> → System expects <code>category_features</code></li>
+<li><strong>Remove All New Methods</strong> → Breaking changes (400+ lines)</li>
+</ol>
+<p><strong>Impact</strong>: System becomes 75% simpler but loses advanced intelligence</p>
+<hr />
+<h4 id="low-risks-keeping-current">🟢 LOW RISKS (Keeping Current)<a class="headerlink" href="#low-risks-keeping-current" title="Permanent link">&para;</a></h4>
+<ol>
+<li><strong>Feature File Missing</strong> → Graceful degradation (no filtering)</li>
+<li><strong>Forward Compatible</strong> → Downloaded version can upgrade later</li>
+<li><strong>Backward Compatible</strong> → Works with old queries/parameters</li>
+<li><strong>No Breaking Changes</strong> → All existing code still works</li>
+</ol>
+<p><strong>Impact</strong>: Minimal risk, maximum benefit</p>
+<hr />
+<h2 id="part-5-recommendations">Part 5: Recommendations<a class="headerlink" href="#part-5-recommendations" title="Permanent link">&para;</a></h2>
+<h3 id="recommended-keep-current-version">✅ <strong>RECOMMENDED: Keep Current Version</strong><a class="headerlink" href="#recommended-keep-current-version" title="Permanent link">&para;</a></h3>
+<p><strong>Reasons</strong>:
+1. ✨ Advanced LLM-powered filtering
+2. ✨ Operator-based constraints (≤, ≥, &lt;, &gt;, =, range, ≈)
+3. ✨ More accurate search results
+4. ✅ Backward compatible
+5. ✅ Graceful degradation if feature file missing
+6. ✅ Additive enhancement (no removed functionality)</p>
+<p><strong>Action</strong>: No changes needed</p>
+<hr />
+<h3 id="document-the-enhancement">📝 <strong>Document the Enhancement</strong><a class="headerlink" href="#document-the-enhancement" title="Permanent link">&para;</a></h3>
+<p><strong>Create</strong>:
+1. <code>docs/LLM_FEATURE_FILTERING.md</code> - Architecture documentation
+2. <code>app/config/category_features_llm.json.example</code> - Config template
+3. Update <code>docs/PRODUCT_SEARCH_SERVICE.md</code> with filtering section</p>
+<p><strong>Benefits</strong>:
+- Team understands the enhancement
+- New developers can leverage the system
+- Clear upgrade path for other projects</p>
+<hr />
+<h3 id="not-recommended-revert-to-downloaded-version">🚫 <strong>NOT RECOMMENDED: Revert to Downloaded Version</strong><a class="headerlink" href="#not-recommended-revert-to-downloaded-version" title="Permanent link">&para;</a></h3>
+<p><strong>Reasons</strong>:
+1. ❌ Lose 75% of code (1,429 lines)
+2. ❌ Lose intelligent filtering capability
+3. ❌ Less accurate search results
+4. ❌ No operator support
+5. ❌ No tolerance matching
+6. ❌ Downloaded version appears to be older/simpler baseline</p>
+<p><strong>Only Revert If</strong>:
+- Downloaded version has critical fixes not in current
+- Current version has production-breaking bugs
+- Need to merge specific features from downloaded</p>
+<hr />
+<h2 id="part-6-migration-considerations">Part 6: Migration Considerations<a class="headerlink" href="#part-6-migration-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="if-you-must-switch-versions">🔄 If You Must Switch Versions<a class="headerlink" href="#if-you-must-switch-versions" title="Permanent link">&para;</a></h3>
+<h4 id="switching-to-downloaded-not-recommended"><strong>Switching to Downloaded (Not Recommended)</strong><a class="headerlink" href="#switching-to-downloaded-not-recommended" title="Permanent link">&para;</a></h4>
+<p><strong>Steps</strong>:
+1. Backup current version (it's more advanced!)
+2. Extract <code>category_features_llm.json</code> (may need later)
+3. Copy downloaded version over current
+4. Remove <code>Union</code> from imports (may cause errors)
+5. Test all search methods
+6. Document what was lost</p>
+<p><strong>Risks</strong>:
+- Lose intelligent filtering
+- Lose operator support
+- Less accurate results</p>
+<hr />
+<h4 id="merging-best-of-both-if-needed"><strong>Merging Best of Both (If Needed)</strong><a class="headerlink" href="#merging-best-of-both-if-needed" title="Permanent link">&para;</a></h4>
+<p><strong>Steps</strong>:
+1. Keep current version as base
+2. Identify specific features from downloaded you need
+3. Cherry-pick those features
+4. Test compatibility
+5. Maintain feature filtering system</p>
+<p><strong>Benefits</strong>:
+- Keep intelligence
+- Add any missing fixes from downloaded
+- Best of both worlds</p>
+<hr />
+<h2 id="part-7-conclusion">Part 7: Conclusion<a class="headerlink" href="#part-7-conclusion" title="Permanent link">&para;</a></h2>
+<h3 id="key-findings-summary">🎯 Key Findings Summary<a class="headerlink" href="#key-findings-summary" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Current version is significantly more advanced</strong> (3,343 lines vs 1,914 lines)</li>
+<li><strong>Downloaded version appears to be an earlier baseline</strong> without LLM filtering</li>
+<li><strong>No features were removed</strong> - only additions were made</li>
+<li><strong>All core functionality is identical</strong> between versions</li>
+<li><strong>Feature filtering is a major enhancement</strong> (325+ lines)</li>
+<li><strong>System is backward compatible</strong> and gracefully degrades</li>
+</ol>
+<h3 id="final-recommendation">💡 Final Recommendation<a class="headerlink" href="#final-recommendation" title="Permanent link">&para;</a></h3>
+<p><strong>Keep the current version.</strong> It represents a major advancement in search intelligence while maintaining all existing functionality. The downloaded version is a simpler baseline that lacks the sophisticated filtering capabilities of the current implementation.</p>
+<p>If specific features from the downloaded version are needed, cherry-pick them into the current version rather than reverting entirely.</p>
+<hr />
+<h2 id="appendix-a-dependency-check">Appendix A: Dependency Check<a class="headerlink" href="#appendix-a-dependency-check" title="Permanent link">&para;</a></h2>
+<h3 id="required-files-for-current-version">Required Files for Current Version<a class="headerlink" href="#required-files-for-current-version" title="Permanent link">&para;</a></h3>
+<p><strong><code>app/config/category_features_llm.json</code></strong></p>
+<p><strong>Status</strong>: Check if file exists</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>ls<span class="w"> </span>-lh<span class="w"> </span>/Users/bharath/Desktop/Ayna_ESAB_Nov7/src/backend/app/config/category_features_llm.json
+</code></pre></div></td></tr></table></div>
+<p><strong>If Missing</strong>: System still works but filtering is disabled</p>
+<p><strong>Schema</strong> (Example):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;Powersource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Powersource&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;product_count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;numeric_specs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Current Output&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;min&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">300</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;max&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;unit&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;display&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;300A - 500A&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;categorical_features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">          </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Process&quot;</span><span class="p">,</span>
+<span class="w">          </span><span class="nt">&quot;options&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;MIG&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;TIG&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;MMA&quot;</span><span class="p">],</span>
+<span class="w">          </span><span class="nt">&quot;display&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MIG, TIG, MMA&quot;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="appendix-b-testing-recommendations">Appendix B: Testing Recommendations<a class="headerlink" href="#appendix-b-testing-recommendations" title="Permanent link">&para;</a></h2>
+<h3 id="unit-tests-for-new-features">Unit Tests for New Features<a class="headerlink" href="#unit-tests-for-new-features" title="Permanent link">&para;</a></h3>
+<p><strong>Test Coverage Needed</strong>:
+1. <code>_parse_numeric_value()</code> - Various formats
+2. <code>_in_tolerance()</code> - Boundary cases
+3. <code>_matches_numeric_constraint()</code> - All operators
+4. <code>_matches_feature_requirements()</code> - Complex scenarios
+5. Feature-based filtering integration - End-to-end</p>
+<p><strong>Example Test</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_numeric_constraint_operators</span><span class="p">():</span>
+    <span class="n">service</span> <span class="o">=</span> <span class="n">Neo4jProductSearch</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+    <span class="c1"># Test lte (≤)</span>
+    <span class="k">assert</span> <span class="n">service</span><span class="o">.</span><span class="n">_matches_numeric_constraint</span><span class="p">(</span><span class="s2">&quot;450A&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;lte&quot;</span><span class="p">})</span> <span class="o">==</span> <span class="kc">True</span>
+    <span class="k">assert</span> <span class="n">service</span><span class="o">.</span><span class="n">_matches_numeric_constraint</span><span class="p">(</span><span class="s2">&quot;550A&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;lte&quot;</span><span class="p">})</span> <span class="o">==</span> <span class="kc">False</span>
+
+    <span class="c1"># Test gte (≥)</span>
+    <span class="k">assert</span> <span class="n">service</span><span class="o">.</span><span class="n">_matches_numeric_constraint</span><span class="p">(</span><span class="s2">&quot;350A&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;gte&quot;</span><span class="p">})</span> <span class="o">==</span> <span class="kc">True</span>
+    <span class="k">assert</span> <span class="n">service</span><span class="o">.</span><span class="n">_matches_numeric_constraint</span><span class="p">(</span><span class="s2">&quot;250A&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;gte&quot;</span><span class="p">})</span> <span class="o">==</span> <span class="kc">False</span>
+
+    <span class="c1"># Test range</span>
+    <span class="k">assert</span> <span class="n">service</span><span class="o">.</span><span class="n">_matches_numeric_constraint</span><span class="p">(</span><span class="s2">&quot;400A&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;range&quot;</span><span class="p">})</span> <span class="o">==</span> <span class="kc">True</span>
+    <span class="k">assert</span> <span class="n">service</span><span class="o">.</span><span class="n">_matches_numeric_constraint</span><span class="p">(</span><span class="s2">&quot;600A&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;range&quot;</span><span class="p">})</span> <span class="o">==</span> <span class="kc">False</span>
+
+    <span class="c1"># Test approx (±20%)</span>
+    <span class="k">assert</span> <span class="n">service</span><span class="o">.</span><span class="n">_matches_numeric_constraint</span><span class="p">(</span><span class="s2">&quot;480A&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;approx&quot;</span><span class="p">})</span> <span class="o">==</span> <span class="kc">True</span>
+    <span class="k">assert</span> <span class="n">service</span><span class="o">.</span><span class="n">_matches_numeric_constraint</span><span class="p">(</span><span class="s2">&quot;350A&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;approx&quot;</span><span class="p">})</span> <span class="o">==</span> <span class="kc">False</span>
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="document-history">Document History<a class="headerlink" href="#document-history" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Version</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2025-01-10</td>
+<td>1.0</td>
+<td>Initial comprehensive comparison</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>End of Document</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 ESAB
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/esab/configurator" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/esab-configurator/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../../javascripts/extra.js"></script>
+      
+    
+  </body>
+</html>

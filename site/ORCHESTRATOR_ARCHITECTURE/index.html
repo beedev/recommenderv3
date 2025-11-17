@@ -1,0 +1,3247 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="AI-powered welding equipment configurator - Technical documentation">
+      
+      
+        <meta name="author" content="ESAB Development Team">
+      
+      
+        <link rel="canonical" href="https://esab-configurator.readthedocs.io/ORCHESTRATOR_ARCHITECTURE/">
+      
+      
+        <link rel="prev" href="../CORRECTED_STATE_FLOW_ARCHITECTURE/">
+      
+      
+        <link rel="next" href="../CONTEXT_BASED_STRATEGIES/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Orchestrator - ESAB Configurator Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#orchestrator-architecture-statebystateorchestrator" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ESAB Configurator Documentation" class="md-header__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ESAB Configurator Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Orchestrator
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../CODE_ARCHITECTURE_OVERVIEW/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../deployment/README.md" class="md-tabs__link">
+          
+  
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ESAB Configurator Documentation" class="md-nav__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ESAB Configurator Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_ARCHITECTURE_OVERVIEW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORRECTED_STATE_FLOW_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestrator
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestrator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-responsibilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Responsibilities
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Responsibilities">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-processor-registry-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Processor Registry Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-component-applicability-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Component Applicability Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-main-processing-flow-process_message" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Main Processing Flow - process_message()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-product-selection-flow-select_product" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Product Selection Flow - select_product()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#special-command-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Special Command Handling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Special Command Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#skip-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skip Command
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compound-request-handling-new-in-v21" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compound Request Handling (NEW in v2.1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Compound Request Handling (NEW in v2.1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Processing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-transition-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State Transition Logic
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="State Transition Logic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#next-state-determination" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next State Determination
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agent-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Agent Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agent-1-parameterextractor-llm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent 1: ParameterExtractor (LLM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agent-2-productsearch-neo4j-via-searchorchestrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent 2: ProductSearch (Neo4j) via SearchOrchestrator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agent-3-messagegenerator-templates-llm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent 3: MessageGenerator (Templates + LLM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#langsmith-observability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LangSmith Observability
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-processor-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State Processor Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="State Processor Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stateprocessorregistry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StateProcessorRegistry
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stateprocessor-base-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StateProcessor Base Class
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#powersourcestateprocessor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PowerSourceStateProcessor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessorystateprocessor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AccessoryStateProcessor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#accessory-factory-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accessory Factory Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#product-ranker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Product Ranker
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Product Ranker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ranking-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ranking Strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration with Search
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#future-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Future Enhancements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#langgraph-integration-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LangGraph Integration (Optional)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LangGraph Integration (Optional)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-node-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4-Node Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node Implementations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Node Implementations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#node-1-extract-parameters-agent-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node 1: Extract Parameters (Agent 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-2-search-products-agent-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node 2: Search Products (Agent 2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-3-generate-response-agent-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node 3: Generate Response (Agent 3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-4-determine-next-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Node 4: Determine Next State
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-checkpointing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Redis Checkpointing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-not-used-in-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Not Used in Production?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-location" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Location
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTEXT_BASED_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Search Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MASTER_PARAMETER_JSON_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Parameter JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MULTILINGUAL_FLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multilingual Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    System Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONFIGURATION_SYSTEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OBSERVABILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-guide.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operations/runbook.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="orchestrator-architecture-statebystateorchestrator">Orchestrator Architecture - StateByStateOrchestrator<a class="headerlink" href="#orchestrator-architecture-statebystateorchestrator" title="Permanent link">&para;</a></h1>
+<p><strong>File</strong>: <code>src/backend/app/services/orchestrator/state_orchestrator.py</code></p>
+<p>The StateByStateOrchestrator is the central coordinator of the 3-agent system, managing the S1→SN dynamic state machine workflow.</p>
+<hr />
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The orchestrator is a <strong>thin coordination layer</strong> that delegates all state-specific logic to modular processors via the <code>StateProcessorRegistry</code>. It focuses solely on:</p>
+<ul>
+<li>State transitions between processors</li>
+<li>Special command handling (skip, done, finalize)</li>
+<li>Session management</li>
+<li>Compound request coordination</li>
+</ul>
+<p><strong>Architecture Pattern</strong>: Registry + Delegation Pattern (~800-1000 lines vs previous 3,851 lines)</p>
+<hr />
+<h2 id="core-responsibilities">Core Responsibilities<a class="headerlink" href="#core-responsibilities" title="Permanent link">&para;</a></h2>
+<h3 id="1-processor-registry-management">1. Processor Registry Management<a class="headerlink" href="#1-processor-registry-management" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">parameter_extractor</span><span class="p">:</span> <span class="n">ParameterExtractor</span><span class="p">,</span>
+    <span class="n">message_generator</span><span class="p">:</span> <span class="n">MessageGenerator</span><span class="p">,</span>
+    <span class="n">search_orchestrator</span><span class="p">:</span> <span class="n">SearchOrchestrator</span><span class="p">,</span>
+    <span class="n">state_config_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;app/config/state_config.json&quot;</span><span class="p">,</span>
+    <span class="n">powersource_applicability_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize orchestrator with modular processor registry.&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">parameter_extractor</span> <span class="o">=</span> <span class="n">parameter_extractor</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">message_generator</span> <span class="o">=</span> <span class="n">message_generator</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">search_orchestrator</span> <span class="o">=</span> <span class="n">search_orchestrator</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">powersource_applicability_config</span> <span class="o">=</span> <span class="n">powersource_applicability_config</span> <span class="ow">or</span> <span class="p">{}</span>
+
+    <span class="c1"># Initialize processor registry - handles all 13 state processors</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">registry</span> <span class="o">=</span> <span class="n">StateProcessorRegistry</span><span class="p">(</span>
+        <span class="n">state_config_path</span><span class="o">=</span><span class="n">state_config_path</span><span class="p">,</span>
+        <span class="n">search_orchestrator</span><span class="o">=</span><span class="n">search_orchestrator</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Initialize auto-skip service for unified skip decision logic</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">auto_skip_service</span> <span class="o">=</span> <span class="n">AutoSkipService</span><span class="p">()</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;✅ StateByStateOrchestrator initialized with processor registry&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Processors loaded: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">_processors</span><span class="p">)</span><span class="si">}</span><span class="s2"> states&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Key Components</strong>:
+- <code>StateProcessorRegistry</code>: Manages 13 state processors (PowerSource, Feeder, Cooler, etc.)
+- <code>AutoSkipService</code>: Unified skip decision logic for component applicability
+- <strong>Agent 1</strong>: ParameterExtractor (LLM-based parameter extraction)
+- <strong>Agent 3</strong>: MessageGenerator (Template-based + LLM translation)
+- <code>SearchOrchestrator</code>: Coordinates Agent 2 (ProductSearch)</p>
+<hr />
+<h3 id="2-component-applicability-management">2. Component Applicability Management<a class="headerlink" href="#2-component-applicability-management" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_load_applicability_for_powersource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">power_source_gin</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComponentApplicability</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load component applicability from configuration for a specific PowerSource.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        power_source_gin: GIN of the selected PowerSource</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ComponentApplicability with Y/N/O rules for each component</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">power_sources</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">powersource_applicability_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;power_sources&quot;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="n">ps_config</span> <span class="o">=</span> <span class="n">power_sources</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">power_source_gin</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ps_config</span><span class="p">:</span>
+        <span class="c1"># Found config for this specific PowerSource</span>
+        <span class="n">applicability_data</span> <span class="o">=</span> <span class="n">ps_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;applicability&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Loaded applicability for </span><span class="si">{</span><span class="n">ps_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">power_source_gin</span><span class="p">)</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">applicability_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ComponentApplicability</span><span class="p">(</span><span class="o">**</span><span class="n">applicability_data</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># PowerSource not in config - use default policy</span>
+        <span class="n">default_policy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">powersource_applicability_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default_policy&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">applicability_data</span> <span class="o">=</span> <span class="n">default_policy</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;applicability&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;   PowerSource </span><span class="si">{</span><span class="n">power_source_gin</span><span class="si">}</span><span class="s2"> not in config - using default applicability: </span><span class="si">{</span><span class="n">applicability_data</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ComponentApplicability</span><span class="p">(</span><span class="o">**</span><span class="n">applicability_data</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Configuration</strong>: Loads from <code>component_applicability.json</code> which defines Y/N/O flags for each component based on selected PowerSource.</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;power_sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;0446200880&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Aristo 500ix&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;applicability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;Feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Cooler&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Interconnector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Torch&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Accessories&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h3 id="3-main-processing-flow-process_message">3. Main Processing Flow - <code>process_message()</code><a class="headerlink" href="#3-main-processing-flow-process_message" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@traceable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;orchestrator_process_message&quot;</span><span class="p">,</span> <span class="n">run_type</span><span class="o">=</span><span class="s2">&quot;chain&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">process_message</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">conversation_state</span><span class="p">:</span> <span class="n">ConversationState</span><span class="p">,</span>
+    <span class="n">user_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">last_shown_products</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process user message in current state using modular processors.</span>
+
+<span class="sd">    Flow:</span>
+<span class="sd">    1. Check for special commands (skip, done, finalize)</span>
+<span class="sd">    2. Extract parameters via ParameterExtractor (Agent 1)</span>
+<span class="sd">    3. Detect compound requests</span>
+<span class="sd">    4. Delegate to processor for current state</span>
+<span class="sd">    5. Handle state transition</span>
+<span class="sd">    6. Generate response via MessageGenerator (Agent 3)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        conversation_state: Current session state</span>
+<span class="sd">        user_message: User&#39;s input message</span>
+<span class="sd">        last_shown_products: Previously shown products (for selection detection)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict with response, state, products, selection status</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">language</span> <span class="o">=</span> <span class="n">conversation_state</span><span class="o">.</span><span class="n">language</span> <span class="ow">or</span> <span class="s2">&quot;en&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;🎯 Processing message in state: </span><span class="si">{</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">current_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># STEP 1: Handle special commands first</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_special_command</span><span class="p">(</span><span class="n">user_message</span><span class="p">):</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_special_command</span><span class="p">(</span>
+                <span class="n">user_message</span><span class="p">,</span> <span class="n">conversation_state</span><span class="p">,</span> <span class="n">language</span>
+            <span class="p">)</span>
+
+        <span class="c1"># STEP 2: Extract parameters using Agent 1 (LLM)</span>
+        <span class="n">master_parameters</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_extractor</span><span class="o">.</span><span class="n">extract_parameters</span><span class="p">(</span>
+            <span class="n">user_message</span><span class="o">=</span><span class="n">user_message</span><span class="p">,</span>
+            <span class="n">current_state</span><span class="o">=</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span>
+            <span class="n">master_parameters</span><span class="o">=</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">master_parameters</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Update conversation state with extracted parameters</span>
+        <span class="n">conversation_state</span><span class="o">.</span><span class="n">master_parameters</span> <span class="o">=</span> <span class="n">master_parameters</span>
+
+        <span class="c1"># Log extracted parameters for debugging</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+        <span class="n">master_params_dict</span> <span class="o">=</span> <span class="n">master_parameters</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">master_parameters</span><span class="p">,</span> <span class="s1">&#39;model_dump&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">master_parameters</span>
+        <span class="n">non_empty_params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">master_params_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;last_updated&quot;</span> <span class="ow">and</span> <span class="n">v</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">!=</span> <span class="p">{}</span> <span class="ow">and</span> <span class="n">v</span> <span class="o">!=</span> <span class="p">[]</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">non_empty_params</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;🔍 LLM EXTRACTED PARAMETERS:</span><span class="se">\n</span><span class="si">{</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">non_empty_params</span><span class="p">,</span><span class="w"> </span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;🔍 LLM EXTRACTED: No parameters extracted from user message&quot;</span><span class="p">)</span>
+
+        <span class="c1"># STEP 3: Check for compound request (multiple components specified)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_compound_request</span><span class="p">(</span><span class="n">master_parameters</span><span class="p">,</span> <span class="n">conversation_state</span><span class="p">):</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle_compound_request</span><span class="p">(</span>
+                <span class="n">master_parameters</span><span class="p">,</span> <span class="n">conversation_state</span><span class="p">,</span> <span class="n">language</span>
+            <span class="p">)</span>
+
+        <span class="c1"># STEP 4: Delegate to processor for current state</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_single_state</span><span class="p">(</span>
+            <span class="n">user_message</span><span class="p">,</span> <span class="n">master_parameters</span><span class="p">,</span> <span class="n">conversation_state</span><span class="p">,</span> <span class="n">language</span>
+        <span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Error in process_message: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_error_response</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">conversation_state</span><span class="p">,</span> <span class="n">language</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Key Features</strong>:
+- <strong>LangSmith Tracing</strong>: <code>@traceable</code> decorator for observability
+- <strong>Special Commands</strong>: Handles <code>skip</code>, <code>done</code>, <code>finalize</code> commands
+- <strong>Agent 1 Integration</strong>: Calls <code>ParameterExtractor.extract_parameters()</code> for LLM-based intent extraction
+- <strong>Compound Request Detection</strong>: Multi-component requests like "Aristo 500ix with RobustFeed U6"
+- <strong>Processor Delegation</strong>: Routes to appropriate state processor for search and validation</p>
+<hr />
+<h3 id="4-product-selection-flow-select_product">4. Product Selection Flow - <code>select_product()</code><a class="headerlink" href="#4-product-selection-flow-select_product" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@traceable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;orchestrator_select_product&quot;</span><span class="p">,</span> <span class="n">run_type</span><span class="o">=</span><span class="s2">&quot;chain&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">select_product</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">product_gin</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">product_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">conversation_state</span><span class="p">:</span> <span class="n">ConversationState</span><span class="p">,</span>
+    <span class="n">language</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;en&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handle explicit product selection using modular processors.</span>
+
+<span class="sd">    Flow:</span>
+<span class="sd">    1. Get processor for current state</span>
+<span class="sd">    2. Create SelectedProduct from product data</span>
+<span class="sd">    3. Add to response_json</span>
+<span class="sd">    4. Check if proactive display enabled for next state</span>
+<span class="sd">    5. Generate response with selection confirmation</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        product_gin: Selected product GIN</span>
+<span class="sd">        product_data: Product details</span>
+<span class="sd">        conversation_state: Current session state</span>
+<span class="sd">        language: ISO 639-1 language code</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dict with response, updated state, next products</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Product selected: </span><span class="si">{</span><span class="n">product_gin</span><span class="si">}</span><span class="s2"> in state </span><span class="si">{</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">current_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Guard: Reject selections in FINALIZE state</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">current_state</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;finalize&quot;</span> <span class="ow">or</span> <span class="n">conversation_state</span><span class="o">.</span><span class="n">current_state</span> <span class="o">==</span> <span class="n">ConfiguratorState</span><span class="o">.</span><span class="n">FINALIZE</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Cannot select products in FINALIZE state&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="s2">&quot;Configuration is complete. Cannot add more products.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;current_state&quot;</span><span class="p">:</span> <span class="n">conversation_state</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span>
+                <span class="s2">&quot;products&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s2">&quot;can_finalize&quot;</span><span class="p">:</span> <span class="kc">True</span>
+            <span class="p">}</span>
+
+        <span class="c1"># Get processor for current state</span>
+        <span class="n">processor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">get_processor</span><span class="p">(</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">current_state</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">processor</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No processor found for state: </span><span class="si">{</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">current_state</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create selected product</span>
+        <span class="n">selected_product</span> <span class="o">=</span> <span class="n">SelectedProduct</span><span class="p">(</span>
+            <span class="n">gin</span><span class="o">=</span><span class="n">product_gin</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">product_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;Unknown&quot;</span><span class="p">),</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">product_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">product_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Add to response_json based on component type</span>
+        <span class="n">component_key</span> <span class="o">=</span> <span class="n">processor</span><span class="o">.</span><span class="n">component_type</span>
+        <span class="n">field_name</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_response_json_field_name</span><span class="p">(</span><span class="n">component_key</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">processor</span><span class="o">.</span><span class="n">is_multi_select</span><span class="p">():</span>
+            <span class="c1"># Multi-select: Add to list (e.g., Accessories)</span>
+            <span class="n">current_list</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">response_json</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_list</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">current_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">current_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">selected_product</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">response_json</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">current_list</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Single-select: Replace existing</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">response_json</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">selected_product</span><span class="p">)</span>
+
+        <span class="c1"># ... handle state transition and response generation</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Key Features</strong>:
+- <strong>FINALIZE Guard</strong>: Prevents selection after configuration is complete
+- <strong>Multi-Select Support</strong>: Handles accessories (multiple) vs single components
+- <strong>Dynamic Field Mapping</strong>: Maps component_key to ResponseJSON field names
+- <strong>State Transition</strong>: Automatically advances to next applicable state</p>
+<hr />
+<h2 id="special-command-handling">Special Command Handling<a class="headerlink" href="#special-command-handling" title="Permanent link">&para;</a></h2>
+<h3 id="skip-command">Skip Command<a class="headerlink" href="#skip-command" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_is_special_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if message is a special command.&quot;&quot;&quot;</span>
+    <span class="n">message_lower</span> <span class="o">=</span> <span class="n">user_message</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">message_lower</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;skip&quot;</span><span class="p">,</span> <span class="s2">&quot;done&quot;</span><span class="p">,</span> <span class="s2">&quot;finalize&quot;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Skip Logic</strong>:
+1. Checks if component is skippable (applicability != "Y")
+2. Marks component as skipped in response_json
+3. Advances to next applicable state
+4. Validates only mandatory PowerSource is required</p>
+<hr />
+<h2 id="compound-request-handling-new-in-v21">Compound Request Handling (NEW in v2.1)<a class="headerlink" href="#compound-request-handling-new-in-v21" title="Permanent link">&para;</a></h2>
+<h3 id="detection">Detection<a class="headerlink" href="#detection" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_is_compound_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">master_parameters</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">conversation_state</span><span class="p">:</span> <span class="n">ConversationState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Detect if user specified multiple components in one message.</span>
+
+<span class="sd">    Example: &quot;Aristo 500ix with RobustFeed U6&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check how many components have specifications</span>
+    <span class="n">specified_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">component_params</span> <span class="ow">in</span> <span class="n">master_params</span> <span class="k">if</span> <span class="n">component_params</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">specified_count</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="p">(</span><span class="n">specified_count</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">at_powersource_state</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="processing">Processing<a class="headerlink" href="#processing" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_handle_compound_request</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">master_parameters</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">conversation_state</span><span class="p">:</span> <span class="n">ConversationState</span><span class="p">,</span>
+    <span class="n">language</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Process compound requests where user specifies multiple components.</span>
+
+<span class="sd">    Flow:</span>
+<span class="sd">    1. Validate PowerSource dependency</span>
+<span class="sd">    2. Search all specified components in parallel</span>
+<span class="sd">    3. Auto-select if exactly 1 match found</span>
+<span class="sd">    4. Queue for disambiguation if 2+ matches</span>
+<span class="sd">    5. Advance state appropriately</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Auto-Selection Logic</strong>:
+- <strong>1 result</strong>: Auto-select and add to ResponseJSON
+- <strong>2+ results</strong>: Queue for user disambiguation
+- <strong>0 results</strong>: Show all compatible products</p>
+<p><strong>User Experience</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>BEFORE: &quot;Aristo 500ix with RobustFeed U6&quot; → 6 interactions (sequential)
+AFTER:  &quot;Aristo 500ix with RobustFeed U6&quot; → 1 interaction (compound)
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="state-transition-logic">State Transition Logic<a class="headerlink" href="#state-transition-logic" title="Permanent link">&para;</a></h2>
+<h3 id="next-state-determination">Next State Determination<a class="headerlink" href="#next-state-determination" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_determine_next_state</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">conversation_state</span><span class="p">:</span> <span class="n">ConversationState</span><span class="p">,</span>
+    <span class="n">processor</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ConfiguratorState</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine next state based on applicability and auto-skip rules.</span>
+
+<span class="sd">    Uses ConversationState.get_next_state() which:</span>
+<span class="sd">    1. Checks component applicability (Y/N/O)</span>
+<span class="sd">    2. Auto-skips &quot;N&quot; components</span>
+<span class="sd">    3. Returns next applicable component</span>
+<span class="sd">    4. Returns FINALIZE when all components handled</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">conversation_state</span><span class="o">.</span><span class="n">get_next_state</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>State Flow Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code>S1 (PowerSource) → Applicability Loaded
+   ↓ (Feeder: Y)
+S2 (Feeder) → User selects feeder
+   ↓ (Cooler: N - Auto-skip)
+   ↓ (Interconnector: Y)
+S3 (Interconnector) → User selects interconnector
+   ↓
+S7 (FINALIZE)
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="agent-integration">Agent Integration<a class="headerlink" href="#agent-integration" title="Permanent link">&para;</a></h2>
+<h3 id="agent-1-parameterextractor-llm">Agent 1: ParameterExtractor (LLM)<a class="headerlink" href="#agent-1-parameterextractor-llm" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Called in process_message()</span>
+<span class="n">master_parameters</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_extractor</span><span class="o">.</span><span class="n">extract_parameters</span><span class="p">(</span>
+    <span class="n">user_message</span><span class="o">=</span><span class="n">user_message</span><span class="p">,</span>
+    <span class="n">current_state</span><span class="o">=</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span>
+    <span class="n">master_parameters</span><span class="o">=</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">master_parameters</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Purpose</strong>: Extract welding parameters from natural language using GPT-4</p>
+<h3 id="agent-2-productsearch-neo4j-via-searchorchestrator">Agent 2: ProductSearch (Neo4j) via SearchOrchestrator<a class="headerlink" href="#agent-2-productsearch-neo4j-via-searchorchestrator" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Delegated to state processors via registry</span>
+<span class="n">processor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">get_processor</span><span class="p">(</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">current_state</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">processor</span><span class="o">.</span><span class="n">process</span><span class="p">(</span>
+    <span class="n">user_message</span><span class="o">=</span><span class="n">user_message</span><span class="p">,</span>
+    <span class="n">master_parameters</span><span class="o">=</span><span class="n">master_parameters</span><span class="p">,</span>
+    <span class="n">selected_components</span><span class="o">=</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">response_json</span><span class="p">,</span>
+    <span class="n">language</span><span class="o">=</span><span class="n">language</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Purpose</strong>: Search Neo4j graph database for compatible products</p>
+<h3 id="agent-3-messagegenerator-templates-llm">Agent 3: MessageGenerator (Templates + LLM)<a class="headerlink" href="#agent-3-messagegenerator-templates-llm" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Called at end of processing flow</span>
+<span class="n">response_message</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_generator</span><span class="o">.</span><span class="n">generate_response</span><span class="p">(</span>
+    <span class="n">current_state</span><span class="o">=</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span>
+    <span class="n">search_results</span><span class="o">=</span><span class="n">products</span><span class="p">,</span>
+    <span class="n">master_parameters</span><span class="o">=</span><span class="n">master_parameters</span><span class="p">,</span>
+    <span class="n">response_json</span><span class="o">=</span><span class="n">conversation_state</span><span class="o">.</span><span class="n">response_json</span><span class="p">,</span>
+    <span class="n">language</span><span class="o">=</span><span class="n">language</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Purpose</strong>: Generate user-friendly multilingual responses</p>
+<hr />
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_generate_error_response</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">error_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">conversation_state</span><span class="p">:</span> <span class="n">ConversationState</span><span class="p">,</span>
+    <span class="n">language</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate user-friendly error response.&quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Generating error response: </span><span class="si">{</span><span class="n">error_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">error_message</span><span class="si">}</span><span class="s2">. Please try again.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;current_state&quot;</span><span class="p">:</span> <span class="n">conversation_state</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span>
+        <span class="s2">&quot;products&quot;</span><span class="p">:</span> <span class="p">[],</span>
+        <span class="s2">&quot;master_parameters&quot;</span><span class="p">:</span> <span class="n">conversation_state</span><span class="o">.</span><span class="n">master_parameters</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
+        <span class="s2">&quot;response_json&quot;</span><span class="p">:</span> <span class="n">conversation_state</span><span class="o">.</span><span class="n">response_json</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
+        <span class="s2">&quot;can_finalize&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="langsmith-observability">LangSmith Observability<a class="headerlink" href="#langsmith-observability" title="Permanent link">&para;</a></h2>
+<p><strong>Tracing</strong>: All major methods decorated with <code>@traceable</code> for monitoring in LangSmith:
+- <code>process_message()</code> - Main entry point
+- <code>select_product()</code> - Product selection flow</p>
+<p><strong>Environment Variables</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">LANGSMITH_API_KEY</span><span class="o">=</span>ls_...
+<span class="nv">LANGSMITH_PROJECT</span><span class="o">=</span>Recommender
+<span class="nv">LANGSMITH_TRACING</span><span class="o">=</span><span class="nb">true</span>
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="state-processor-architecture">State Processor Architecture<a class="headerlink" href="#state-processor-architecture" title="Permanent link">&para;</a></h2>
+<p>The orchestrator delegates all state-specific logic to modular processors managed by <code>StateProcessorRegistry</code>. This architecture enables clean separation of concerns and easy extension.</p>
+<h3 id="stateprocessorregistry">StateProcessorRegistry<a class="headerlink" href="#stateprocessorregistry" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>src/backend/app/services/processors/registry.py</code></p>
+<p><strong>Purpose</strong>: Manages lifecycle and retrieval of all 14 state processors</p>
+<p><strong>Key Features</strong>:
+- <strong>Centralized Management</strong>: Single registry for all processors
+- <strong>Configuration-Driven</strong>: Loads processors from <code>state_config.json</code> and <code>component_types.json</code>
+- <strong>Factory Pattern</strong>: Creates accessory processors dynamically from configuration
+- <strong>Dependency Injection</strong>: Injects <code>SearchOrchestrator</code> into all processors</p>
+<p><strong>Initialization</strong> (<code>registry.py:20-70</code>):</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StateProcessorRegistry</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Registry for all state processors&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_config_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">search_orchestrator</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_orchestrator</span> <span class="o">=</span> <span class="n">search_orchestrator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_config_dict</span> <span class="o">=</span> <span class="n">load_state_config</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_processors</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">StateProcessor</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_processors</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_processors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize all 14 state processors&quot;&quot;&quot;</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;states&quot;</span><span class="p">,</span> <span class="p">{})</span>
+
+        <span class="c1"># S1: Power Source (MANDATORY)</span>
+        <span class="k">if</span> <span class="s2">&quot;power_source_selection&quot;</span> <span class="ow">in</span> <span class="n">states</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_processors</span><span class="p">[</span><span class="s2">&quot;power_source_selection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">PowerSourceStateProcessor</span><span class="p">(</span>
+                <span class="n">state_name</span><span class="o">=</span><span class="s2">&quot;power_source_selection&quot;</span><span class="p">,</span>
+                <span class="n">component_type</span><span class="o">=</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span>
+                <span class="n">state_config</span><span class="o">=</span><span class="n">states</span><span class="p">[</span><span class="s2">&quot;power_source_selection&quot;</span><span class="p">],</span>
+                <span class="n">search_orchestrator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">search_orchestrator</span>
+            <span class="p">)</span>
+
+        <span class="c1"># S2-S5: Primary components</span>
+        <span class="c1"># ... similar initialization for Feeder, Cooler, Interconnector, Torch</span>
+
+        <span class="c1"># S6: Accessories (9 accessory states using factory)</span>
+        <span class="n">accessory_processors</span> <span class="o">=</span> <span class="n">create_accessory_processors</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">state_config_dict</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">search_orchestrator</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_processors</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">accessory_processors</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>14 Processors Managed</strong>:
+1. <code>power_source_selection</code> - PowerSourceStateProcessor (S1, mandatory)
+2. <code>feeder_selection</code> - SingleSelectionProcessor (S2)
+3. <code>cooler_selection</code> - SingleSelectionProcessor (S3)
+4. <code>interconnector_selection</code> - SingleSelectionProcessor (S4)
+5. <code>torch_selection</code> - SingleSelectionProcessor (S5)
+6. <code>powersource_accessories_selection</code> - AccessoryStateProcessor (S6a)
+7. <code>feeder_accessories_selection</code> - AccessoryStateProcessor (S6b)
+8. <code>feeder_conditional_accessories</code> - AccessoryStateProcessor (S6c)
+9. <code>interconnector_accessories_selection</code> - AccessoryStateProcessor (S6d)
+10. <code>remote_selection</code> - AccessoryStateProcessor (S6e)
+11. <code>remote_accessories_selection</code> - AccessoryStateProcessor (S6f)
+12. <code>remote_conditional_accessories</code> - AccessoryStateProcessor (S6g)
+13. <code>connectivity_selection</code> - AccessoryStateProcessor (S6h)
+14. <code>finalize</code> - Special state (no processor)</p>
+<p><strong>Processor Retrieval</strong>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_processor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">StateProcessor</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get processor for given state name&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_processors</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">state_name</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="stateprocessor-base-class">StateProcessor Base Class<a class="headerlink" href="#stateprocessor-base-class" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>src/backend/app/services/processors/base.py</code></p>
+<p><strong>Purpose</strong>: Abstract base class defining interface for all processors</p>
+<p><strong>Core Interface</strong>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">StateProcessor</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for state processors&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">state_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">component_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">state_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">search_orchestrator</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_name</span> <span class="o">=</span> <span class="n">state_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_type</span> <span class="o">=</span> <span class="n">component_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_config</span> <span class="o">=</span> <span class="n">state_config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_orchestrator</span> <span class="o">=</span> <span class="n">search_orchestrator</span>
+
+        <span class="c1"># Extract configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mandatory</span> <span class="o">=</span> <span class="n">state_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mandatory&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proactive_display</span> <span class="o">=</span> <span class="n">state_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;proactive_display&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">search_limit</span> <span class="o">=</span> <span class="n">state_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;search_limit&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multi_select</span> <span class="o">=</span> <span class="n">state_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;multi_select&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_skip</span> <span class="o">=</span> <span class="n">state_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;allow_skip&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search_products</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">user_message</span><span class="p">,</span> <span class="n">master_parameters</span><span class="p">,</span> <span class="n">selected_components</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">offset</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Search for products for this state&#39;s component type&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_next_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conversation_state</span><span class="p">,</span> <span class="n">selection_made</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determine the next state after this state&quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">product_gin</span><span class="p">,</span> <span class="n">product_data</span><span class="p">,</span> <span class="n">selected_components</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate a product selection&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">None</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_proactive_preview</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">user_message</span><span class="p">,</span> <span class="n">master_parameters</span><span class="p">,</span> <span class="n">selected_components</span><span class="p">,</span> <span class="n">limit</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate proactive preview for this state&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">proactive_display</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="c1"># ... preview generation logic</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Configuration Flags</strong>:
+- <code>mandatory</code> - Must select before finalize (only PowerSource is mandatory)
+- <code>proactive_display</code> - Show preview of next state after selection
+- <code>search_limit</code> - Max products to return (default: 10)
+- <code>preview_limit</code> - Max products for proactive preview (default: 5)
+- <code>multi_select</code> - Allow multiple selections (accessories only)
+- <code>allow_skip</code> - Can skip this state (all except PowerSource)</p>
+<h3 id="powersourcestateprocessor">PowerSourceStateProcessor<a class="headerlink" href="#powersourcestateprocessor" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>src/backend/app/services/processors/power_source.py</code></p>
+<p><strong>State</strong>: S1 (power_source_selection)</p>
+<p><strong>Characteristics</strong>:
+- ✅ <strong>Mandatory</strong>: Cannot be skipped (must select before finalize)
+- ✅ <strong>Single-select</strong>: Only one power source per configuration
+- ✅ <strong>Proactive display</strong>: Shows Feeder preview after selection
+- ✅ <strong>No dependencies</strong>: First component in flow</p>
+<p><strong>Search Method</strong> (<code>power_source.py:28-94</code>):</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@traceable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;search_products_power_source&quot;</span><span class="p">,</span> <span class="n">run_type</span><span class="o">=</span><span class="s2">&quot;retriever&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search_products</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_message</span><span class="p">,</span> <span class="n">master_parameters</span><span class="p">,</span> <span class="n">selected_components</span><span class="p">,</span> <span class="n">limit</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search for power sources based on user requirements&quot;&quot;&quot;</span>
+
+    <span class="c1"># Execute search via SearchOrchestrator</span>
+    <span class="c1"># Both Cypher and Lucene strategies will run</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_orchestrator</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+        <span class="n">component_type</span><span class="o">=</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span>
+        <span class="n">user_message</span><span class="o">=</span><span class="n">user_message</span><span class="p">,</span>
+        <span class="n">master_parameters</span><span class="o">=</span><span class="n">master_parameters</span><span class="p">,</span>
+        <span class="n">selected_components</span><span class="o">=</span><span class="n">selected_components</span><span class="p">,</span>  <span class="c1"># Empty for S1</span>
+        <span class="n">limit</span><span class="o">=</span><span class="n">search_limit</span><span class="p">,</span>
+        <span class="n">offset</span><span class="o">=</span><span class="n">offset</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">results</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Next State Logic</strong> (<code>power_source.py:96-153</code>):</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_next_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conversation_state</span><span class="p">,</span> <span class="n">selection_made</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine next state after power source selection&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">selection_made</span><span class="p">:</span>
+        <span class="c1"># Error case: No selection made (shouldn&#39;t happen - power source is mandatory)</span>
+        <span class="k">return</span> <span class="s2">&quot;power_source_selection&quot;</span>
+
+    <span class="c1"># Get applicability from response_json</span>
+    <span class="n">applicability</span> <span class="o">=</span> <span class="n">conversation_state</span><span class="o">.</span><span class="n">response_json</span><span class="o">.</span><span class="n">applicability</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+
+    <span class="c1"># Check if Feeder is applicable</span>
+    <span class="k">if</span> <span class="n">applicability</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Feeder&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;mandatory&quot;</span><span class="p">,</span> <span class="s2">&quot;optional&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s2">&quot;feeder_selection&quot;</span>
+
+    <span class="c1"># Feeder not applicable, check Cooler</span>
+    <span class="k">if</span> <span class="n">applicability</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Cooler&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;mandatory&quot;</span><span class="p">,</span> <span class="s2">&quot;optional&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s2">&quot;cooler_selection&quot;</span>
+
+    <span class="c1"># Continue through all primary components...</span>
+    <span class="c1"># Eventually defaults to accessories or finalize</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="accessorystateprocessor">AccessoryStateProcessor<a class="headerlink" href="#accessorystateprocessor" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>src/backend/app/services/processors/accessory.py</code></p>
+<p><strong>States</strong>: S6a-S6h (all accessory states)</p>
+<p><strong>Characteristics</strong>:
+- ✅ <strong>Multi-select</strong>: Can select multiple products (configurable per state)
+- ✅ <strong>Optional</strong>: Can be skipped (allow_skip=true)
+- ✅ <strong>Proactive display</strong>: Shows compatible products automatically
+- ✅ <strong>Completion keywords</strong>: "done", "next", "skip" to proceed</p>
+<p><strong>Key Features</strong>:</p>
+<ol>
+<li><strong>Multi-Select Completion Detection</strong> (<code>accessory.py:200-221</code>):</li>
+</ol>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_is_done_with_multi_select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conversation_state</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if user is done with multi-select&quot;&quot;&quot;</span>
+
+    <span class="n">conversation_history</span> <span class="o">=</span> <span class="n">conversation_state</span><span class="o">.</span><span class="n">conversation_history</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">conversation_history</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="n">last_message</span> <span class="o">=</span> <span class="n">conversation_history</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;user_message&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="n">completion_keywords</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;done&quot;</span><span class="p">,</span> <span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="s2">&quot;skip&quot;</span><span class="p">,</span> <span class="s2">&quot;finish&quot;</span><span class="p">,</span> <span class="s2">&quot;finalize&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;proceed&quot;</span><span class="p">,</span> <span class="s2">&quot;continue&quot;</span><span class="p">,</span> <span class="s2">&quot;that&#39;s all&quot;</span>
+    <span class="p">]</span>
+
+    <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">keyword</span> <span class="ow">in</span> <span class="n">last_message</span> <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="n">completion_keywords</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<ol>
+<li><strong>Conditional Accessory Logic</strong> (<code>accessory.py:245-308</code>):</li>
+</ol>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_is_conditional_accessory_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if a state is a conditional accessory state&quot;&quot;&quot;</span>
+    <span class="n">conditional_states</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;feeder_conditional_accessories&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;remote_conditional_accessories&quot;</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">state_name</span> <span class="ow">in</span> <span class="n">conditional_states</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_has_parent_accessory_selections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conditional_state</span><span class="p">,</span> <span class="n">conversation_state</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if parent accessory category has any selections&quot;&quot;&quot;</span>
+
+    <span class="c1"># Map conditional states to their parent accessory fields</span>
+    <span class="n">parent_mapping</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;feeder_conditional_accessories&quot;</span><span class="p">:</span> <span class="s2">&quot;FeederAccessories&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;remote_conditional_accessories&quot;</span><span class="p">:</span> <span class="s2">&quot;RemoteAccessories&quot;</span>
+    <span class="p">}</span>
+
+    <span class="n">parent_field</span> <span class="o">=</span> <span class="n">parent_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">conditional_state</span><span class="p">)</span>
+    <span class="n">parent_accessories</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">response_json</span><span class="p">,</span> <span class="n">parent_field</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># Check if parent has selections</span>
+    <span class="k">if</span> <span class="n">parent_accessories</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">parent_accessories</span> <span class="o">==</span> <span class="s2">&quot;skipped&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent_accessories</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">parent_accessories</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># Parent has selections</span>
+</code></pre></div></td></tr></table></div>
+<ol>
+<li><strong>Applicability-Based Auto-Skip</strong> (<code>accessory.py:163-181</code>):</li>
+</ol>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Check if next accessory state is applicable for selected PowerSource</span>
+<span class="n">applicability</span> <span class="o">=</span> <span class="n">response_json</span><span class="o">.</span><span class="n">applicability</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
+
+<span class="n">component_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_component_api_key_from_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_accessory_state</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">component_key</span><span class="p">:</span>
+    <span class="n">component_status</span> <span class="o">=</span> <span class="n">applicability</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">component_key</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">component_status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;mandatory&quot;</span><span class="p">,</span> <span class="s2">&quot;optional&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="c1"># Auto-skip not_applicable accessories</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⏭️  Skipping </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">next_accessory_state</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">component_key</span><span class="si">}</span><span class="s2"> applicability: </span><span class="si">{</span><span class="n">component_status</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_next_applicable_accessory_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_accessory_state</span><span class="p">,</span> <span class="n">conversation_state</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="accessory-factory-pattern">Accessory Factory Pattern<a class="headerlink" href="#accessory-factory-pattern" title="Permanent link">&para;</a></h3>
+<p><strong>Factory Function</strong>: <code>create_accessory_processors()</code> (<code>accessory.py:459-536</code>)</p>
+<p><strong>Purpose</strong>: Create all 9 accessory processors with proper sequencing (configuration-driven)</p>
+<p><strong>Process</strong>:</p>
+<ol>
+<li><strong>Load state sequence</strong> from <code>component_types.json</code>:</li>
+</ol>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">component_types</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_component_types</span><span class="p">()</span>
+<span class="n">full_state_sequence</span> <span class="o">=</span> <span class="n">component_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state_sequence&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
+<span class="c1"># Filter to get only accessory states (states after torch_selection)</span>
+<span class="n">torch_index</span> <span class="o">=</span> <span class="n">full_state_sequence</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s2">&quot;torch_selection&quot;</span><span class="p">)</span>
+<span class="n">accessory_states</span> <span class="o">=</span> <span class="n">full_state_sequence</span><span class="p">[</span><span class="n">torch_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:]</span>
+
+<span class="c1"># Result: [</span>
+<span class="c1">#   &quot;powersource_accessories_selection&quot;,</span>
+<span class="c1">#   &quot;feeder_accessories_selection&quot;,</span>
+<span class="c1">#   &quot;feeder_conditional_accessories&quot;,</span>
+<span class="c1">#   &quot;interconnector_accessories_selection&quot;,</span>
+<span class="c1">#   &quot;remote_selection&quot;,</span>
+<span class="c1">#   &quot;remote_accessories_selection&quot;,</span>
+<span class="c1">#   &quot;remote_conditional_accessories&quot;,</span>
+<span class="c1">#   &quot;connectivity_selection&quot;,</span>
+<span class="c1"># ]</span>
+</code></pre></div></td></tr></table></div>
+<ol>
+<li><strong>Build processors with proper next_state linkage</strong>:</li>
+</ol>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">state_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">accessory_states</span><span class="p">):</span>
+    <span class="c1"># Get component type from component_types.json</span>
+    <span class="n">component_type</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># Lookup from config</span>
+
+    <span class="c1"># Get next state in sequence (or None if last)</span>
+    <span class="n">next_state</span> <span class="o">=</span> <span class="n">accessory_states</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">accessory_states</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="c1"># Get state config</span>
+    <span class="n">state_config</span> <span class="o">=</span> <span class="n">state_config_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;states&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">state_name</span><span class="p">,</span> <span class="p">{})</span>
+
+    <span class="c1"># Create processor</span>
+    <span class="n">processor</span> <span class="o">=</span> <span class="n">AccessoryStateProcessor</span><span class="p">(</span>
+        <span class="n">state_name</span><span class="o">=</span><span class="n">state_name</span><span class="p">,</span>
+        <span class="n">component_type</span><span class="o">=</span><span class="n">component_type</span><span class="p">,</span>
+        <span class="n">state_config</span><span class="o">=</span><span class="n">state_config</span><span class="p">,</span>
+        <span class="n">search_orchestrator</span><span class="o">=</span><span class="n">search_orchestrator</span><span class="p">,</span>
+        <span class="n">next_accessory_state</span><span class="o">=</span><span class="n">next_state</span>
+    <span class="p">)</span>
+
+    <span class="n">processors</span><span class="p">[</span><span class="n">state_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">processor</span>
+</code></pre></div></td></tr></table></div>
+<ol>
+<li><strong>Result</strong>: Linked list of accessory processors:</li>
+</ol>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>powersource_accessories_selection → feeder_accessories_selection →
+feeder_conditional_accessories → interconnector_accessories_selection →
+remote_selection → remote_accessories_selection →
+remote_conditional_accessories → connectivity_selection → (None)
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="product-ranker">Product Ranker<a class="headerlink" href="#product-ranker" title="Permanent link">&para;</a></h2>
+<p><strong>File</strong>: <code>src/backend/app/services/ranker/product_ranker.py</code></p>
+<p>The Product Ranker provides deterministic, explainable ranking for small result sets (&lt;100 products).</p>
+<h3 id="ranking-strategy">Ranking Strategy<a class="headerlink" href="#ranking-strategy" title="Permanent link">&para;</a></h3>
+<p><strong>Algorithm</strong>: 3-Tier Tuple Sorting</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">is_default</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_default&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="p">(</span><span class="n">context</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;query&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="n">exact_hit</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="k">if</span> <span class="n">q</span> <span class="ow">and</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">name</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Lower tuple sorts earlier; invert booleans</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="mi">0</span> <span class="k">if</span> <span class="n">is_default</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># Tier 1: Prefer defaults</span>
+        <span class="mi">0</span> <span class="k">if</span> <span class="n">exact_hit</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>   <span class="c1"># Tier 2: Prefer exact name contains</span>
+        <span class="n">name</span>                     <span class="c1"># Tier 3: Alphabetical</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Sorting Priority</strong>:</p>
+<ol>
+<li><strong>Tier 1: Default Products</strong> (<code>is_default=True</code>)</li>
+<li>Products flagged as recommended/default by ESAB</li>
+<li>Score: 0 (highest priority)</li>
+<li>
+<p>Use case: Promote most popular or recommended products</p>
+</li>
+<li>
+<p><strong>Tier 2: Exact Match</strong> (query in product name)</p>
+</li>
+<li>Exact phrase match in product name</li>
+<li>Score: 0 if match, 1 if no match</li>
+<li>
+<p>Use case: "Aristo 500ix" query matches "Aristo 500ix MIG Welder"</p>
+</li>
+<li>
+<p><strong>Tier 3: Alphabetical</strong> (stable sort)</p>
+</li>
+<li>Deterministic ordering by product name</li>
+<li>Use case: Consistent results across requests</li>
+</ol>
+<h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">app.services.ranker.product_ranker</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProductRanker</span>
+
+<span class="n">ranker</span> <span class="o">=</span> <span class="n">ProductRanker</span><span class="p">()</span>
+
+<span class="c1"># Example products</span>
+<span class="n">products</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;gin&quot;</span><span class="p">:</span> <span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;RobustFeed U6&quot;</span><span class="p">,</span> <span class="s2">&quot;is_default&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;gin&quot;</span><span class="p">:</span> <span class="s2">&quot;002&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Aristo 500ix&quot;</span><span class="p">,</span> <span class="s2">&quot;is_default&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;gin&quot;</span><span class="p">:</span> <span class="s2">&quot;003&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;RobustFeed U4&quot;</span><span class="p">,</span> <span class="s2">&quot;is_default&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+<span class="p">]</span>
+
+<span class="c1"># Rank with context</span>
+<span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="s2">&quot;RobustFeed U6&quot;</span><span class="p">}</span>
+<span class="n">ranked</span> <span class="o">=</span> <span class="n">ranker</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">products</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+
+<span class="c1"># Result order:</span>
+<span class="c1"># 1. Aristo 500ix (is_default=True, tier 1)</span>
+<span class="c1"># 2. RobustFeed U6 (exact match, tier 2)</span>
+<span class="c1"># 3. RobustFeed U4 (alphabetical, tier 3)</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="integration-with-search">Integration with Search<a class="headerlink" href="#integration-with-search" title="Permanent link">&para;</a></h3>
+<p>The ranker is used by <strong>SearchOrchestrator</strong> to provide final ordering after score consolidation:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># After multi-strategy search and score consolidation</span>
+<span class="n">ranked_products</span> <span class="o">=</span> <span class="n">product_ranker</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span>
+    <span class="n">products</span><span class="o">=</span><span class="n">consolidated_products</span><span class="p">,</span>
+    <span class="n">context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">user_message</span><span class="p">}</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>When Ranker is Applied</strong>:
+- After all search strategies return results
+- After score consolidation (weighted average across strategies)
+- Before returning final results to orchestrator</p>
+<p><strong>Benefits</strong>:
+- <strong>Deterministic</strong>: Same inputs → same outputs (no randomness)
+- <strong>Explainable</strong>: Clear 3-tier logic (default → exact match → alphabetical)
+- <strong>Fast</strong>: O(n log n) sorting (suitable for small result sets)
+- <strong>Extensible</strong>: Can add more tiers (e.g., bundle frequency, pricing tiers)</p>
+<h3 id="future-enhancements">Future Enhancements<a class="headerlink" href="#future-enhancements" title="Permanent link">&para;</a></h3>
+<p>Possible extensions to ranking algorithm:</p>
+<ol>
+<li><strong>Telemetry-Based</strong>: Rank by usage frequency or popularity</li>
+<li><strong>Bundle Frequency</strong>: Prefer products often bought together</li>
+<li><strong>Pricing Tiers</strong>: Rank by price (low to high or high to low)</li>
+<li><strong>Recency</strong>: Prefer newer products (by release date)</li>
+<li><strong>Stock Availability</strong>: Rank in-stock products higher</li>
+</ol>
+<p><strong>Implementation Pattern</strong>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_score_with_telemetry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="n">usage_count</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;usage_count&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="mi">0</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;is_default&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>      <span class="c1"># Tier 1: Defaults</span>
+        <span class="o">-</span><span class="n">usage_count</span><span class="p">,</span>                           <span class="c1"># Tier 2: Most used (negative for descending)</span>
+        <span class="mi">0</span> <span class="k">if</span> <span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;query&quot;</span><span class="p">)</span> <span class="ow">in</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>  <span class="c1"># Tier 3: Exact match</span>
+        <span class="n">p</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>                               <span class="c1"># Tier 4: Alphabetical</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="langgraph-integration-optional">LangGraph Integration (Optional)<a class="headerlink" href="#langgraph-integration-optional" title="Permanent link">&para;</a></h2>
+<p><strong>File</strong>: <code>src/backend/app/services/graph/configurator_graph.py</code></p>
+<p><strong>Note</strong>: LangGraph integration is <strong>optional</strong> and not currently used in production. The main orchestrator (<code>StateByStateOrchestrator</code>) provides the active workflow.</p>
+<h3 id="overview_1">Overview<a class="headerlink" href="#overview_1" title="Permanent link">&para;</a></h3>
+<p>LangGraph provides an alternative agent orchestration approach with:</p>
+<ul>
+<li><strong>Redis Checkpointing</strong>: Hot session data persistence</li>
+<li><strong>State Graph Workflow</strong>: Explicit node → edge → node flow</li>
+<li><strong>LangSmith Integration</strong>: Built-in observability</li>
+<li><strong>Multi-Agent Orchestration</strong>: Coordinated agent execution</li>
+</ul>
+<h3 id="4-node-workflow">4-Node Workflow<a class="headerlink" href="#4-node-workflow" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code>User Message
+    ↓
+[extract_parameters] (Agent 1: LLM)
+    ↓
+[search_products] (Agent 2: Neo4j)
+    ↓
+[generate_response] (Agent 3: LLM)
+    ↓
+[determine_next_state] (State machine logic)
+    ↓
+END
+</code></pre></div></td></tr></table></div>
+<p><strong>Graph Definition</strong> (<code>configurator_graph.py:71-89</code>):</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_build_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">StateGraph</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build LangGraph workflow&quot;&quot;&quot;</span>
+
+    <span class="n">workflow</span> <span class="o">=</span> <span class="n">StateGraph</span><span class="p">(</span><span class="n">ConfiguratorGraphState</span><span class="p">)</span>
+
+    <span class="c1"># Add nodes</span>
+    <span class="n">workflow</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;extract_parameters&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_parameters_node</span><span class="p">)</span>
+    <span class="n">workflow</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;search_products&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_products_node</span><span class="p">)</span>
+    <span class="n">workflow</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;generate_response&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_response_node</span><span class="p">)</span>
+    <span class="n">workflow</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="s2">&quot;determine_next_state&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">determine_next_state_node</span><span class="p">)</span>
+
+    <span class="c1"># Define edges (sequential flow)</span>
+    <span class="n">workflow</span><span class="o">.</span><span class="n">set_entry_point</span><span class="p">(</span><span class="s2">&quot;extract_parameters&quot;</span><span class="p">)</span>
+    <span class="n">workflow</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;extract_parameters&quot;</span><span class="p">,</span> <span class="s2">&quot;search_products&quot;</span><span class="p">)</span>
+    <span class="n">workflow</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;search_products&quot;</span><span class="p">,</span> <span class="s2">&quot;generate_response&quot;</span><span class="p">)</span>
+    <span class="n">workflow</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;generate_response&quot;</span><span class="p">,</span> <span class="s2">&quot;determine_next_state&quot;</span><span class="p">)</span>
+    <span class="n">workflow</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="s2">&quot;determine_next_state&quot;</span><span class="p">,</span> <span class="n">END</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">workflow</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="node-implementations">Node Implementations<a class="headerlink" href="#node-implementations" title="Permanent link">&para;</a></h3>
+<h4 id="node-1-extract-parameters-agent-1">Node 1: Extract Parameters (Agent 1)<a class="headerlink" href="#node-1-extract-parameters-agent-1" title="Permanent link">&para;</a></h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@traceable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;extract_parameters&quot;</span><span class="p">,</span> <span class="n">run_type</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">extract_parameters_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">ConfiguratorGraphState</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract parameters from user message using LLM&quot;&quot;&quot;</span>
+
+    <span class="n">updated_master</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_extractor</span><span class="o">.</span><span class="n">extract_parameters</span><span class="p">(</span>
+        <span class="n">user_message</span><span class="o">=</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;user_message&quot;</span><span class="p">],</span>
+        <span class="n">current_state</span><span class="o">=</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;current_state&quot;</span><span class="p">],</span>
+        <span class="n">master_parameters</span><span class="o">=</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;master_parameters&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Log extraction for observability</span>
+    <span class="n">extraction</span> <span class="o">=</span> <span class="n">LLMExtraction</span><span class="p">(</span>
+        <span class="n">timestamp</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="n">user_message</span><span class="o">=</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;user_message&quot;</span><span class="p">],</span>
+        <span class="n">current_state</span><span class="o">=</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;current_state&quot;</span><span class="p">],</span>
+        <span class="n">extracted_parameters</span><span class="o">=</span><span class="n">updated_master</span><span class="p">,</span>
+        <span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-4&quot;</span><span class="p">,</span>
+        <span class="n">tokens_used</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">duration_ms</span><span class="o">=</span><span class="n">duration_ms</span><span class="p">,</span>
+        <span class="n">success</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">error</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;master_parameters&quot;</span><span class="p">:</span> <span class="n">updated_master</span><span class="p">,</span>
+        <span class="s2">&quot;llm_extractions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">extraction</span><span class="p">],</span>
+        <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+    <span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<h4 id="node-2-search-products-agent-2">Node 2: Search Products (Agent 2)<a class="headerlink" href="#node-2-search-products-agent-2" title="Permanent link">&para;</a></h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@traceable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;search_products&quot;</span><span class="p">,</span> <span class="n">run_type</span><span class="o">=</span><span class="s2">&quot;retriever&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search_products_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">ConfiguratorGraphState</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search Neo4j for matching products&quot;&quot;&quot;</span>
+
+    <span class="n">component</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;current_state&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_selection&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">component_params</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;master_parameters&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="p">{})</span>
+
+    <span class="c1"># Search Neo4j</span>
+    <span class="n">products</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">product_search</span><span class="o">.</span><span class="n">search_by_component</span><span class="p">(</span>
+        <span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">,</span>
+        <span class="n">requirements</span><span class="o">=</span><span class="n">component_params</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Log query for observability</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">Neo4jQuery</span><span class="p">(</span>
+        <span class="n">timestamp</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="n">query_type</span><span class="o">=</span><span class="s2">&quot;product_search&quot;</span><span class="p">,</span>
+        <span class="n">component</span><span class="o">=</span><span class="n">component</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="n">component_params</span><span class="p">,</span>
+        <span class="n">results_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">products</span><span class="p">),</span>
+        <span class="n">top_results</span><span class="o">=</span><span class="n">products</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span>
+        <span class="n">duration_ms</span><span class="o">=</span><span class="n">duration_ms</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;neo4j_queries&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">query</span><span class="p">],</span>
+        <span class="s2">&quot;agent_actions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">AgentAction</span><span class="p">(</span><span class="o">...</span><span class="p">)]</span>
+    <span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<h4 id="node-3-generate-response-agent-3">Node 3: Generate Response (Agent 3)<a class="headerlink" href="#node-3-generate-response-agent-3" title="Permanent link">&para;</a></h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@traceable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;generate_response&quot;</span><span class="p">,</span> <span class="n">run_type</span><span class="o">=</span><span class="s2">&quot;llm&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">generate_response_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">ConfiguratorGraphState</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate conversational response&quot;&quot;&quot;</span>
+
+    <span class="n">response_text</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">message_generator</span><span class="o">.</span><span class="n">generate_message</span><span class="p">(</span>
+        <span class="n">current_state</span><span class="o">=</span><span class="n">ConfiguratorState</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;current_state&quot;</span><span class="p">]),</span>
+        <span class="n">master_parameters</span><span class="o">=</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;master_parameters&quot;</span><span class="p">],</span>
+        <span class="n">response_json</span><span class="o">=</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;response_json&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;ai_response&quot;</span><span class="p">:</span> <span class="n">response_text</span><span class="p">,</span>
+        <span class="s2">&quot;agent_actions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">AgentAction</span><span class="p">(</span><span class="o">...</span><span class="p">)]</span>
+    <span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<h4 id="node-4-determine-next-state">Node 4: Determine Next State<a class="headerlink" href="#node-4-determine-next-state" title="Permanent link">&para;</a></h4>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@traceable</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;determine_next_state&quot;</span><span class="p">,</span> <span class="n">run_type</span><span class="o">=</span><span class="s2">&quot;chain&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">determine_next_state_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">ConfiguratorGraphState</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine next state based on applicability&quot;&quot;&quot;</span>
+
+    <span class="c1"># Simple progression (TODO: Implement full applicability logic)</span>
+    <span class="n">state_order</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;power_source_selection&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;feeder_selection&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cooler_selection&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;interconnector_selection&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;torch_selection&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;accessories_selection&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;finalize&quot;</span>
+    <span class="p">]</span>
+
+    <span class="n">current_idx</span> <span class="o">=</span> <span class="n">state_order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;current_state&quot;</span><span class="p">])</span>
+    <span class="n">next_state</span> <span class="o">=</span> <span class="n">state_order</span><span class="p">[</span><span class="n">current_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">current_idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">state_order</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;finalize&quot;</span>
+
+    <span class="n">transition</span> <span class="o">=</span> <span class="n">StateTransition</span><span class="p">(</span>
+        <span class="n">timestamp</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+        <span class="n">from_state</span><span class="o">=</span><span class="n">state</span><span class="p">[</span><span class="s2">&quot;current_state&quot;</span><span class="p">],</span>
+        <span class="n">to_state</span><span class="o">=</span><span class="n">next_state</span><span class="p">,</span>
+        <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;progression&quot;</span><span class="p">,</span>
+        <span class="n">applicability_check</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;next_state&quot;</span><span class="p">:</span> <span class="n">next_state</span><span class="p">,</span>
+        <span class="s2">&quot;state_transitions&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">transition</span><span class="p">],</span>
+        <span class="s2">&quot;checkpoint_count&quot;</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;checkpoint_count&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="redis-checkpointing">Redis Checkpointing<a class="headerlink" href="#redis-checkpointing" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Persist graph state between invocations</p>
+<p><strong>Initialization</strong>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">langgraph.checkpoint.redis</span><span class="w"> </span><span class="kn">import</span> <span class="n">RedisSaver</span>
+
+<span class="n">redis_checkpointer</span> <span class="o">=</span> <span class="n">RedisSaver</span><span class="p">(</span><span class="n">redis_client</span><span class="p">)</span>
+
+<span class="n">graph</span> <span class="o">=</span> <span class="n">ConfiguratorGraph</span><span class="p">(</span>
+    <span class="n">parameter_extractor</span><span class="o">=</span><span class="n">parameter_extractor</span><span class="p">,</span>
+    <span class="n">product_search</span><span class="o">=</span><span class="n">product_search</span><span class="p">,</span>
+    <span class="n">message_generator</span><span class="o">=</span><span class="n">message_generator</span><span class="p">,</span>
+    <span class="n">redis_checkpointer</span><span class="o">=</span><span class="n">redis_checkpointer</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Process Message with Checkpointing</strong>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">process_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session_id</span><span class="p">,</span> <span class="n">user_message</span><span class="p">,</span> <span class="n">current_state</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process message through LangGraph workflow&quot;&quot;&quot;</span>
+
+    <span class="c1"># Update state with new message</span>
+    <span class="n">current_state</span><span class="p">[</span><span class="s2">&quot;user_message&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_message</span>
+    <span class="n">current_state</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+        <span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">user_message</span><span class="p">,</span>
+        <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+    <span class="p">})</span>
+
+    <span class="c1"># Create config for checkpointing</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;configurable&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;thread_id&quot;</span><span class="p">:</span> <span class="n">session_id</span><span class="p">}}</span>
+
+    <span class="c1"># Invoke graph with checkpointing</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">ainvoke</span><span class="p">(</span><span class="n">current_state</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+
+    <span class="c1"># Checkpoint automatically saved by LangGraph</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Checkpoint #</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;checkpoint_count&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> saved&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Benefits</strong>:
+- <strong>Session Persistence</strong>: State saved automatically after each node
+- <strong>Resume Capability</strong>: Resume from last checkpoint on reconnection
+- <strong>Crash Recovery</strong>: Recover state after server restart
+- <strong>Debugging</strong>: Inspect graph state at each checkpoint</p>
+<h3 id="why-not-used-in-production">Why Not Used in Production?<a class="headerlink" href="#why-not-used-in-production" title="Permanent link">&para;</a></h3>
+<p>The main orchestrator (<code>StateByStateOrchestrator</code>) is preferred because:</p>
+<ol>
+<li><strong>Simpler</strong>: Direct function calls vs graph nodes</li>
+<li><strong>More Flexible</strong>: Dynamic state transitions based on applicability</li>
+<li><strong>Better Performance</strong>: No checkpointing overhead</li>
+<li><strong>Easier Debugging</strong>: Standard Python async/await patterns</li>
+<li><strong>Less Dependencies</strong>: No LangGraph or Redis checkpointing required</li>
+</ol>
+<p><strong>LangGraph is retained</strong> for:
+- Future experimentation with multi-agent workflows
+- Alternative architecture research
+- Checkpointing capabilities if needed
+- LangSmith-native integration patterns</p>
+<hr />
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../AGENT1_PARAMETER_EXTRACTOR/">Agent 1: ParameterExtractor</a> - LLM-based parameter extraction</li>
+<li><a href="../AGENT2_PRODUCT_SEARCH/">Agent 2: ProductSearch</a> - Neo4j graph database search</li>
+<li><a href="../AGENT3_MESSAGE_GENERATOR/">Agent 3: MessageGenerator</a> - Template-based + LLM response generation</li>
+<li><a href="../CORRECTED_STATE_FLOW_ARCHITECTURE/">State Flow Architecture</a> - S1→SN dynamic state machine</li>
+<li><a href="../MASTER_PARAMETER_JSON_ARCHITECTURE/">Master Parameter JSON Architecture</a> - Data models</li>
+</ul>
+<hr />
+<h2 id="file-location">File Location<a class="headerlink" href="#file-location" title="Permanent link">&para;</a></h2>
+<p><strong>Source</strong>: <code>src/backend/app/services/orchestrator/state_orchestrator.py</code></p>
+<p><strong>Related Files</strong>:
+- <code>app/services/processors/registry.py</code> - StateProcessorRegistry
+- <code>app/services/processors/base.py</code> - BaseStateProcessor
+- <code>app/services/processors/powersource.py</code> - PowerSourceProcessor
+- <code>app/services/processors/single_selection.py</code> - SingleSelectionProcessor (Feeder, Cooler, etc.)
+- <code>app/services/processors/multi_selection.py</code> - MultiSelectionProcessor (Accessories)
+- <code>app/config/component_applicability.json</code> - Component Y/N/O rules
+- <code>app/config/state_config.json</code> - State processor configuration</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 ESAB
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/esab/configurator" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/esab-configurator/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../javascripts/extra.js"></script>
+      
+    
+  </body>
+</html>

@@ -141,7 +141,7 @@
       "description": "Proactive display uses only Cypher for fast compatibility checking when entering a new state"
     },
     "user_intent": {
-      "enabled_strategies": ["cypher", "lucene", "vector", "llm"],
+      "enabled_strategies": ["cypher","lucene", "vector", "llm"],
       "description": "User intent uses all strategies for comprehensive semantic matching when user provides search requirements."
     }
   },

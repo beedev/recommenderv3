@@ -1,0 +1,3210 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="AI-powered welding equipment configurator - Technical documentation">
+      
+      
+        <meta name="author" content="ESAB Development Team">
+      
+      
+        <link rel="canonical" href="https://esab-configurator.readthedocs.io/MASTER_PARAMETER_JSON_ARCHITECTURE/">
+      
+      
+        <link rel="prev" href="../CONTEXT_BASED_STRATEGIES/">
+      
+      
+        <link rel="next" href="../MULTILINGUAL_FLOW/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Master Parameter JSON - ESAB Configurator Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#master-parameter-json-architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ESAB Configurator Documentation" class="md-header__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ESAB Configurator Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Master Parameter JSON
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../CODE_ARCHITECTURE_OVERVIEW/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../deployment/README.md" class="md-tabs__link">
+          
+  
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ESAB Configurator Documentation" class="md-nav__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ESAB Configurator Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_ARCHITECTURE_OVERVIEW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORRECTED_STATE_FLOW_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ORCHESTRATOR_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestrator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTEXT_BASED_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Search Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Parameter JSON
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Parameter JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-problem-statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Problem Statement
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Problem Statement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-current-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Current State
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-spec-requirement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Spec Requirement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-key-requirements-from-spec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Key Requirements from Spec
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-solution-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Solution Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Solution Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-master-parameter-json-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Master Parameter JSON Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-llm-entity-extraction-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. LLM Entity Extraction Service
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. LLM Entity Extraction Service">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-intent-to-master-json-converter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Intent to Master JSON Converter
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-integration-with-existing-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Integration with Existing System
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Integration with Existing System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-session-state-enhancement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Session State Enhancement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-conversational-manager-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Conversational Manager Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-neo4j-search-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Neo4j Search Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-user-flow-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. User Flow Example
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. User Flow Example">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-scenario-user-specifies-aristo-500ix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Scenario: User Specifies "Aristo 500ix"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-scenario-user-changes-mind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Scenario: User Changes Mind
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-scenario-downstream-re-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Scenario: Downstream Re-Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Benefits
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Benefits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-deterministic-entity-extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Deterministic Entity Extraction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-flexible-intent-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Flexible Intent Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-neo4j-search-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Neo4j Search Optimization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-unit-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Unit Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-api-response-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. API Response Format
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. API Response Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-include-master-json-in-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Include Master JSON in Response
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-implementation-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Implementation Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-success-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Success Criteria
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MULTILINGUAL_FLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multilingual Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    System Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONFIGURATION_SYSTEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OBSERVABILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-guide.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operations/runbook.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="master-parameter-json-architecture">Master Parameter JSON Architecture<a class="headerlink" href="#master-parameter-json-architecture" title="Permanent link">&para;</a></h1>
+<p><strong>Version</strong>: 1.0
+<strong>Date</strong>: 2025-10-24
+<strong>Status</strong>: Architecture Design - Critical Component</p>
+<hr />
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>The <strong>Master Parameter JSON</strong> is the deterministic semantic bridge between user intent and Neo4j search. It holds normalized, attribute-level parameters per component extracted by the LLM, serving as the single source of truth for what the user wants.</p>
+<p><strong>Spec Reference</strong>: Section 1.1 (Lines 23-94)</p>
+<hr />
+<h2 id="1-problem-statement">1. Problem Statement<a class="headerlink" href="#1-problem-statement" title="Permanent link">&para;</a></h2>
+<h3 id="11-current-state">1.1 Current State<a class="headerlink" href="#11-current-state" title="Permanent link">&para;</a></h3>
+<p><strong>Current Implementation</strong>:
+- Intent extracted into <code>EnhancedProcessedIntent</code> model
+- Attributes scattered across multiple models
+- No single normalized parameter structure
+- Difficult to track what user has specified vs. what's been inferred</p>
+<p><strong>Current Models</strong> (<code>enhanced_state_models.py</code>):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">EnhancedProcessedIntent</span><span class="p">(</span><span class="n">ExtractedIntent</span><span class="p">):</span>
+    <span class="n">original_query</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">processed_query</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">detected_language</span><span class="p">:</span> <span class="n">LanguageCode</span>
+    <span class="n">expertise_mode</span><span class="p">:</span> <span class="n">ExpertiseMode</span>
+    <span class="c1"># Attributes are in base ExtractedIntent:</span>
+    <span class="c1"># - welding_process: List[WeldingProcess]</span>
+    <span class="c1"># - current_amps: Optional[str]</span>
+    <span class="c1"># - material: Optional[Material]</span>
+    <span class="c1"># - thickness_mm: Optional[str]</span>
+    <span class="c1"># etc.</span>
+</code></pre></div></td></tr></table></div></p>
+<h3 id="12-spec-requirement">1.2 Spec Requirement<a class="headerlink" href="#12-spec-requirement" title="Permanent link">&para;</a></h3>
+<p><strong>Master Parameter JSON Structure</strong> (Lines 29-62):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;PowerSource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;process&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;current_output&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;duty_cycle&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;material&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;voltage&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;Feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;process&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;portability&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;wire_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;material&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;Cooler&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;cooling_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;flow_rate&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;capacity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;Interconnect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;length&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;connector_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;Torch&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;process&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;cooling_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;material&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;amperage_rating&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<h3 id="13-key-requirements-from-spec">1.3 Key Requirements from Spec<a class="headerlink" href="#13-key-requirements-from-spec" title="Permanent link">&para;</a></h3>
+<p><strong>1. Attribute Management</strong> (Lines 66-70):
+- Attributes refined/overwritten based on latest user input
+- Never arbitrarily deleted by system
+- User can change their mind - latest value wins</p>
+<p><strong>2. Eligibility for Neo4j Search</strong> (Lines 71-73):
+- Component must have ≥1 parameter to be eligible
+- Exception: Direct product mentions bypass requirement</p>
+<p><strong>3. Direct Product Mentions</strong> (Lines 75-78):
+- Product names trigger direct GIN lookup
+- System enriches Master JSON with product attributes from Neo4j</p>
+<p><strong>4. Re-Validation Scope</strong> (Lines 80-83):
+- Updating component triggers re-validation ONLY for downstream
+- Downstream = all states after modified component</p>
+<p><strong>5. Normalization Standards</strong> (Lines 85-93):
+- Current output: "500 A", "300 A"
+- Voltage: "230V", "460V"
+- Phase: "single-phase", "3-phase"
+- Process: "MIG (GMAW)", "TIG (GTAW)", "Stick (SMAW)"
+- Cooling type: "water", "air", "none"
+- Length: "25 ft", "50 ft"
+- Wire size: "0.035 inch", "0.045 inch"</p>
+<hr />
+<h2 id="2-solution-architecture">2. Solution Architecture<a class="headerlink" href="#2-solution-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="21-master-parameter-json-model">2.1 Master Parameter JSON Model<a class="headerlink" href="#21-master-parameter-json-model" title="Permanent link">&para;</a></h3>
+<p><strong>Location</strong>: <code>/backend/app/models/master_parameter.py</code></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span>
+<span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span>
+<span class="normal">279</span>
+<span class="normal">280</span>
+<span class="normal">281</span>
+<span class="normal">282</span>
+<span class="normal">283</span>
+<span class="normal">284</span>
+<span class="normal">285</span>
+<span class="normal">286</span>
+<span class="normal">287</span>
+<span class="normal">288</span>
+<span class="normal">289</span>
+<span class="normal">290</span>
+<span class="normal">291</span>
+<span class="normal">292</span>
+<span class="normal">293</span>
+<span class="normal">294</span>
+<span class="normal">295</span>
+<span class="normal">296</span>
+<span class="normal">297</span>
+<span class="normal">298</span>
+<span class="normal">299</span>
+<span class="normal">300</span>
+<span class="normal">301</span>
+<span class="normal">302</span>
+<span class="normal">303</span>
+<span class="normal">304</span>
+<span class="normal">305</span>
+<span class="normal">306</span>
+<span class="normal">307</span>
+<span class="normal">308</span>
+<span class="normal">309</span>
+<span class="normal">310</span>
+<span class="normal">311</span>
+<span class="normal">312</span>
+<span class="normal">313</span>
+<span class="normal">314</span>
+<span class="normal">315</span>
+<span class="normal">316</span>
+<span class="normal">317</span>
+<span class="normal">318</span>
+<span class="normal">319</span>
+<span class="normal">320</span>
+<span class="normal">321</span>
+<span class="normal">322</span>
+<span class="normal">323</span>
+<span class="normal">324</span>
+<span class="normal">325</span>
+<span class="normal">326</span>
+<span class="normal">327</span>
+<span class="normal">328</span>
+<span class="normal">329</span>
+<span class="normal">330</span>
+<span class="normal">331</span>
+<span class="normal">332</span>
+<span class="normal">333</span>
+<span class="normal">334</span>
+<span class="normal">335</span>
+<span class="normal">336</span>
+<span class="normal">337</span>
+<span class="normal">338</span>
+<span class="normal">339</span>
+<span class="normal">340</span>
+<span class="normal">341</span>
+<span class="normal">342</span>
+<span class="normal">343</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span>
+<span class="normal">349</span>
+<span class="normal">350</span>
+<span class="normal">351</span>
+<span class="normal">352</span>
+<span class="normal">353</span>
+<span class="normal">354</span>
+<span class="normal">355</span>
+<span class="normal">356</span>
+<span class="normal">357</span>
+<span class="normal">358</span>
+<span class="normal">359</span>
+<span class="normal">360</span>
+<span class="normal">361</span>
+<span class="normal">362</span>
+<span class="normal">363</span>
+<span class="normal">364</span>
+<span class="normal">365</span>
+<span class="normal">366</span>
+<span class="normal">367</span>
+<span class="normal">368</span>
+<span class="normal">369</span>
+<span class="normal">370</span>
+<span class="normal">371</span>
+<span class="normal">372</span>
+<span class="normal">373</span>
+<span class="normal">374</span>
+<span class="normal">375</span>
+<span class="normal">376</span>
+<span class="normal">377</span>
+<span class="normal">378</span>
+<span class="normal">379</span>
+<span class="normal">380</span>
+<span class="normal">381</span>
+<span class="normal">382</span>
+<span class="normal">383</span>
+<span class="normal">384</span>
+<span class="normal">385</span>
+<span class="normal">386</span>
+<span class="normal">387</span>
+<span class="normal">388</span>
+<span class="normal">389</span>
+<span class="normal">390</span>
+<span class="normal">391</span>
+<span class="normal">392</span>
+<span class="normal">393</span>
+<span class="normal">394</span>
+<span class="normal">395</span>
+<span class="normal">396</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">validator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WeldingProcess</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalized welding process names&quot;&quot;&quot;</span>
+    <span class="n">MIG</span> <span class="o">=</span> <span class="s2">&quot;MIG (GMAW)&quot;</span>
+    <span class="n">TIG</span> <span class="o">=</span> <span class="s2">&quot;TIG (GTAW)&quot;</span>
+    <span class="n">STICK</span> <span class="o">=</span> <span class="s2">&quot;Stick (SMAW)&quot;</span>
+    <span class="n">FLUX_CORE</span> <span class="o">=</span> <span class="s2">&quot;Flux-Cored (FCAW)&quot;</span>
+    <span class="n">SAW</span> <span class="o">=</span> <span class="s2">&quot;Submerged Arc (SAW)&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CoolingType</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalized cooling types&quot;&quot;&quot;</span>
+    <span class="n">WATER</span> <span class="o">=</span> <span class="s2">&quot;water&quot;</span>
+    <span class="n">AIR</span> <span class="o">=</span> <span class="s2">&quot;air&quot;</span>
+    <span class="n">NONE</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PhaseType</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalized phase types&quot;&quot;&quot;</span>
+    <span class="n">SINGLE</span> <span class="o">=</span> <span class="s2">&quot;single-phase&quot;</span>
+    <span class="n">THREE</span> <span class="o">=</span> <span class="s2">&quot;3-phase&quot;</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PowerSourceParameters</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalized parameters for Power Source component&quot;&quot;&quot;</span>
+
+    <span class="n">process</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># WeldingProcess enum value</span>
+    <span class="n">current_output</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># e.g., &quot;500 A&quot;</span>
+    <span class="n">duty_cycle</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># e.g., &quot;60%&quot;, &quot;100%&quot;</span>
+    <span class="n">material</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># e.g., &quot;aluminum&quot;, &quot;steel&quot;, &quot;stainless&quot;</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># PhaseType enum value</span>
+    <span class="n">voltage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># e.g., &quot;230V&quot;, &quot;460V&quot;</span>
+
+    <span class="c1"># Metadata</span>
+    <span class="n">has_parameters</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">direct_product_mention</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># e.g., &quot;Aristo 500ix&quot;</span>
+
+    <span class="nd">@validator</span><span class="p">(</span><span class="s1">&#39;current_output&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_current</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize current to &#39;XXX A&#39; format&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v</span>
+        <span class="c1"># Extract number and add unit</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d+)&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> A&quot;</span>
+        <span class="k">return</span> <span class="n">v</span>
+
+    <span class="nd">@validator</span><span class="p">(</span><span class="s1">&#39;voltage&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_voltage</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize voltage to &#39;XXXV&#39; format&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d+)&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">V&quot;</span>
+        <span class="k">return</span> <span class="n">v</span>
+
+    <span class="nd">@validator</span><span class="p">(</span><span class="s1">&#39;phase&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_phase</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize phase to standard format&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v</span>
+        <span class="n">v_lower</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s1">&#39;3&#39;</span> <span class="ow">in</span> <span class="n">v_lower</span> <span class="ow">or</span> <span class="s1">&#39;three&#39;</span> <span class="ow">in</span> <span class="n">v_lower</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">PhaseType</span><span class="o">.</span><span class="n">THREE</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">elif</span> <span class="s1">&#39;1&#39;</span> <span class="ow">in</span> <span class="n">v_lower</span> <span class="ow">or</span> <span class="s1">&#39;single&#39;</span> <span class="ow">in</span> <span class="n">v_lower</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">PhaseType</span><span class="o">.</span><span class="n">SINGLE</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="n">v</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">updates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update parameters from dict, overwriting existing values&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">updates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_has_parameters</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_has_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if any parameter is set&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_parameters</span> <span class="o">=</span> <span class="nb">any</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">duty_cycle</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phase</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">voltage</span>
+        <span class="p">])</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">FeederParameters</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalized parameters for Feeder component&quot;&quot;&quot;</span>
+
+    <span class="n">process</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">portability</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># &quot;portable&quot;, &quot;stationary&quot;</span>
+    <span class="n">wire_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># e.g., &quot;0.035 inch&quot;, &quot;0.045 inch&quot;</span>
+    <span class="n">material</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># Metadata</span>
+    <span class="n">has_parameters</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">direct_product_mention</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@validator</span><span class="p">(</span><span class="s1">&#39;wire_size&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_wire_size</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize wire size to &#39;X.XXX inch&#39; format&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+        <span class="c1"># Extract decimal number</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d+\.?\d*)&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Ensure leading zero for decimals</span>
+            <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">in</span> <span class="n">size</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">size</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">):</span>
+                <span class="n">size</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span> <span class="o">+</span> <span class="n">size</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">size</span><span class="si">}</span><span class="s2"> inch&quot;</span>
+        <span class="k">return</span> <span class="n">v</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">updates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update parameters from dict&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">updates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_has_parameters</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_has_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_parameters</span> <span class="o">=</span> <span class="nb">any</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">portability</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wire_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span>
+        <span class="p">])</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CoolerParameters</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalized parameters for Cooler component&quot;&quot;&quot;</span>
+
+    <span class="n">cooling_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># CoolingType enum value</span>
+    <span class="n">flow_rate</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># e.g., &quot;2 GPM&quot;, &quot;4 GPM&quot;</span>
+    <span class="n">capacity</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># e.g., &quot;3 gallon&quot;, &quot;5 gallon&quot;</span>
+
+    <span class="c1"># Metadata</span>
+    <span class="n">has_parameters</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">direct_product_mention</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@validator</span><span class="p">(</span><span class="s1">&#39;cooling_type&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_cooling</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize cooling type to lowercase&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v</span>
+        <span class="n">v_lower</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s1">&#39;water&#39;</span> <span class="ow">in</span> <span class="n">v_lower</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CoolingType</span><span class="o">.</span><span class="n">WATER</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">elif</span> <span class="s1">&#39;air&#39;</span> <span class="ow">in</span> <span class="n">v_lower</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CoolingType</span><span class="o">.</span><span class="n">AIR</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="n">v</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">updates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update parameters from dict&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">updates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_has_parameters</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_has_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_parameters</span> <span class="o">=</span> <span class="nb">any</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cooling_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_rate</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">capacity</span>
+        <span class="p">])</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">InterconnectorParameters</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalized parameters for Interconnector component&quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># Cable type</span>
+    <span class="n">length</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># e.g., &quot;25 ft&quot;, &quot;50 ft&quot;</span>
+    <span class="n">connector_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># Metadata</span>
+    <span class="n">has_parameters</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">direct_product_mention</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@validator</span><span class="p">(</span><span class="s1">&#39;length&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_length</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize length to &#39;XX ft&#39; format&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d+)&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> ft&quot;</span>
+        <span class="k">return</span> <span class="n">v</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">updates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update parameters from dict&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">updates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_has_parameters</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_has_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_parameters</span> <span class="o">=</span> <span class="nb">any</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">connector_type</span>
+        <span class="p">])</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TorchParameters</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalized parameters for Torch component&quot;&quot;&quot;</span>
+
+    <span class="n">process</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">cooling_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># CoolingType enum value</span>
+    <span class="n">material</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">amperage_rating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># e.g., &quot;400 A&quot;, &quot;500 A&quot;</span>
+
+    <span class="c1"># Metadata</span>
+    <span class="n">has_parameters</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">direct_product_mention</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@validator</span><span class="p">(</span><span class="s1">&#39;amperage_rating&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">normalize_amperage</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Normalize amperage to &#39;XXX A&#39; format&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(\d+)&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> A&quot;</span>
+        <span class="k">return</span> <span class="n">v</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">updates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update parameters from dict&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">updates</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_has_parameters</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_has_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_parameters</span> <span class="o">=</span> <span class="nb">any</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cooling_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">amperage_rating</span>
+        <span class="p">])</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MasterParameterJSON</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Master Parameter JSON - Semantic bridge between user intent and Neo4j</span>
+
+<span class="sd">    Spec Reference: Section 1.1 (Lines 23-94)</span>
+
+<span class="sd">    Holds normalized, attribute-level parameters per component inferred by LLM.</span>
+<span class="sd">    Acts as single source of truth for user requirements.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Component parameters</span>
+    <span class="n">PowerSource</span><span class="p">:</span> <span class="n">PowerSourceParameters</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">PowerSourceParameters</span><span class="p">)</span>
+    <span class="n">Feeder</span><span class="p">:</span> <span class="n">FeederParameters</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">FeederParameters</span><span class="p">)</span>
+    <span class="n">Cooler</span><span class="p">:</span> <span class="n">CoolerParameters</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">CoolerParameters</span><span class="p">)</span>
+    <span class="n">Interconnect</span><span class="p">:</span> <span class="n">InterconnectorParameters</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">InterconnectorParameters</span><span class="p">)</span>
+    <span class="n">Torch</span><span class="p">:</span> <span class="n">TorchParameters</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">TorchParameters</span><span class="p">)</span>
+
+    <span class="c1"># Metadata</span>
+    <span class="n">version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+    <span class="n">last_updated</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">)</span>
+
+    <span class="c1"># Conversation context</span>
+    <span class="n">original_queries</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update parameters for a component</span>
+
+<span class="sd">        Implements spec requirement: &quot;Attributes refined or overwritten based on latest input&quot;</span>
+<span class="sd">        Latest value wins - user can change their mind</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">):</span>
+            <span class="n">component_params</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+            <span class="n">component_params</span><span class="o">.</span><span class="n">update_from_dict</span><span class="p">(</span><span class="n">parameters</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_updated</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_component_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get parameters for a component&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_component_eligible_for_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if component has enough parameters for Neo4j search</span>
+
+<span class="sd">        Spec requirement: Component must have ≥1 parameter OR direct product mention</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">component_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_component_parameters</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">component_params</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Direct product mention bypasses parameter requirement</span>
+        <span class="k">if</span> <span class="n">component_params</span><span class="o">.</span><span class="n">direct_product_mention</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># Check if has at least 1 parameter</span>
+        <span class="k">return</span> <span class="n">component_params</span><span class="o">.</span><span class="n">has_parameters</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_search_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate search text for Neo4j embedding search</span>
+
+<span class="sd">        Example: &quot;PowerSource 500A 3-phase MIG aluminum&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">component_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_component_parameters</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">component_params</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># If direct product mention, use that</span>
+        <span class="k">if</span> <span class="n">component_params</span><span class="o">.</span><span class="n">direct_product_mention</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">component_params</span><span class="o">.</span><span class="n">direct_product_mention</span>
+
+        <span class="c1"># Build search text from parameters</span>
+        <span class="n">text_parts</span> <span class="o">=</span> <span class="p">[</span><span class="n">component</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">field</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">component_params</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">field</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;has_parameters&#39;</span><span class="p">,</span> <span class="s1">&#39;direct_product_mention&#39;</span><span class="p">]:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">text_parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text_parts</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">enrich_from_product</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">product_data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enrich Master JSON with product attributes from Neo4j node</span>
+
+<span class="sd">        Spec requirement: When direct product mentioned, system enriches JSON</span>
+<span class="sd">        Example: &quot;Aristo 500ix&quot; → add current_output=&quot;500 A&quot;, process=&quot;MIG (GMAW)&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">component</span> <span class="o">==</span> <span class="s2">&quot;PowerSource&quot;</span><span class="p">:</span>
+            <span class="n">updates</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">if</span> <span class="s1">&#39;current_output&#39;</span> <span class="ow">in</span> <span class="n">product_data</span><span class="p">:</span>
+                <span class="n">updates</span><span class="p">[</span><span class="s1">&#39;current_output&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">product_data</span><span class="p">[</span><span class="s1">&#39;current_output&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;process&#39;</span> <span class="ow">in</span> <span class="n">product_data</span><span class="p">:</span>
+                <span class="n">updates</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">product_data</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;voltage&#39;</span> <span class="ow">in</span> <span class="n">product_data</span><span class="p">:</span>
+                <span class="n">updates</span><span class="p">[</span><span class="s1">&#39;voltage&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">product_data</span><span class="p">[</span><span class="s1">&#39;voltage&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;phase&#39;</span> <span class="ow">in</span> <span class="n">product_data</span><span class="p">:</span>
+                <span class="n">updates</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">product_data</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_component</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">updates</span><span class="p">)</span>
+
+        <span class="c1"># Similar logic for other components...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_downstream_components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modified_component</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clear parameters for downstream components</span>
+
+<span class="sd">        Spec requirement: Updating component triggers re-validation for downstream only</span>
+<span class="sd">        Downstream = all states after modified component in S1→SN sequence</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">component_order</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span>  <span class="c1"># S1</span>
+            <span class="s2">&quot;Feeder&quot;</span><span class="p">,</span>       <span class="c1"># S2</span>
+            <span class="s2">&quot;Cooler&quot;</span><span class="p">,</span>       <span class="c1"># S3</span>
+            <span class="s2">&quot;Interconnect&quot;</span><span class="p">,</span> <span class="c1"># S4</span>
+            <span class="s2">&quot;Torch&quot;</span>         <span class="c1"># S5</span>
+        <span class="p">]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">modified_index</span> <span class="o">=</span> <span class="n">component_order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">modified_component</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Clear all downstream components</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">modified_index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">component_order</span><span class="p">)):</span>
+            <span class="n">downstream_component</span> <span class="o">=</span> <span class="n">component_order</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="c1"># Reset to empty parameters</span>
+            <span class="k">if</span> <span class="n">downstream_component</span> <span class="o">==</span> <span class="s2">&quot;PowerSource&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">PowerSource</span> <span class="o">=</span> <span class="n">PowerSourceParameters</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">downstream_component</span> <span class="o">==</span> <span class="s2">&quot;Feeder&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Feeder</span> <span class="o">=</span> <span class="n">FeederParameters</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">downstream_component</span> <span class="o">==</span> <span class="s2">&quot;Cooler&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Cooler</span> <span class="o">=</span> <span class="n">CoolerParameters</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">downstream_component</span> <span class="o">==</span> <span class="s2">&quot;Interconnect&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Interconnect</span> <span class="o">=</span> <span class="n">InterconnectorParameters</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">downstream_component</span> <span class="o">==</span> <span class="s2">&quot;Torch&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">Torch</span> <span class="o">=</span> <span class="n">TorchParameters</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_updated</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export as dictionary for API/storage&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;PowerSource&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">PowerSource</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span>
+            <span class="s2">&quot;Feeder&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Feeder</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span>
+            <span class="s2">&quot;Cooler&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Cooler</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span>
+            <span class="s2">&quot;Interconnect&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Interconnect</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span>
+            <span class="s2">&quot;Torch&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">Torch</span><span class="o">.</span><span class="n">dict</span><span class="p">(),</span>
+            <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">created_at</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="s2">&quot;last_updated&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_updated</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="s2">&quot;original_queries&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_queries</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="3-llm-entity-extraction-service">3. LLM Entity Extraction Service<a class="headerlink" href="#3-llm-entity-extraction-service" title="Permanent link">&para;</a></h2>
+<h3 id="31-intent-to-master-json-converter">3.1 Intent to Master JSON Converter<a class="headerlink" href="#31-intent-to-master-json-converter" title="Permanent link">&para;</a></h3>
+<p><strong>Location</strong>: <code>/backend/app/services/extraction/master_parameter_extractor.py</code></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span>
+<span class="normal">200</span>
+<span class="normal">201</span>
+<span class="normal">202</span>
+<span class="normal">203</span>
+<span class="normal">204</span>
+<span class="normal">205</span>
+<span class="normal">206</span>
+<span class="normal">207</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...models.master_parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">MasterParameterJSON</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..enterprise.enhanced_state_models</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnhancedProcessedIntent</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MasterParameterExtractor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts and normalizes parameters from LLM intent into Master Parameter JSON</span>
+
+<span class="sd">    Implements spec Section 7: LLM Semantic Extraction</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">extract_from_intent</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">intent</span><span class="p">:</span> <span class="n">EnhancedProcessedIntent</span><span class="p">,</span>
+        <span class="n">master_json</span><span class="p">:</span> <span class="n">MasterParameterJSON</span><span class="p">,</span>
+        <span class="n">user_message</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MasterParameterJSON</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract parameters from intent and update Master JSON</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            intent: Processed intent from intelligent_intent_service</span>
+<span class="sd">            master_json: Current Master Parameter JSON to update</span>
+<span class="sd">            user_message: Original user message</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Updated Master Parameter JSON</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Add original query to history</span>
+        <span class="n">master_json</span><span class="o">.</span><span class="n">original_queries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">user_message</span><span class="p">)</span>
+
+        <span class="c1"># Extract PowerSource parameters</span>
+        <span class="n">ps_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_power_source_params</span><span class="p">(</span><span class="n">intent</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ps_params</span><span class="p">:</span>
+            <span class="n">master_json</span><span class="o">.</span><span class="n">update_component</span><span class="p">(</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span> <span class="n">ps_params</span><span class="p">)</span>
+
+        <span class="c1"># Extract Feeder parameters</span>
+        <span class="n">feeder_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_feeder_params</span><span class="p">(</span><span class="n">intent</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">feeder_params</span><span class="p">:</span>
+            <span class="n">master_json</span><span class="o">.</span><span class="n">update_component</span><span class="p">(</span><span class="s2">&quot;Feeder&quot;</span><span class="p">,</span> <span class="n">feeder_params</span><span class="p">)</span>
+
+        <span class="c1"># Extract Cooler parameters</span>
+        <span class="n">cooler_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_cooler_params</span><span class="p">(</span><span class="n">intent</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cooler_params</span><span class="p">:</span>
+            <span class="n">master_json</span><span class="o">.</span><span class="n">update_component</span><span class="p">(</span><span class="s2">&quot;Cooler&quot;</span><span class="p">,</span> <span class="n">cooler_params</span><span class="p">)</span>
+
+        <span class="c1"># Extract Interconnector parameters</span>
+        <span class="n">interconnect_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_interconnect_params</span><span class="p">(</span><span class="n">intent</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">interconnect_params</span><span class="p">:</span>
+            <span class="n">master_json</span><span class="o">.</span><span class="n">update_component</span><span class="p">(</span><span class="s2">&quot;Interconnect&quot;</span><span class="p">,</span> <span class="n">interconnect_params</span><span class="p">)</span>
+
+        <span class="c1"># Extract Torch parameters</span>
+        <span class="n">torch_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_torch_params</span><span class="p">(</span><span class="n">intent</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">torch_params</span><span class="p">:</span>
+            <span class="n">master_json</span><span class="o">.</span><span class="n">update_component</span><span class="p">(</span><span class="s2">&quot;Torch&quot;</span><span class="p">,</span> <span class="n">torch_params</span><span class="p">)</span>
+
+        <span class="c1"># Check for direct product mentions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_detect_product_mentions</span><span class="p">(</span><span class="n">user_message</span><span class="p">,</span> <span class="n">master_json</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">master_json</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_power_source_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intent</span><span class="p">:</span> <span class="n">EnhancedProcessedIntent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract PowerSource parameters from intent&quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Process</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="s1">&#39;welding_process&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">intent</span><span class="o">.</span><span class="n">welding_process</span><span class="p">:</span>
+            <span class="c1"># welding_process is a list</span>
+            <span class="n">processes</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">intent</span><span class="o">.</span><span class="n">welding_process</span><span class="p">]</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">processes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">processes</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="c1"># Current output</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="s1">&#39;current_amps&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">intent</span><span class="o">.</span><span class="n">current_amps</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;current_output&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">intent</span><span class="o">.</span><span class="n">current_amps</span><span class="p">)</span>
+
+        <span class="c1"># Material</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="s1">&#39;material&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">intent</span><span class="o">.</span><span class="n">material</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;material&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">intent</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">intent</span><span class="o">.</span><span class="n">material</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">intent</span><span class="o">.</span><span class="n">material</span><span class="p">)</span>
+
+        <span class="c1"># Voltage</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="s1">&#39;voltage&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">intent</span><span class="o">.</span><span class="n">voltage</span><span class="p">:</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;voltage&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">intent</span><span class="o">.</span><span class="n">voltage</span><span class="p">)</span>
+
+        <span class="c1"># Phase (extract from extracted_entities if available)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="s1">&#39;extracted_entities&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">intent</span><span class="o">.</span><span class="n">extracted_entities</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;phase&#39;</span> <span class="ow">in</span> <span class="n">intent</span><span class="o">.</span><span class="n">extracted_entities</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">intent</span><span class="o">.</span><span class="n">extracted_entities</span><span class="p">[</span><span class="s1">&#39;phase&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">params</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_feeder_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intent</span><span class="p">:</span> <span class="n">EnhancedProcessedIntent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract Feeder parameters from intent&quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Process (same as power source)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="s1">&#39;welding_process&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">intent</span><span class="o">.</span><span class="n">welding_process</span><span class="p">:</span>
+            <span class="n">processes</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">intent</span><span class="o">.</span><span class="n">welding_process</span><span class="p">]</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">processes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">processes</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="c1"># Check extracted_entities for feeder-specific params</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="s1">&#39;extracted_entities&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">intent</span><span class="o">.</span><span class="n">extracted_entities</span><span class="p">:</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="n">intent</span><span class="o">.</span><span class="n">extracted_entities</span>
+
+            <span class="k">if</span> <span class="s1">&#39;portability&#39;</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;portability&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;portability&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="s1">&#39;wire_size&#39;</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;wire_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;wire_size&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">params</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_cooler_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intent</span><span class="p">:</span> <span class="n">EnhancedProcessedIntent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract Cooler parameters from intent&quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="s1">&#39;extracted_entities&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">intent</span><span class="o">.</span><span class="n">extracted_entities</span><span class="p">:</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="n">intent</span><span class="o">.</span><span class="n">extracted_entities</span>
+
+            <span class="k">if</span> <span class="s1">&#39;cooling_type&#39;</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;cooling_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;cooling_type&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="s1">&#39;flow_rate&#39;</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;flow_rate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;flow_rate&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="s1">&#39;capacity&#39;</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;capacity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;capacity&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">params</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_interconnect_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intent</span><span class="p">:</span> <span class="n">EnhancedProcessedIntent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract Interconnector parameters from intent&quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="s1">&#39;extracted_entities&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">intent</span><span class="o">.</span><span class="n">extracted_entities</span><span class="p">:</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="n">intent</span><span class="o">.</span><span class="n">extracted_entities</span>
+
+            <span class="k">if</span> <span class="s1">&#39;cable_length&#39;</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;cable_length&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="s1">&#39;connector_type&#39;</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;connector_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;connector_type&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">params</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_torch_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intent</span><span class="p">:</span> <span class="n">EnhancedProcessedIntent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract Torch parameters from intent&quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Process</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="s1">&#39;welding_process&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">intent</span><span class="o">.</span><span class="n">welding_process</span><span class="p">:</span>
+            <span class="n">processes</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">value</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">intent</span><span class="o">.</span><span class="n">welding_process</span><span class="p">]</span>
+            <span class="n">params</span><span class="p">[</span><span class="s1">&#39;process&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">processes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">processes</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">intent</span><span class="p">,</span> <span class="s1">&#39;extracted_entities&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">intent</span><span class="o">.</span><span class="n">extracted_entities</span><span class="p">:</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="n">intent</span><span class="o">.</span><span class="n">extracted_entities</span>
+
+            <span class="k">if</span> <span class="s1">&#39;torch_cooling&#39;</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;cooling_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;torch_cooling&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="s1">&#39;torch_amperage&#39;</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+                <span class="n">params</span><span class="p">[</span><span class="s1">&#39;amperage_rating&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;torch_amperage&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">params</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_detect_product_mentions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">master_json</span><span class="p">:</span> <span class="n">MasterParameterJSON</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Detect direct product name mentions</span>
+
+<span class="sd">        Spec: Product names (e.g., &quot;Aristo 500ix&quot;) trigger direct GIN lookup</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Known product patterns</span>
+        <span class="n">product_patterns</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Aristo&quot;</span><span class="p">:</span> <span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Renegade&quot;</span><span class="p">:</span> <span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Warrior&quot;</span><span class="p">:</span> <span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Dynasty&quot;</span><span class="p">:</span> <span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Python&quot;</span><span class="p">:</span> <span class="s2">&quot;Feeder&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Bernard&quot;</span><span class="p">:</span> <span class="s2">&quot;Torch&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Tweco&quot;</span><span class="p">:</span> <span class="s2">&quot;Torch&quot;</span>
+        <span class="p">}</span>
+
+        <span class="n">message_lower</span> <span class="o">=</span> <span class="n">user_message</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">product_name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">product_patterns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">product_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">message_lower</span><span class="p">:</span>
+                <span class="c1"># Extract full product name (e.g., &quot;Aristo 500ix&quot;)</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">product_name</span><span class="si">}</span><span class="se">\\</span><span class="s2">s*</span><span class="se">\\</span><span class="s2">w*&quot;</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">user_message</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="n">full_name</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+                    <span class="c1"># Set direct product mention</span>
+                    <span class="n">component_params</span> <span class="o">=</span> <span class="n">master_json</span><span class="o">.</span><span class="n">get_component_parameters</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">component_params</span><span class="p">:</span>
+                        <span class="n">component_params</span><span class="o">.</span><span class="n">direct_product_mention</span> <span class="o">=</span> <span class="n">full_name</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detected product mention: </span><span class="si">{</span><span class="n">full_name</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">component</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_master_parameter_extractor</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">MasterParameterExtractor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get extractor instance&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">MasterParameterExtractor</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="4-integration-with-existing-system">4. Integration with Existing System<a class="headerlink" href="#4-integration-with-existing-system" title="Permanent link">&para;</a></h2>
+<h3 id="41-session-state-enhancement">4.1 Session State Enhancement<a class="headerlink" href="#41-session-state-enhancement" title="Permanent link">&para;</a></h3>
+<p><strong>Modify</strong> <code>/backend/app/models/conversation_models.py</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">.master_parameter</span><span class="w"> </span><span class="kn">import</span> <span class="n">MasterParameterJSON</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConversationHistory</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Conversation session history&quot;&quot;&quot;</span>
+
+    <span class="c1"># ... existing fields ...</span>
+
+    <span class="c1"># Add Master Parameter JSON</span>
+    <span class="n">master_parameters</span><span class="p">:</span> <span class="n">MasterParameterJSON</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">MasterParameterJSON</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">data</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">master_parameters</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">master_parameters</span> <span class="o">=</span> <span class="n">MasterParameterJSON</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="42-conversational-manager-integration">4.2 Conversational Manager Integration<a class="headerlink" href="#42-conversational-manager-integration" title="Permanent link">&para;</a></h3>
+<p><strong>Modify</strong> <code>/backend/app/services/enterprise/conversational_manager.py</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">..extraction.master_parameter_extractor</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_master_parameter_extractor</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConversationalManager</span><span class="p">:</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intent_service</span><span class="p">,</span> <span class="n">neo4j_service</span><span class="p">):</span>
+        <span class="c1"># ... existing initialization ...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameter_extractor</span> <span class="o">=</span> <span class="n">get_master_parameter_extractor</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_process_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">user_message</span><span class="p">):</span>
+        <span class="c1"># ... existing logic ...</span>
+
+        <span class="c1"># Extract intent</span>
+        <span class="n">intent_result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">intent_service</span><span class="o">.</span><span class="n">process_query</span><span class="p">(</span>
+            <span class="n">query</span><span class="o">=</span><span class="n">user_message</span><span class="p">,</span>
+            <span class="n">user_context</span><span class="o">=</span><span class="n">user_context</span><span class="p">,</span>
+            <span class="n">trace_id</span><span class="o">=</span><span class="n">trace_id</span>
+        <span class="p">)</span>
+
+        <span class="c1"># UPDATE MASTER PARAMETER JSON</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">master_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameter_extractor</span><span class="o">.</span><span class="n">extract_from_intent</span><span class="p">(</span>
+            <span class="n">intent</span><span class="o">=</span><span class="n">intent_result</span><span class="p">,</span>
+            <span class="n">master_json</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">master_parameters</span><span class="p">,</span>
+            <span class="n">user_message</span><span class="o">=</span><span class="n">user_message</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Log extracted parameters</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Master Parameters updated: </span><span class="si">{</span><span class="n">session</span><span class="o">.</span><span class="n">master_parameters</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Continue with existing logic...</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="43-neo4j-search-integration">4.3 Neo4j Search Integration<a class="headerlink" href="#43-neo4j-search-integration" title="Permanent link">&para;</a></h3>
+<p><strong>Modify</strong> <code>/backend/app/services/enterprise/smart_neo4j_service.py</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search_with_master_parameters</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">component</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">master_json</span><span class="p">:</span> <span class="n">MasterParameterJSON</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Search Neo4j using Master Parameter JSON</span>
+
+<span class="sd">    Implements spec Section 4.1: Retrieval Strategies</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Check if component has direct product mention</span>
+    <span class="n">component_params</span> <span class="o">=</span> <span class="n">master_json</span><span class="o">.</span><span class="n">get_component_parameters</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">component_params</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="c1"># Strategy 1: Direct GIN/Model Lookup</span>
+    <span class="k">if</span> <span class="n">component_params</span><span class="o">.</span><span class="n">direct_product_mention</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using direct product lookup: </span><span class="si">{</span><span class="n">component_params</span><span class="o">.</span><span class="n">direct_product_mention</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_direct_product_lookup</span><span class="p">(</span>
+            <span class="n">component</span><span class="p">,</span>
+            <span class="n">component_params</span><span class="o">.</span><span class="n">direct_product_mention</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Strategy 2: Attribute-Based Embedding Search</span>
+    <span class="k">if</span> <span class="n">master_json</span><span class="o">.</span><span class="n">is_component_eligible_for_search</span><span class="p">(</span><span class="n">component</span><span class="p">):</span>
+        <span class="n">search_text</span> <span class="o">=</span> <span class="n">master_json</span><span class="o">.</span><span class="n">get_search_text</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using embedding search: </span><span class="si">{</span><span class="n">search_text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_products_semantic</span><span class="p">(</span>
+            <span class="n">query</span><span class="o">=</span><span class="n">search_text</span><span class="p">,</span>
+            <span class="n">category</span><span class="o">=</span><span class="n">component</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Not eligible for search</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Component </span><span class="si">{</span><span class="n">component</span><span class="si">}</span><span class="s2"> not eligible for search (no parameters)&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[]</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="5-user-flow-example">5. User Flow Example<a class="headerlink" href="#5-user-flow-example" title="Permanent link">&para;</a></h2>
+<h3 id="51-scenario-user-specifies-aristo-500ix">5.1 Scenario: User Specifies "Aristo 500ix"<a class="headerlink" href="#51-scenario-user-specifies-aristo-500ix" title="Permanent link">&para;</a></h3>
+<p><strong>User Input</strong>: "I need an Aristo 500ix power source"</p>
+<p><strong>Processing</strong>:</p>
+<ol>
+<li>
+<p><strong>Intent Extraction</strong> (intelligent_intent_service):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">intent</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;original_query&quot;</span><span class="p">:</span> <span class="s2">&quot;I need an Aristo 500ix power source&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;welding_process&quot;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="s2">&quot;current_amps&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="s2">&quot;extracted_entities&quot;</span><span class="p">:</span> <span class="p">{}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+</li>
+<li>
+<p><strong>Master Parameter Extraction</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Detect product mention &quot;Aristo 500ix&quot;</span>
+<span class="n">master_json</span><span class="o">.</span><span class="n">PowerSource</span><span class="o">.</span><span class="n">direct_product_mention</span> <span class="o">=</span> <span class="s2">&quot;Aristo 500ix&quot;</span>
+</code></pre></div></td></tr></table></div></p>
+</li>
+<li>
+<p><strong>Neo4j Direct Lookup</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Product</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="w"> </span><span class="n">CONTAINS</span><span class="w"> </span><span class="s">&quot;Aristo 500ix&quot;</span>
+<span class="w">   </span><span class="n">OR</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">model_name</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Aristo 500ix&quot;</span>
+<span class="w">   </span><span class="n">OR</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">gin</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;0446200880&quot;</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">p</span>
+</code></pre></div></td></tr></table></div></p>
+</li>
+<li>
+<p><strong>Enrich Master JSON from Product</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">product_data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;gin&quot;</span><span class="p">:</span> <span class="s2">&quot;0446200880&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Aristo 500ix&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;current_output&quot;</span><span class="p">:</span> <span class="s2">&quot;500 A&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;process&quot;</span><span class="p">:</span> <span class="s2">&quot;MIG (GMAW)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;voltage&quot;</span><span class="p">:</span> <span class="s2">&quot;230V&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;phase&quot;</span><span class="p">:</span> <span class="s2">&quot;3-phase&quot;</span>
+<span class="p">}</span>
+
+<span class="c1"># Enrich Master JSON</span>
+<span class="n">master_json</span><span class="o">.</span><span class="n">enrich_from_product</span><span class="p">(</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span> <span class="n">product_data</span><span class="p">)</span>
+
+<span class="c1"># Master JSON now has:</span>
+<span class="p">{</span>
+  <span class="s2">&quot;PowerSource&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;process&quot;</span><span class="p">:</span> <span class="s2">&quot;MIG (GMAW)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;current_output&quot;</span><span class="p">:</span> <span class="s2">&quot;500 A&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;voltage&quot;</span><span class="p">:</span> <span class="s2">&quot;230V&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;phase&quot;</span><span class="p">:</span> <span class="s2">&quot;3-phase&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;direct_product_mention&quot;</span><span class="p">:</span> <span class="s2">&quot;Aristo 500ix&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+</li>
+</ol>
+<h3 id="52-scenario-user-changes-mind">5.2 Scenario: User Changes Mind<a class="headerlink" href="#52-scenario-user-changes-mind" title="Permanent link">&para;</a></h3>
+<p><strong>Turn 1</strong>: "I need 500 amps"
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span><span class="nt">&quot;PowerSource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;current_output&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;500 A&quot;</span><span class="p">}}</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Turn 2</strong>: "Actually, make that 300 amps"
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span><span class="nt">&quot;PowerSource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;current_output&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;300 A&quot;</span><span class="p">}}</span>
+<span class="c1">// Latest value wins!</span>
+</code></pre></div></td></tr></table></div></p>
+<h3 id="53-scenario-downstream-re-validation">5.3 Scenario: Downstream Re-Validation<a class="headerlink" href="#53-scenario-downstream-re-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Turn 1</strong>: Select Aristo 500ix (500A)
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;PowerSource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;current_output&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;500 A&quot;</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;Feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;process&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MIG (GMAW)&quot;</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;Cooler&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;cooling_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;water&quot;</span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;Torch&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;amperage_rating&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;500 A&quot;</span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Turn 2</strong>: User changes to Renegade ES300 (300A)
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Clear downstream components</span>
+<span class="n">master_json</span><span class="o">.</span><span class="n">update_component</span><span class="p">(</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;current_output&quot;</span><span class="p">:</span> <span class="s2">&quot;300 A&quot;</span><span class="p">})</span>
+<span class="n">master_json</span><span class="o">.</span><span class="n">clear_downstream_components</span><span class="p">(</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">)</span>
+
+<span class="c1"># Result:</span>
+<span class="p">{</span>
+  <span class="s2">&quot;PowerSource&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;current_output&quot;</span><span class="p">:</span> <span class="s2">&quot;300 A&quot;</span><span class="p">},</span>
+  <span class="s2">&quot;Feeder&quot;</span><span class="p">:</span> <span class="p">{},</span>  <span class="o">//</span> <span class="n">CLEARED</span>
+  <span class="s2">&quot;Cooler&quot;</span><span class="p">:</span> <span class="p">{},</span>  <span class="o">//</span> <span class="n">CLEARED</span>
+  <span class="s2">&quot;Torch&quot;</span><span class="p">:</span> <span class="p">{}</span>    <span class="o">//</span> <span class="n">CLEARED</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="6-benefits">6. Benefits<a class="headerlink" href="#6-benefits" title="Permanent link">&para;</a></h2>
+<h3 id="61-deterministic-entity-extraction">6.1 Deterministic Entity Extraction<a class="headerlink" href="#61-deterministic-entity-extraction" title="Permanent link">&para;</a></h3>
+<p>✅ <strong>Single Source of Truth</strong>: All user requirements in one place
+✅ <strong>Normalized Format</strong>: Consistent attribute representation
+✅ <strong>Audit Trail</strong>: original_queries tracks conversation history
+✅ <strong>Searchable</strong>: Easy to query what user has specified</p>
+<h3 id="62-flexible-intent-handling">6.2 Flexible Intent Handling<a class="headerlink" href="#62-flexible-intent-handling" title="Permanent link">&para;</a></h3>
+<p>✅ <strong>Latest Value Wins</strong>: User can change mind anytime
+✅ <strong>Never Delete</strong>: Attributes only overwritten, never removed arbitrarily
+✅ <strong>Downstream Cascade</strong>: Clear dependent components automatically
+✅ <strong>Product Enrichment</strong>: Auto-populate from known products</p>
+<h3 id="63-neo4j-search-optimization">6.3 Neo4j Search Optimization<a class="headerlink" href="#63-neo4j-search-optimization" title="Permanent link">&para;</a></h3>
+<p>✅ <strong>Eligibility Check</strong>: Only search when ≥1 parameter
+✅ <strong>Direct Lookup</strong>: Bypass search for known products
+✅ <strong>Semantic Search</strong>: Generate optimal search text from parameters
+✅ <strong>Strategy Selection</strong>: Choose best retrieval strategy automatically</p>
+<hr />
+<h2 id="7-testing">7. Testing<a class="headerlink" href="#7-testing" title="Permanent link">&para;</a></h2>
+<h3 id="71-unit-tests">7.1 Unit Tests<a class="headerlink" href="#71-unit-tests" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">test_normalize_current_output</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test current normalization&quot;&quot;&quot;</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">PowerSourceParameters</span><span class="p">(</span><span class="n">current_output</span><span class="o">=</span><span class="s2">&quot;500&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">params</span><span class="o">.</span><span class="n">current_output</span> <span class="o">==</span> <span class="s2">&quot;500 A&quot;</span>
+
+    <span class="n">params</span> <span class="o">=</span> <span class="n">PowerSourceParameters</span><span class="p">(</span><span class="n">current_output</span><span class="o">=</span><span class="s2">&quot;500 amps&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">params</span><span class="o">.</span><span class="n">current_output</span> <span class="o">==</span> <span class="s2">&quot;500 A&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_update_component</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test component update (latest wins)&quot;&quot;&quot;</span>
+    <span class="n">master</span> <span class="o">=</span> <span class="n">MasterParameterJSON</span><span class="p">()</span>
+
+    <span class="c1"># First update</span>
+    <span class="n">master</span><span class="o">.</span><span class="n">update_component</span><span class="p">(</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;current_output&quot;</span><span class="p">:</span> <span class="s2">&quot;500&quot;</span><span class="p">})</span>
+    <span class="k">assert</span> <span class="n">master</span><span class="o">.</span><span class="n">PowerSource</span><span class="o">.</span><span class="n">current_output</span> <span class="o">==</span> <span class="s2">&quot;500 A&quot;</span>
+
+    <span class="c1"># Second update (should overwrite)</span>
+    <span class="n">master</span><span class="o">.</span><span class="n">update_component</span><span class="p">(</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;current_output&quot;</span><span class="p">:</span> <span class="s2">&quot;300&quot;</span><span class="p">})</span>
+    <span class="k">assert</span> <span class="n">master</span><span class="o">.</span><span class="n">PowerSource</span><span class="o">.</span><span class="n">current_output</span> <span class="o">==</span> <span class="s2">&quot;300 A&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_clear_downstream</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test downstream clearing&quot;&quot;&quot;</span>
+    <span class="n">master</span> <span class="o">=</span> <span class="n">MasterParameterJSON</span><span class="p">()</span>
+
+    <span class="c1"># Set all components</span>
+    <span class="n">master</span><span class="o">.</span><span class="n">update_component</span><span class="p">(</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;current_output&quot;</span><span class="p">:</span> <span class="s2">&quot;500 A&quot;</span><span class="p">})</span>
+    <span class="n">master</span><span class="o">.</span><span class="n">update_component</span><span class="p">(</span><span class="s2">&quot;Feeder&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;process&quot;</span><span class="p">:</span> <span class="s2">&quot;MIG (GMAW)&quot;</span><span class="p">})</span>
+    <span class="n">master</span><span class="o">.</span><span class="n">update_component</span><span class="p">(</span><span class="s2">&quot;Torch&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;amperage_rating&quot;</span><span class="p">:</span> <span class="s2">&quot;500 A&quot;</span><span class="p">})</span>
+
+    <span class="c1"># Modify PowerSource (should clear Feeder and Torch)</span>
+    <span class="n">master</span><span class="o">.</span><span class="n">clear_downstream_components</span><span class="p">(</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">master</span><span class="o">.</span><span class="n">PowerSource</span><span class="o">.</span><span class="n">current_output</span> <span class="o">==</span> <span class="s2">&quot;500 A&quot;</span>  <span class="c1"># Unchanged</span>
+    <span class="k">assert</span> <span class="n">master</span><span class="o">.</span><span class="n">Feeder</span><span class="o">.</span><span class="n">process</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># Cleared</span>
+    <span class="k">assert</span> <span class="n">master</span><span class="o">.</span><span class="n">Torch</span><span class="o">.</span><span class="n">amperage_rating</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># Cleared</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="8-api-response-format">8. API Response Format<a class="headerlink" href="#8-api-response-format" title="Permanent link">&para;</a></h2>
+<h3 id="81-include-master-json-in-response">8.1 Include Master JSON in Response<a class="headerlink" href="#81-include-master-json-in-response" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ConversationQueryResponse</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="c1"># ... existing fields ...</span>
+
+    <span class="n">master_parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_session</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">ConversationHistory</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="c1"># ... existing fields ...</span>
+            <span class="n">master_parameters</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">master_parameters</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Example Response</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;session_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;abc-123&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;I&#39;ve found the Aristo 500ix...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;current_state&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;FEEDER&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;master_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;PowerSource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;process&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;MIG (GMAW)&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;current_output&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;500 A&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;voltage&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;230V&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;phase&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;3-phase&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;direct_product_mention&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Aristo 500ix&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;has_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;Feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">    </span><span class="nt">&quot;Cooler&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">    </span><span class="nt">&quot;Interconnect&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">    </span><span class="nt">&quot;Torch&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">    </span><span class="nt">&quot;metadata&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-10-24T10:00:00&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;last_updated&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-10-24T10:01:30&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;original_queries&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;I need an Aristo 500ix power source&quot;</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="9-implementation-checklist">9. Implementation Checklist<a class="headerlink" href="#9-implementation-checklist" title="Permanent link">&para;</a></h2>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create <code>master_parameter.py</code> with all component parameter models</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add normalization validators for each attribute type</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Implement <code>MasterParameterExtractor</code> service</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Integrate with <code>ConversationHistory</code> model</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Update <code>ConversationalManager</code> to use Master JSON</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Enhance <code>SmartNeo4jService</code> with parameter-based search</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add Master JSON to API responses</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Write unit tests for normalization</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Write unit tests for update logic</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Write integration tests for user flow scenarios</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Document API changes in Swagger/OpenAPI</li>
+</ul>
+<hr />
+<h2 id="10-success-criteria">10. Success Criteria<a class="headerlink" href="#10-success-criteria" title="Permanent link">&para;</a></h2>
+<p>✅ <strong>Deterministic Extraction</strong>: Same input always produces same Master JSON
+✅ <strong>Normalization Accuracy</strong>: 100% of test cases normalize correctly
+✅ <strong>Latest Value Wins</strong>: User can change mind, latest value always used
+✅ <strong>Downstream Cascade</strong>: Modifying component clears all downstream
+✅ <strong>Product Enrichment</strong>: Direct mentions auto-populate attributes
+✅ <strong>Search Eligibility</strong>: Correct strategy selection (direct vs semantic)</p>
+<hr />
+<p><strong>Status</strong>: Architecture Design Complete - Ready for Implementation
+<strong>Next</strong>: Integrate with Phase 1 implementation plan</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 ESAB
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/esab/configurator" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/esab-configurator/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../javascripts/extra.js"></script>
+      
+    
+  </body>
+</html>

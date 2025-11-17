@@ -1,0 +1,1926 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="AI-powered welding equipment configurator - Technical documentation">
+      
+      
+        <meta name="author" content="ESAB Development Team">
+      
+      
+        <link rel="canonical" href="https://esab-configurator.readthedocs.io/archive/pre-refactoring/STATE_ORCHESTRATOR_METHODS_REFERENCE/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>State Orchestrator Methods Reference - ESAB Configurator Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#state-orchestrator-methods-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="ESAB Configurator Documentation" class="md-header__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ESAB Configurator Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              State Orchestrator Methods Reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../CODE_ARCHITECTURE_OVERVIEW/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../deployment/README.md" class="md-tabs__link">
+          
+  
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ESAB Configurator Documentation" class="md-nav__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ESAB Configurator Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CODE_ARCHITECTURE_OVERVIEW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CORRECTED_STATE_FLOW_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ORCHESTRATOR_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestrator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTEXT_BASED_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Search Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MASTER_PARAMETER_JSON_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Parameter JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MULTILINGUAL_FLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multilingual Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    System Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONFIGURATION_SYSTEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OBSERVABILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deployment/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../testing-guide.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/runbook.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="state-orchestrator-methods-reference">State Orchestrator Methods Reference<a class="headerlink" href="#state-orchestrator-methods-reference" title="Permanent link">&para;</a></h1>
+<p><strong>File</strong>: <code>src/backend/app/services/orchestrator/state_orchestrator.py</code>
+<strong>Class</strong>: <code>StateByStateOrchestrator</code></p>
+<p>Complete reference of all methods, their purposes, calling locations, inconsistencies, and unused code.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#initialization--lifecycle">Initialization &amp; Lifecycle</a></li>
+<li><a href="#public-api-methods">Public API Methods</a></li>
+<li><a href="#compound-request-handling">Compound Request Handling</a></li>
+<li><a href="#state-processing-methods-s1-s7">State Processing Methods (S1-S7)</a></li>
+<li><a href="#special-command-handlers">Special Command Handlers</a></li>
+<li><a href="#product-selection--management">Product Selection &amp; Management</a></li>
+<li><a href="#helper-methods---state-management">Helper Methods - State Management</a></li>
+<li><a href="#helper-methods---component-management">Helper Methods - Component Management</a></li>
+<li><a href="#helper-methods---serialization">Helper Methods - Serialization</a></li>
+<li><a href="#data-classes--nested-methods">Data Classes &amp; Nested Methods</a></li>
+<li><a href="#method-usage-statistics">Method Usage Statistics</a></li>
+<li><a href="#inconsistencies--issues">Inconsistencies &amp; Issues</a></li>
+<li><a href="#unused--irrelevant-methods">Unused &amp; Irrelevant Methods</a></li>
+</ol>
+<hr />
+<h2 id="initialization-lifecycle">Initialization &amp; Lifecycle<a class="headerlink" href="#initialization-lifecycle" title="Permanent link">&para;</a></h2>
+<h3 id="__init__parameter_extractor-product_search-message_generator-config_file_path-line-213"><code>__init__(parameter_extractor, product_search, message_generator, config_file_path)</code> (Line 213)<a class="headerlink" href="#__init__parameter_extractor-product_search-message_generator-config_file_path-line-213" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Initialize orchestrator with all service dependencies and load component applicability config
+<strong>Parameters</strong>:
+- <code>parameter_extractor</code>: Agent 1 (LLM-based intent extraction)
+- <code>product_search</code>: Agent 2 (Neo4j graph search)
+- <code>message_generator</code>: Agent 3 (Response generation)
+- <code>config_file_path</code>: Path to <code>component_applicability.json</code></p>
+<p><strong>Called From</strong>: <code>main.py:app_lifespan()</code> - Application startup
+<strong>Initialization Tasks</strong>:
+- Load component applicability rules from JSON
+- Set up class-level search limits (DEFAULT_SEARCH_LIMIT = 10, PROACTIVE_SEARCH_LIMIT = 10)
+- Initialize service dependencies</p>
+<p><strong>Returns</strong>: None</p>
+<hr />
+<h2 id="public-api-methods">Public API Methods<a class="headerlink" href="#public-api-methods" title="Permanent link">&para;</a></h2>
+<h3 id="async-process_messageconversation_state-user_message-line-1138"><code>async process_message(conversation_state, user_message)</code> (Line 1138)<a class="headerlink" href="#async-process_messageconversation_state-user_message-line-1138" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: <strong>Main entry point</strong> - Process user message and orchestrate S1→S7 flow
+<strong>Called From</strong>: <code>configurator.py:send_message()</code> - API endpoint handler
+<strong>Calls</strong>: 20+ internal methods</p>
+<p><strong>Primary Flow</strong>:
+1. Check for special commands ("skip", "next", "done", "finalize")
+2. Detect compound requests (multi-component specifications)
+3. Extract parameters via <code>ParameterExtractor</code> (Agent 1)
+4. Route to appropriate state processor
+5. Search for products via <code>Neo4jProductSearch</code> (Agent 2)
+6. Generate response via <code>MessageGenerator</code> (Agent 3)
+7. Update conversation state</p>
+<p><strong>Returns</strong>: <code>Dict</code> with message, products, state, and metadata</p>
+<p><strong>Special Handlers</strong>:
+- <code>"skip"</code> / <code>"next"</code> → <code>_handle_skip()</code>
+- <code>"done"</code> / <code>"finalize"</code> → <code>_handle_finalize()</code>
+- <code>"show more"</code> / <code>"more"</code> → <code>_handle_show_more()</code>
+- Question detection → <code>_handle_question()</code>
+- Compound requests → <code>_process_compound_request()</code></p>
+<hr />
+<h3 id="async-select_productconversation_state-user_message-gin-product_data-line-2814"><code>async select_product(conversation_state, user_message, gin, product_data)</code> (Line 2814)<a class="headerlink" href="#async-select_productconversation_state-user_message-gin-product_data-line-2814" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Handle explicit product selection via GIN
+<strong>Called From</strong>: <code>configurator.py:select_product_endpoint()</code> - API endpoint handler
+<strong>Calls</strong>: 6 internal methods</p>
+<p><strong>Primary Flow</strong>:
+1. Validate product matches current state
+2. Add product to ResponseJSON
+3. Update component applicability if PowerSource (S1)
+4. Determine next state
+5. Trigger proactive search for next component
+6. Generate confirmation message</p>
+<p><strong>Special Behavior</strong>:
+- <strong>Accessory States</strong>: Returns <code>stay_in_state: True</code> for multi-select
+- <strong>Proactive Preview</strong>: Shows first 3 products from next accessory state (NEW FIX)
+- <strong>Main Components</strong>: Advances to next applicable state</p>
+<p><strong>Returns</strong>: <code>Dict</code> with confirmation message, next state, products preview</p>
+<hr />
+<h2 id="compound-request-handling">Compound Request Handling<a class="headerlink" href="#compound-request-handling" title="Permanent link">&para;</a></h2>
+<h3 id="_detect_compound_requestmaster_parameters-line-238"><code>_detect_compound_request(master_parameters)</code> (Line 238)<a class="headerlink" href="#_detect_compound_requestmaster_parameters-line-238" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Detect if user specified multiple components in one message
+<strong>Called From</strong>: <code>process_message()</code> (1 call)</p>
+<p><strong>Detection Logic</strong>:
+- Counts components with specifications in <code>master_parameters</code>
+- Requires 2+ components specified
+- Ignores "_detected_gin" metadata field</p>
+<p><strong>Returns</strong>: <code>bool</code> - True if compound request detected</p>
+<p><strong>Example Detections</strong>:
+- ✅ <code>{"power_source": {"product_name": "Aristo"}, "feeder": {"cooling_type": "Water-cooled"}}</code> → True
+- ❌ <code>{"power_source": {"product_name": "Aristo"}}</code> → False (only 1 component)</p>
+<hr />
+<h3 id="_validate_compound_requestmaster_parameters-line-288"><code>_validate_compound_request(master_parameters)</code> (Line 288)<a class="headerlink" href="#_validate_compound_requestmaster_parameters-line-288" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Validate compound request follows dependency rules
+<strong>Called From</strong>: <code>_process_compound_request()</code> (1 call)</p>
+<p><strong>Validation Rules</strong>:
+1. <strong>PowerSource Standalone</strong>: ✅ Allowed
+2. <strong>Downstream Without PowerSource</strong>: ❌ Blocked with helpful message
+3. <strong>PowerSource + Downstream</strong>: ✅ Allowed</p>
+<p><strong>Returns</strong>: <code>Tuple[bool, Optional[str]]</code> - (is_valid, error_message)</p>
+<p><strong>Error Message Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>&quot;To configure a Feeder, I first need to know which Power Source you want...&quot;
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h3 id="_is_specific_product_nameproduct_name-line-341"><code>_is_specific_product_name(product_name)</code> (Line 341)<a class="headerlink" href="#_is_specific_product_nameproduct_name-line-341" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Determine if product name is specific enough for direct search
+<strong>Called From</strong>: <code>_process_compound_request()</code> (3 calls)</p>
+<p><strong>Heuristics</strong>:
+- Length &gt; 5 characters
+- Not generic terms ("welder", "feeder", "cooler")
+- Contains digits or specific model indicators
+- Capitalization patterns (e.g., "Aristo", "RobustFeed")</p>
+<p><strong>Returns</strong>: <code>bool</code> - True if specific product name</p>
+<hr />
+<h3 id="async-_process_compound_requestconversation_state-master_parameters-user_message-line-383"><code>async _process_compound_request(conversation_state, master_parameters, user_message)</code> (Line 383)<a class="headerlink" href="#async-_process_compound_requestconversation_state-master_parameters-user_message-line-383" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Process multi-component requests with auto-selection
+<strong>Called From</strong>: <code>process_message()</code> (1 call)
+<strong>Calls</strong>: <code>_search_component()</code>, <code>_is_specific_product_name()</code>, <code>_generate_compound_response()</code></p>
+<p><strong>Processing Steps</strong>:
+1. Validate request dependencies
+2. Search all specified components in parallel
+3. Auto-select if exactly 1 match
+4. Queue for disambiguation if multiple matches
+5. Advance to first unhandled component
+6. Generate response with selections + next prompt</p>
+<p><strong>Auto-Selection Logic</strong>:
+- <strong>1 result</strong>: Auto-select, add to ResponseJSON
+- <strong>2+ results</strong>: Queue for disambiguation, stop at that state
+- <strong>0 results</strong>: Show all compatible products (fallback)</p>
+<p><strong>Returns</strong>: <code>Dict</code> with selections, disambiguations, next state</p>
+<hr />
+<h3 id="async-_search_componentcomponent_type-master_params-serialized_response-user_message-line-534"><code>async _search_component(component_type, master_params, serialized_response, user_message)</code> (Line 534)<a class="headerlink" href="#async-_search_componentcomponent_type-master_params-serialized_response-user_message-line-534" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Generic component search wrapper for compound requests
+<strong>Called From</strong>: <code>_process_compound_request()</code> (2 calls)</p>
+<p><strong>Search Routing</strong>:
+- PowerSource → <code>search_power_source()</code>
+- Feeder → <code>search_feeder_smart()</code>
+- Cooler → <code>search_cooler_smart()</code>
+- Torch → <code>search_torch_smart()</code>
+- Interconnector → <code>search_interconnector()</code></p>
+<p><strong>Returns</strong>: <code>SearchResults</code> or None</p>
+<hr />
+<h3 id="_is_component_selectedconversation_state-component_type-line-565"><code>_is_component_selected(conversation_state, component_type)</code> (Line 565)<a class="headerlink" href="#_is_component_selectedconversation_state-component_type-line-565" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Check if component already selected in ResponseJSON
+<strong>Called From</strong>: <code>_process_compound_request()</code> (1 call)</p>
+<p><strong>Checks</strong>:
+- Main components: <code>PowerSource</code>, <code>Feeder</code>, <code>Cooler</code>, <code>Interconnector</code>, <code>Torch</code>
+- Accessories: Checks if non-empty list</p>
+<p><strong>Returns</strong>: <code>bool</code> - True if component already selected</p>
+<hr />
+<h3 id="async-_generate_compound_responseconversation_state-selections-disambiguations-next_state-line-578"><code>async _generate_compound_response(conversation_state, selections, disambiguations, next_state)</code> (Line 578)<a class="headerlink" href="#async-_generate_compound_responseconversation_state-selections-disambiguations-next_state-line-578" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Generate user-friendly response for compound request results
+<strong>Called From</strong>: <code>_process_compound_request()</code> (1 call)</p>
+<p><strong>Response Components</strong>:
+1. <strong>Auto-selections</strong>: ✅ Component: Name (GIN: xxx) - Auto-selected
+2. <strong>Disambiguations</strong>: Multiple matches found, please select from list
+3. <strong>Current Package</strong>: List of all selected components
+4. <strong>Next Prompt</strong>: What would you like next?</p>
+<p><strong>Returns</strong>: <code>Dict</code> with formatted message and products for disambiguation</p>
+<hr />
+<h2 id="state-processing-methods-s1-s7">State Processing Methods (S1-S7)<a class="headerlink" href="#state-processing-methods-s1-s7" title="Permanent link">&para;</a></h2>
+<h3 id="async-_process_power_source_selectionconversation_state-user_message-line-1402"><code>async _process_power_source_selection(conversation_state, user_message)</code> (Line 1402)<a class="headerlink" href="#async-_process_power_source_selectionconversation_state-user_message-line-1402" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: <strong>S1 - Power Source Selection</strong> (MANDATORY first step)
+<strong>Called From</strong>:
+- <code>_route_to_state_processor()</code> - Main routing
+- <code>_process_compound_request()</code> - Compound requests</p>
+<p><strong>Search Strategy</strong>:
+1. Direct GIN lookup if detected
+2. Exact model name match
+3. Lucene full-text search via <code>search_power_source_smart()</code>
+4. Traditional filtered search (fallback)</p>
+<p><strong>Special Behavior</strong>:
+- Loads component applicability after selection
+- Auto-selects if exactly 1 result
+- No compatibility validation (first component)</p>
+<p><strong>Returns</strong>: <code>Dict</code> with products, message, state</p>
+<hr />
+<h3 id="async-_process_component_selectionconversation_state-user_message-search_method-state-line-1667"><code>async _process_component_selection(conversation_state, user_message, search_method, state)</code> (Line 1667)<a class="headerlink" href="#async-_process_component_selectionconversation_state-user_message-search_method-state-line-1667" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: <strong>Generic handler for S2-S5</strong> (Feeder, Cooler, Interconnector, Torch)
+<strong>Called From</strong>: <code>_route_to_state_processor()</code> - For S2, S3, S4, S5 states (8 calls total)</p>
+<p><strong>Handles</strong>:
+- S2: Feeder Selection
+- S3: Cooler Selection
+- S4: Interconnector Selection
+- S5: Torch Selection</p>
+<p><strong>Search Strategy</strong>:
+1. Extract user message + master parameters
+2. Call appropriate <code>search_*_smart()</code> method
+3. Validate compatibility with selected components
+4. Auto-select if exactly 1 result
+5. Generate response with options</p>
+<p><strong>Returns</strong>: <code>Dict</code> with products, message, state</p>
+<hr />
+<h3 id="async-_process_powersource_accessories_selectionconversation_state-user_message-line-1931"><code>async _process_powersource_accessories_selection(conversation_state, user_message)</code> (Line 1931)<a class="headerlink" href="#async-_process_powersource_accessories_selectionconversation_state-user_message-line-1931" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: <strong>S6A - PowerSource Accessories Selection</strong>
+<strong>Called From</strong>:
+- <code>_route_to_state_processor()</code> (1 call)
+- <code>_handle_skip()</code> - Proactive search (3 calls)
+- Proactive search after main component selection (3 calls)</p>
+<p><strong>Search Strategy</strong>:
+- <code>search_powersource_accessories_smart()</code> - Lucene + traditional
+- Filters by PowerSource compatibility</p>
+<p><strong>Special Behavior</strong>:
+- Multi-select state (can add multiple accessories)
+- Shows preview of next accessory state when selecting</p>
+<p><strong>Returns</strong>: <code>Dict</code> with products, message, state, <code>multi_select: True</code></p>
+<hr />
+<h3 id="async-_process_feeder_accessories_selectionconversation_state-user_message-line-1996"><code>async _process_feeder_accessories_selection(conversation_state, user_message)</code> (Line 1996)<a class="headerlink" href="#async-_process_feeder_accessories_selectionconversation_state-user_message-line-1996" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: <strong>S6B - Feeder Accessories Selection</strong>
+<strong>Called From</strong>:
+- <code>_route_to_state_processor()</code> (1 call)
+- <code>_handle_skip()</code> - Proactive search (3 calls)
+- Proactive search after accessory selection (3 calls)</p>
+<p><strong>Search Strategy</strong>:
+- <code>search_feeder_accessories_smart()</code> - Lucene + traditional
+- Filters by Feeder compatibility</p>
+<p><strong>Special Behavior</strong>: Same as PowerSource Accessories (multi-select with preview)</p>
+<hr />
+<h3 id="async-_process_feeder_conditional_accessoriesconversation_state-user_message-line-2054"><code>async _process_feeder_conditional_accessories(conversation_state, user_message)</code> (Line 2054)<a class="headerlink" href="#async-_process_feeder_conditional_accessoriesconversation_state-user_message-line-2054" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: <strong>S6C - Feeder Conditional Accessories</strong> (Dependent on Feeder Accessory)
+<strong>Called From</strong>:
+- <code>_route_to_state_processor()</code> (1 call)
+- <code>_handle_skip()</code> - Proactive search (3 calls)</p>
+<p><strong>Search Strategy</strong>:
+- <code>search_feeder_conditional_accessories()</code> - Traditional only
+- Requires parent Feeder Accessory selected first</p>
+<p><strong>Dependency</strong>: Only shown if user selected a Feeder Accessory in previous state</p>
+<hr />
+<h3 id="async-_process_interconnector_accessories_selectionconversation_state-user_message-line-2107"><code>async _process_interconnector_accessories_selection(conversation_state, user_message)</code> (Line 2107)<a class="headerlink" href="#async-_process_interconnector_accessories_selectionconversation_state-user_message-line-2107" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: <strong>S6D - Interconnector Accessories Selection</strong>
+<strong>Called From</strong>:
+- <code>_route_to_state_processor()</code> (1 call)
+- <code>_handle_skip()</code> - Proactive search (3 calls)
+- Proactive search after accessory selection (3 calls)</p>
+<p><strong>Search Strategy</strong>:
+- <code>search_interconn_accessories()</code> - Traditional only
+- Filters by Interconnector compatibility</p>
+<p><strong>Special Behavior</strong>: Same as other accessory states (multi-select with preview)</p>
+<hr />
+<h3 id="async-_process_remote_selectionconversation_state-user_message-line-2156"><code>async _process_remote_selection(conversation_state, user_message)</code> (Line 2156)<a class="headerlink" href="#async-_process_remote_selectionconversation_state-user_message-line-2156" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: <strong>S7 - Remote Selection</strong>
+<strong>Called From</strong>:
+- <code>_route_to_state_processor()</code> (1 call)
+- <code>_handle_skip()</code> - Proactive search (3 calls)
+- Proactive search after accessory selection (3 calls)</p>
+<p><strong>Search Strategy</strong>:
+- <code>search_remotes()</code> - Traditional only
+- Compatible with PowerSource (and optionally Feeder)</p>
+<p><strong>Special Behavior</strong>: Multi-select state</p>
+<hr />
+<h3 id="async-_process_remote_accessories_selectionconversation_state-user_message-line-2206"><code>async _process_remote_accessories_selection(conversation_state, user_message)</code> (Line 2206)<a class="headerlink" href="#async-_process_remote_accessories_selectionconversation_state-user_message-line-2206" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: <strong>S8A - Remote Accessories Selection</strong>
+<strong>Called From</strong>:
+- <code>_route_to_state_processor()</code> (1 call)
+- <code>_handle_skip()</code> - Proactive search (3 calls)</p>
+<p><strong>Search Strategy</strong>:
+- <code>search_remote_accessories()</code> - Traditional only
+- Requires Remote selected first</p>
+<p><strong>Dependency</strong>: Only shown if user selected a Remote in previous state</p>
+<hr />
+<h3 id="async-_process_remote_conditional_accessoriesconversation_state-user_message-line-2255"><code>async _process_remote_conditional_accessories(conversation_state, user_message)</code> (Line 2255)<a class="headerlink" href="#async-_process_remote_conditional_accessoriesconversation_state-user_message-line-2255" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: <strong>S8B - Remote Conditional Accessories</strong>
+<strong>Called From</strong>:
+- <code>_route_to_state_processor()</code> (1 call)
+- <code>_handle_skip()</code> - Proactive search (3 calls)</p>
+<p><strong>Search Strategy</strong>:
+- <code>search_remote_conditional_accessories()</code> - Traditional only
+- Requires parent Remote Accessory selected first</p>
+<p><strong>Dependency</strong>: Only shown if user selected a Remote Accessory in previous state</p>
+<hr />
+<h3 id="async-_process_connectivity_selectionconversation_state-user_message-line-2308"><code>async _process_connectivity_selection(conversation_state, user_message)</code> (Line 2308)<a class="headerlink" href="#async-_process_connectivity_selectionconversation_state-user_message-line-2308" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: <strong>S9 - Connectivity Selection</strong> (WiFi modules, connectivity accessories)
+<strong>Called From</strong>:
+- <code>_route_to_state_processor()</code> (1 call)
+- <code>_handle_skip()</code> - Proactive search (3 calls)
+- Proactive search after accessory selection (3 calls)</p>
+<p><strong>Search Strategy</strong>:
+- <code>search_connectivity()</code> - Traditional only
+- Compatible with PowerSource (and optionally Feeder)</p>
+<p><strong>Special Behavior</strong>: Multi-select state</p>
+<hr />
+<h3 id="async-_process_feeder_wears_selectionconversation_state-user_message-line-2362"><code>async _process_feeder_wears_selection(conversation_state, user_message)</code> (Line 2362)<a class="headerlink" href="#async-_process_feeder_wears_selectionconversation_state-user_message-line-2362" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: <strong>S10 - Feeder Wears Selection</strong> (Wear parts: liners, drive rolls, contact tips)
+<strong>Called From</strong>:
+- <code>_route_to_state_processor()</code> (1 call)
+- <code>_handle_skip()</code> - Proactive search (3 calls)
+- Proactive search after accessory selection (3 calls)</p>
+<p><strong>Search Strategy</strong>:
+- <code>search_feeder_wears()</code> - Traditional only
+- Requires Feeder selected first</p>
+<p><strong>Dependency</strong>: Only shown if Feeder is selected</p>
+<hr />
+<h3 id="async-_process_accessories_selectionconversation_state-user_message-line-2417"><code>async _process_accessories_selection(conversation_state, user_message)</code> (Line 2417)<a class="headerlink" href="#async-_process_accessories_selectionconversation_state-user_message-line-2417" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: <strong>S11 - Generic Accessories Selection</strong> (LEGACY - being phased out)
+<strong>Called From</strong>:
+- <code>_route_to_state_processor()</code> (1 call)
+- <code>_handle_skip()</code> - Proactive search (2 calls)</p>
+<p><strong>Search Strategy</strong>:
+- <code>search_accessories()</code> - Legacy generic search
+- Searches all accessory categories</p>
+<p><strong>Status</strong>: 🔄 Legacy - Being replaced by category-specific methods</p>
+<hr />
+<h3 id="async-_process_finalizeconversation_state-line-2451"><code>async _process_finalize(conversation_state)</code> (Line 2451)<a class="headerlink" href="#async-_process_finalizeconversation_state-line-2451" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: <strong>S12 - Finalize Configuration</strong> (Validate and complete)
+<strong>Called From</strong>:
+- <code>_route_to_state_processor()</code> (1 call)
+- <code>_handle_finalize()</code> (3 calls)</p>
+<p><strong>Validation</strong>:
+- Minimum requirement: PowerSource must be selected
+- Generates final package summary
+- Sets <code>can_finalize: True</code></p>
+<p><strong>Returns</strong>: <code>Dict</code> with final summary, all selections, completion status</p>
+<hr />
+<h2 id="special-command-handlers">Special Command Handlers<a class="headerlink" href="#special-command-handlers" title="Permanent link">&para;</a></h2>
+<h3 id="_is_show_more_requestmessage-line-2490"><code>_is_show_more_request(message)</code> (Line 2490)<a class="headerlink" href="#_is_show_more_requestmessage-line-2490" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Detect "show more" / "more" / "load more" commands
+<strong>Called From</strong>: <code>process_message()</code> (1 call)</p>
+<p><strong>Detection Patterns</strong>:
+- "show more"
+- "more"
+- "load more"
+- "see more"
+- Case-insensitive</p>
+<p><strong>Returns</strong>: <code>bool</code> - True if show more request</p>
+<hr />
+<h3 id="async-_handle_show_moreconversation_state-user_message-line-2514"><code>async _handle_show_more(conversation_state, user_message)</code> (Line 2514)<a class="headerlink" href="#async-_handle_show_moreconversation_state-user_message-line-2514" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Pagination handler - Load next batch of products
+<strong>Called From</strong>: <code>process_message()</code> (1 call)</p>
+<p><strong>Pagination Logic</strong>:
+- Retrieves <code>last_search_params</code> from conversation state
+- Increments offset by 10 (DEFAULT_SEARCH_LIMIT)
+- Calls same search method with new offset
+- Appends results to existing products</p>
+<p><strong>Search Method Routing</strong>:
+- PowerSource → <code>search_power_source()</code>
+- Feeder → <code>search_feeder_smart()</code>
+- Cooler → <code>search_cooler_smart()</code>
+- Torch → <code>search_torch_smart()</code>
+- Interconnector → <code>search_interconnector()</code>
+- Accessories → Category-specific methods</p>
+<p><strong>Returns</strong>: <code>Dict</code> with additional products, <code>show_more_results: True</code></p>
+<hr />
+<h3 id="async-_handle_skipconversation_state-line-2690"><code>async _handle_skip(conversation_state)</code> (Line 2690)<a class="headerlink" href="#async-_handle_skipconversation_state-line-2690" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Handle "skip" / "next" commands - Move to next applicable state
+<strong>Called From</strong>: <code>process_message()</code> (1 call)</p>
+<p><strong>Primary Flow</strong>:
+1. Find next applicable state via <code>_find_next_applicable_state()</code>
+2. Trigger proactive search for next state
+3. Generate prompt for next component
+4. Return products preview</p>
+<p><strong>Proactive Search Routing</strong> (20 calls total):
+- S6A: PowerSource Accessories → <code>_process_powersource_accessories_selection()</code>
+- S6B: Feeder Accessories → <code>_process_feeder_accessories_selection()</code>
+- S6C: Feeder Conditional Accessories → <code>_process_feeder_conditional_accessories()</code>
+- S6D: Interconnector Accessories → <code>_process_interconnector_accessories_selection()</code>
+- S7: Remote Selection → <code>_process_remote_selection()</code>
+- S8A: Remote Accessories → <code>_process_remote_accessories_selection()</code>
+- S8B: Remote Conditional Accessories → <code>_process_remote_conditional_accessories()</code>
+- S9: Connectivity → <code>_process_connectivity_selection()</code>
+- S10: Feeder Wears → <code>_process_feeder_wears_selection()</code>
+- S11: Generic Accessories → <code>_process_accessories_selection()</code>
+- S12: Finalize → <code>_process_finalize()</code></p>
+<p><strong>Returns</strong>: <code>Dict</code> with next state products and prompt</p>
+<hr />
+<h3 id="async-_handle_finalizeconversation_state-line-2806"><code>async _handle_finalize(conversation_state)</code> (Line 2806)<a class="headerlink" href="#async-_handle_finalizeconversation_state-line-2806" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Handle "done" / "finalize" commands - Complete configuration
+<strong>Called From</strong>: <code>process_message()</code> (1 call)</p>
+<p><strong>Validation</strong>:
+- Ensures PowerSource is selected (minimum requirement)
+- Calls <code>_process_finalize()</code> for final summary</p>
+<p><strong>Returns</strong>: <code>Dict</code> with final configuration, <code>can_finalize: True</code></p>
+<hr />
+<h3 id="_is_questionuser_input-line-1007"><code>_is_question(user_input)</code> (Line 1007)<a class="headerlink" href="#_is_questionuser_input-line-1007" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Detect if user message is a question (not a selection or command)
+<strong>Called From</strong>: <code>process_message()</code> (1 call)</p>
+<p><strong>Detection Heuristics</strong>:
+- Ends with <code>?</code>
+- Starts with question words ("what", "how", "why", "when", "where", "which", "can", "is", "do", "does")
+- Contains question patterns ("tell me", "explain", "help me")</p>
+<p><strong>Returns</strong>: <code>bool</code> - True if question detected</p>
+<hr />
+<h3 id="async-_handle_questionconversation_state-user_message-line-1068"><code>async _handle_question(conversation_state, user_message)</code> (Line 1068)<a class="headerlink" href="#async-_handle_questionconversation_state-user_message-line-1068" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Handle user questions without advancing state
+<strong>Called From</strong>: <code>process_message()</code> (1 call)</p>
+<p><strong>Flow</strong>:
+1. Keep current state unchanged
+2. Generate informational response via <code>MessageGenerator</code>
+3. Do NOT trigger product search or state transition</p>
+<p><strong>Use Cases</strong>:
+- "What's the difference between these models?"
+- "How do I choose a cooler?"
+- "Can you explain the specifications?"</p>
+<p><strong>Returns</strong>: <code>Dict</code> with informational message, no state change</p>
+<hr />
+<h2 id="product-selection-management">Product Selection &amp; Management<a class="headerlink" href="#product-selection-management" title="Permanent link">&para;</a></h2>
+<h3 id="_find_product_by_nameproducts-product_name-line-741"><code>_find_product_by_name(products, product_name)</code> (Line 741)<a class="headerlink" href="#_find_product_by_nameproducts-product_name-line-741" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Find exact product match by name using fuzzy matching
+<strong>Called From</strong>: <code>_process_compound_request()</code> (4 calls)</p>
+<p><strong>Matching Strategy</strong>:
+1. Normalize both search term and product names
+2. Check for exact substring match
+3. Use RapidFuzz similarity scoring (threshold: 85%)
+4. Return best match if above threshold</p>
+<p><strong>Returns</strong>: <code>ProductResult</code> or None</p>
+<hr />
+<h3 id="_find_product_by_indexproducts-user_input-line-863"><code>_find_product_by_index(products, user_input)</code> (Line 863)<a class="headerlink" href="#_find_product_by_indexproducts-user_input-line-863" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Find product by numeric index (user selection from list)
+<strong>Called From</strong>: <code>select_product()</code> (1 call)</p>
+<p><strong>Input Patterns</strong>:
+- Numeric index: "1", "2", "3"
+- Text index: "first", "second", "third"</p>
+<p><strong>Returns</strong>: <code>ProductResult</code> or None</p>
+<hr />
+<h3 id="async-_auto_select_single_resultconversation_state-search_result-component_type-user_message-line-3349"><code>async _auto_select_single_result(conversation_state, search_result, component_type, user_message)</code> (Line 3349)<a class="headerlink" href="#async-_auto_select_single_resultconversation_state-search_result-component_type-user_message-line-3349" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Auto-select product if exactly 1 result found
+<strong>Called From</strong>: Multiple state processors (10 calls total)</p>
+<p><strong>Auto-Selection Criteria</strong>:
+- Exactly 1 product in search results
+- Not already selected in ResponseJSON
+- User didn't explicitly ask for options ("show me options", "what are my choices")</p>
+<p><strong>Actions</strong>:
+1. Add product to ResponseJSON
+2. Update applicability if PowerSource
+3. Find next applicable state
+4. Generate confirmation message
+5. Trigger proactive search for next component</p>
+<p><strong>Returns</strong>: <code>Dict</code> with confirmation, next state, preview products</p>
+<hr />
+<h3 id="_get_selected_ginsconversation_state-line-3165"><code>_get_selected_gins(conversation_state)</code> (Line 3165)<a class="headerlink" href="#_get_selected_ginsconversation_state-line-3165" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Get list of all selected product GINs
+<strong>Called From</strong>: Internal use only (not called)</p>
+<p><strong>Extracts GINs From</strong>:
+- PowerSource
+- Feeder
+- Cooler
+- Interconnector
+- Torch
+- All accessory categories (list)</p>
+<p><strong>Returns</strong>: <code>List[str]</code> - All selected GINs</p>
+<p><strong>Status</strong>: ⚠️ <strong>UNUSED</strong> - Defined but never called</p>
+<hr />
+<h2 id="helper-methods-state-management">Helper Methods - State Management<a class="headerlink" href="#helper-methods-state-management" title="Permanent link">&para;</a></h2>
+<h3 id="_find_next_applicable_stateconversation_state-line-881"><code>_find_next_applicable_state(conversation_state)</code> (Line 881)<a class="headerlink" href="#_find_next_applicable_stateconversation_state-line-881" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Determine next state based on component applicability
+<strong>Called From</strong>: Multiple locations (7 calls)</p>
+<p><strong>Logic</strong>:
+1. Get current state from <code>conversation_state.current_state</code>
+2. Check applicability for next component
+3. Skip states where applicability = "N"
+4. Return first applicable state</p>
+<p><strong>State Transition Order</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span></pre></div></td><td class="code"><div><pre><span></span><code>S1: POWER_SOURCE_SELECTION (mandatory)
+↓
+S2: FEEDER_SELECTION (if applicable)
+↓
+S3: COOLER_SELECTION (if applicable)
+↓
+S4: INTERCONNECTOR_SELECTION (if applicable)
+↓
+S5: TORCH_SELECTION (if applicable)
+↓
+S6A: POWERSOURCE_ACCESSORIES_SELECTION
+↓
+S6B: FEEDER_ACCESSORIES_SELECTION
+↓
+S6C: FEEDER_CONDITIONAL_ACCESSORIES
+↓
+S6D: INTERCONNECTOR_ACCESSORIES_SELECTION
+↓
+S7: REMOTE_SELECTION
+↓
+S8A: REMOTE_ACCESSORIES_SELECTION
+↓
+S8B: REMOTE_CONDITIONAL_ACCESSORIES
+↓
+S9: CONNECTIVITY_SELECTION
+↓
+S10: FEEDER_WEARS_SELECTION
+↓
+S11: ACCESSORIES_SELECTION (legacy)
+↓
+S12: FINALIZE
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Returns</strong>: <code>ConfiguratorState</code> - Next applicable state or FINALIZE</p>
+<hr />
+<h3 id="_get_current_applicabilityconversation_state-line-977"><code>_get_current_applicability(conversation_state)</code> (Line 977)<a class="headerlink" href="#_get_current_applicabilityconversation_state-line-977" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Get component applicability for current configuration
+<strong>Called From</strong>: <code>_find_next_applicable_state()</code> (1 call)</p>
+<p><strong>Returns</strong>: Component applicability dict from ResponseJSON or default all "Y"</p>
+<hr />
+<h3 id="async-_route_to_state_processorconversation_state-user_message-master_parameters-line-3467"><code>async _route_to_state_processor(conversation_state, user_message, master_parameters)</code> (Line 3467)<a class="headerlink" href="#async-_route_to_state_processorconversation_state-user_message-master_parameters-line-3467" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Route current state to appropriate processing method
+<strong>Called From</strong>: <code>process_message()</code> (1 call)</p>
+<p><strong>Routing Map</strong>:
+- <code>POWER_SOURCE_SELECTION</code> → <code>_process_power_source_selection()</code>
+- <code>FEEDER_SELECTION</code> → <code>_process_component_selection()</code> with <code>search_feeder_smart</code>
+- <code>COOLER_SELECTION</code> → <code>_process_component_selection()</code> with <code>search_cooler_smart</code>
+- <code>INTERCONNECTOR_SELECTION</code> → <code>_process_component_selection()</code> with <code>search_interconnector</code>
+- <code>TORCH_SELECTION</code> → <code>_process_component_selection()</code> with <code>search_torch_smart</code>
+- <code>POWERSOURCE_ACCESSORIES_SELECTION</code> → <code>_process_powersource_accessories_selection()</code>
+- <code>FEEDER_ACCESSORIES_SELECTION</code> → <code>_process_feeder_accessories_selection()</code>
+- <code>FEEDER_CONDITIONAL_ACCESSORIES</code> → <code>_process_feeder_conditional_accessories()</code>
+- <code>INTERCONNECTOR_ACCESSORIES_SELECTION</code> → <code>_process_interconnector_accessories_selection()</code>
+- <code>REMOTE_SELECTION</code> → <code>_process_remote_selection()</code>
+- <code>REMOTE_ACCESSORIES_SELECTION</code> → <code>_process_remote_accessories_selection()</code>
+- <code>REMOTE_CONDITIONAL_ACCESSORIES</code> → <code>_process_remote_conditional_accessories()</code>
+- <code>CONNECTIVITY_SELECTION</code> → <code>_process_connectivity_selection()</code>
+- <code>FEEDER_WEARS_SELECTION</code> → <code>_process_feeder_wears_selection()</code>
+- <code>ACCESSORIES_SELECTION</code> → <code>_process_accessories_selection()</code>
+- <code>FINALIZE</code> → <code>_process_finalize()</code></p>
+<p><strong>Returns</strong>: <code>Dict</code> - Result from state processor</p>
+<hr />
+<h3 id="_validate_products_for_stateproducts-state-line-3194"><code>_validate_products_for_state(products, state)</code> (Line 3194)<a class="headerlink" href="#_validate_products_for_stateproducts-state-line-3194" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Validate products belong to correct category for current state
+<strong>Called From</strong>: <code>select_product()</code> (1 call)</p>
+<p><strong>Validation</strong>:
+- Checks if product category matches expected category for state
+- Prevents selecting wrong product type (e.g., Feeder in PowerSource state)</p>
+<p><strong>Returns</strong>: <code>bool</code> - True if products valid for state</p>
+<hr />
+<h2 id="helper-methods-component-management">Helper Methods - Component Management<a class="headerlink" href="#helper-methods-component-management" title="Permanent link">&para;</a></h2>
+<h3 id="_state_to_component_namestate-line-3182"><code>_state_to_component_name(state)</code> (Line 3182)<a class="headerlink" href="#_state_to_component_namestate-line-3182" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Convert state enum to user-friendly component name
+<strong>Called From</strong>: Multiple locations (3 calls)</p>
+<p><strong>Mapping</strong>:
+- <code>POWER_SOURCE_SELECTION</code> → "Power Source"
+- <code>FEEDER_SELECTION</code> → "Feeder"
+- <code>COOLER_SELECTION</code> → "Cooler"
+- <code>INTERCONNECTOR_SELECTION</code> → "Interconnector"
+- <code>TORCH_SELECTION</code> → "Torch"
+- <code>POWERSOURCE_ACCESSORIES_SELECTION</code> → "PowerSource Accessories"
+- <code>FEEDER_ACCESSORIES_SELECTION</code> → "Feeder Accessories"
+- (etc.)</p>
+<p><strong>Returns</strong>: <code>str</code> - Human-readable component name</p>
+<hr />
+<h3 id="_get_component_typestate-line-3328"><code>_get_component_type(state)</code> (Line 3328)<a class="headerlink" href="#_get_component_typestate-line-3328" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Get component type string from state for ResponseJSON keys
+<strong>Called From</strong>: Multiple locations (4 calls)</p>
+<p><strong>Mapping</strong>:
+- <code>POWER_SOURCE_SELECTION</code> → "PowerSource"
+- <code>FEEDER_SELECTION</code> → "Feeder"
+- <code>COOLER_SELECTION</code> → "Cooler"
+- <code>INTERCONNECTOR_SELECTION</code> → "Interconnector"
+- <code>TORCH_SELECTION</code> → "Torch"
+- (Accessory states return specific accessory category names)</p>
+<p><strong>Returns</strong>: <code>str</code> - ResponseJSON key name</p>
+<hr />
+<h3 id="_get_component_applicabilitypower_source_gin-line-3315"><code>_get_component_applicability(power_source_gin)</code> (Line 3315)<a class="headerlink" href="#_get_component_applicabilitypower_source_gin-line-3315" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Load component applicability from config for selected PowerSource
+<strong>Called From</strong>: Multiple locations (4 calls)</p>
+<p><strong>Loading Process</strong>:
+1. Look up PowerSource GIN in <code>component_applicability.json</code>
+2. Return applicability dict (Y/N for each component)
+3. Fallback: All "Y" if PowerSource not found in config</p>
+<p><strong>Returns</strong>: <code>ComponentApplicability</code> object</p>
+<hr />
+<h3 id="_state_to_component_typestate-line-3534"><code>_state_to_component_type(state)</code> (Line 3534)<a class="headerlink" href="#_state_to_component_typestate-line-3534" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Convert state to product category for search queries
+<strong>Called From</strong>: <code>_handle_show_more()</code> (1 call)</p>
+<p><strong>Mapping</strong>:
+- <code>POWER_SOURCE_SELECTION</code> → "Powersource"
+- <code>FEEDER_SELECTION</code> → "Feeder"
+- <code>COOLER_SELECTION</code> → "Cooler"
+- <code>INTERCONNECTOR_SELECTION</code> → "Interconnector"
+- <code>TORCH_SELECTION</code> → "Torch"
+- (Accessory states → Specific accessory category)</p>
+<p><strong>Returns</strong>: <code>str</code> - Neo4j product category name</p>
+<p><strong>Note</strong>: ⚠️ <strong>Duplicate functionality</strong> - Very similar to <code>_get_component_type()</code>, possible consolidation</p>
+<hr />
+<h3 id="_get_component_namestate-line-3545"><code>_get_component_name(state)</code> (Line 3545)<a class="headerlink" href="#_get_component_namestate-line-3545" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Get component name for messages (short form)
+<strong>Called From</strong>: Internal use only (not called)</p>
+<p><strong>Returns</strong>: <code>str</code> - Component name</p>
+<p><strong>Status</strong>: ⚠️ <strong>UNUSED</strong> - Defined but never called (duplicate of <code>_state_to_component_name()</code>)</p>
+<hr />
+<h3 id="_has_meaningful_search_contentuser_message-master_parameters-line-3246"><code>_has_meaningful_search_content(user_message, master_parameters)</code> (Line 3246)<a class="headerlink" href="#_has_meaningful_search_contentuser_message-master_parameters-line-3246" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Determine if user message contains meaningful search criteria for Lucene
+<strong>Called From</strong>: Internal use only (not called)</p>
+<p><strong>Heuristics</strong>:
+- Message length &gt; 10 characters
+- Contains alphanumeric content
+- Has specifications in master_parameters
+- Not generic terms only</p>
+<p><strong>Returns</strong>: <code>bool</code> - True if meaningful content for Lucene search</p>
+<p><strong>Status</strong>: ⚠️ <strong>UNUSED</strong> - Defined but never called</p>
+<hr />
+<h2 id="helper-methods-serialization">Helper Methods - Serialization<a class="headerlink" href="#helper-methods-serialization" title="Permanent link">&para;</a></h2>
+<h3 id="_serialize_response_jsonconversation_state-line-3549"><code>_serialize_response_json(conversation_state)</code> (Line 3549)<a class="headerlink" href="#_serialize_response_jsonconversation_state-line-3549" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Convert ResponseJSON to serializable dict for Neo4j searches
+<strong>Called From</strong>: Multiple locations (16 calls)</p>
+<p><strong>Serialization Process</strong>:
+1. Extract all components from ResponseJSON
+2. Convert SelectedProduct objects to dicts
+3. Handle accessory lists (convert to list of dicts)
+4. Include applicability metadata</p>
+<p><strong>Returns</strong>: <code>Dict[str, Any]</code> - Serialized response for search queries</p>
+<p><strong>Used By</strong>:
+- All search methods require serialized response for compatibility validation
+- Compound request processing
+- Proactive searches</p>
+<hr />
+<h3 id="_generate_config_summaryconversation_state-line-3621"><code>_generate_config_summary(conversation_state)</code> (Line 3621)<a class="headerlink" href="#_generate_config_summaryconversation_state-line-3621" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Generate "Current Configuration" summary of selected components
+<strong>Called From</strong>: Previously called from multiple locations, <strong>NOW REMOVED</strong></p>
+<p><strong>Generated Format</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>Current Configuration:
+• Power Source: Aristo 500ix (GIN: 0446200880)
+• Feeder: RobustFeed U6 (GIN: 0460520880)
+• Cooler: Cool 50 (GIN: 0445150880)
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Returns</strong>: <code>str</code> - Formatted summary</p>
+<p><strong>Status</strong>: ⚠️ <strong>UNUSED</strong> - All calls removed per user request (shown on right panel instead)</p>
+<hr />
+<h2 id="data-classes-nested-methods">Data Classes &amp; Nested Methods<a class="headerlink" href="#data-classes-nested-methods" title="Permanent link">&para;</a></h2>
+<h3 id="componentselections-line-51-108"><code>ComponentSelections</code> (Line 51-108)<a class="headerlink" href="#componentselections-line-51-108" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Track selected components for compound requests
+<strong>Methods</strong>:
+- <code>__init__()</code> - Initialize empty selections
+- <code>add_component(component_type, gin, product_name)</code> - Add component
+- <code>get_output_format()</code> - Get serializable dict
+- <code>validate_mandatory(applicability)</code> - Check mandatory components selected</p>
+<p><strong>Used By</strong>: <code>_process_compound_request()</code> for tracking multi-component selections</p>
+<hr />
+<h3 id="conversationtracker-line-142-190"><code>ConversationTracker</code> (Line 142-190)<a class="headerlink" href="#conversationtracker-line-142-190" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Track conversation history for context awareness
+<strong>Methods</strong>:
+- <code>__init__()</code> - Initialize empty history
+- <code>add_message(role, content, intent)</code> - Add message to history
+- <code>get_recent(n)</code> - Get last N messages
+- <code>get_summary()</code> - Get conversation statistics</p>
+<p><strong>Used By</strong>: <code>process_message()</code> for maintaining conversation context</p>
+<hr />
+<h3 id="nested-functions-in-_serialize_response_json">Nested Functions in <code>_serialize_response_json()</code><a class="headerlink" href="#nested-functions-in-_serialize_response_json" title="Permanent link">&para;</a></h3>
+<h4 id="serialize_componentcomponent_value-line-3560"><code>serialize_component(component_value)</code> (Line 3560)<a class="headerlink" href="#serialize_componentcomponent_value-line-3560" title="Permanent link">&para;</a></h4>
+<p><strong>Purpose</strong>: Serialize single component to dict</p>
+<h4 id="serialize_accessory_categorycategory_value-line-3577"><code>serialize_accessory_category(category_value)</code> (Line 3577)<a class="headerlink" href="#serialize_accessory_categorycategory_value-line-3577" title="Permanent link">&para;</a></h4>
+<p><strong>Purpose</strong>: Serialize accessory category (list of products) to list of dicts</p>
+<hr />
+<h2 id="method-usage-statistics">Method Usage Statistics<a class="headerlink" href="#method-usage-statistics" title="Permanent link">&para;</a></h2>
+<h3 id="most-called-internal-methods">Most Called Internal Methods<a class="headerlink" href="#most-called-internal-methods" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Calls</th>
+<th>Primary Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_handle_skip()</code></td>
+<td>20</td>
+<td>Proactive search for next state</td>
+</tr>
+<tr>
+<td><code>_serialize_response_json()</code></td>
+<td>16</td>
+<td>Serialize for Neo4j searches</td>
+</tr>
+<tr>
+<td><code>_auto_select_single_result()</code></td>
+<td>10</td>
+<td>Auto-selection logic</td>
+</tr>
+<tr>
+<td><code>_process_component_selection()</code></td>
+<td>8</td>
+<td>Generic S2-S5 handler</td>
+</tr>
+<tr>
+<td><code>_find_next_applicable_state()</code></td>
+<td>7</td>
+<td>State transition logic</td>
+</tr>
+<tr>
+<td><code>_get_component_type()</code></td>
+<td>4</td>
+<td>Get ResponseJSON key</td>
+</tr>
+<tr>
+<td><code>_get_component_applicability()</code></td>
+<td>4</td>
+<td>Load applicability config</td>
+</tr>
+<tr>
+<td><code>_find_product_by_name()</code></td>
+<td>4</td>
+<td>Fuzzy name matching</td>
+</tr>
+</tbody>
+</table>
+<h3 id="public-api-methods_1">Public API Methods<a class="headerlink" href="#public-api-methods_1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Called From</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>process_message()</code></td>
+<td><code>configurator.py</code></td>
+<td>Main message handler</td>
+</tr>
+<tr>
+<td><code>select_product()</code></td>
+<td><code>configurator.py</code></td>
+<td>Explicit product selection</td>
+</tr>
+<tr>
+<td><code>_serialize_response_json()</code></td>
+<td><code>configurator.py</code></td>
+<td>Serialize for API response</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="inconsistencies-issues">Inconsistencies &amp; Issues<a class="headerlink" href="#inconsistencies-issues" title="Permanent link">&para;</a></h2>
+<h3 id="duplicate-component-name-methods">❌ Duplicate Component Name Methods<a class="headerlink" href="#duplicate-component-name-methods" title="Permanent link">&para;</a></h3>
+<p><strong>Problem</strong>: Three methods do nearly identical things</p>
+<p><strong>Methods</strong>:
+1. <code>_state_to_component_name(state)</code> (Line 3182) - Returns "Power Source", "Feeder", etc.
+2. <code>_state_to_component_type(state)</code> (Line 3534) - Returns "Powersource", "Feeder", etc.
+3. <code>_get_component_name(state)</code> (Line 3545) - Returns component name (UNUSED)</p>
+<p><strong>Differences</strong>:
+- Method 1: User-friendly names ("Power Source" with space)
+- Method 2: Neo4j category names ("Powersource" no space)
+- Method 3: Duplicate of Method 1, never called</p>
+<p><strong>Impact</strong>:
+- Confusion about which method to use
+- Maintenance burden (update 3 places for new states)
+- Potential for inconsistency</p>
+<p><strong>Recommendation</strong>:
+- Keep <code>_state_to_component_name()</code> for user-facing names
+- Keep <code>_state_to_component_type()</code> for Neo4j categories (or rename to <code>_state_to_neo4j_category()</code>)
+- Remove <code>_get_component_name()</code> (unused duplicate)</p>
+<hr />
+<h3 id="inconsistent-state-processor-method-names">❌ Inconsistent State Processor Method Names<a class="headerlink" href="#inconsistent-state-processor-method-names" title="Permanent link">&para;</a></h3>
+<p><strong>Problem</strong>: State processor methods have inconsistent naming patterns</p>
+<p><strong>Patterns Found</strong>:
+1. <code>_process_power_source_selection()</code> - Full state name
+2. <code>_process_component_selection()</code> - Generic name (handles 4 states)
+3. <code>_process_powersource_accessories_selection()</code> - Full state name
+4. <code>_process_feeder_accessories_selection()</code> - Full state name
+5. <code>_process_remote_accessories_selection()</code> - Full state name
+6. <code>_process_feeder_conditional_accessories()</code> - Missing "selection" suffix
+7. <code>_process_remote_conditional_accessories()</code> - Missing "selection" suffix
+8. <code>_process_accessories_selection()</code> - Generic name (legacy)</p>
+<p><strong>Issues</strong>:
+- Hard to predict method name from state name
+- Generic <code>_process_component_selection()</code> handles multiple states but name doesn't indicate this
+- Conditional accessory methods missing "selection" suffix</p>
+<p><strong>Recommendation</strong>:
+- Rename generic method to <code>_process_generic_component_selection()</code> for clarity
+- Add "selection" suffix to conditional accessory methods for consistency
+- Consider pattern: <code>_process_{state_name}_selection()</code> for all</p>
+<hr />
+<h3 id="proactive-search-code-duplication">❌ Proactive Search Code Duplication<a class="headerlink" href="#proactive-search-code-duplication" title="Permanent link">&para;</a></h3>
+<p><strong>Problem</strong>: Proactive search logic duplicated in 2 locations</p>
+<p><strong>Location 1</strong>: <code>_handle_skip()</code> (Lines 2690-2805) - 20 method calls
+<strong>Location 2</strong>: <code>select_product()</code> (Lines 2894-3095) - Proactive search after selection</p>
+<p><strong>Duplicated Code</strong>:
+- Same state routing logic
+- Same search method calls
+- Same product preview generation
+- ~200 lines of near-identical code</p>
+<p><strong>Why Duplicated</strong>:
+- <code>_handle_skip()</code> - Triggered by "skip"/"next" commands
+- <code>select_product()</code> - Triggered after explicit product selection
+- Both need proactive search for next state</p>
+<p><strong>Impact</strong>:
+- Maintenance burden (update 2 places)
+- Risk of divergence (one gets updated, other doesn't)
+- Harder to add new states (must update 2 places)</p>
+<p><strong>Recommendation</strong>:
+- Extract proactive search logic to <code>_trigger_proactive_search(conversation_state, next_state)</code> method
+- Call from both <code>_handle_skip()</code> and <code>select_product()</code>
+- ~150 lines of code reduction</p>
+<hr />
+<h3 id="accessory-state-preview-logic-duplication">❌ Accessory State Preview Logic Duplication<a class="headerlink" href="#accessory-state-preview-logic-duplication" title="Permanent link">&para;</a></h3>
+<p><strong>Problem</strong>: Accessory-to-accessory preview logic duplicated in <code>select_product()</code></p>
+<p><strong>Location</strong>: Lines 2887-2966 in <code>select_product()</code></p>
+<p><strong>Duplicates Logic From</strong>: Main proactive search block (lines 2894-3095)</p>
+<p><strong>Why Duplicated</strong>:
+- Accessory states return early with <code>stay_in_state: True</code>
+- Main proactive search block never reached for accessory selections
+- Preview logic added as fix to show next accessory products</p>
+<p><strong>Impact</strong>:
+- Same search method calls in 2 places
+- Same preview generation logic
+- ~80 lines of duplicate code</p>
+<p><strong>Recommendation</strong>:
+- Use extracted <code>_trigger_proactive_search()</code> method (see previous issue)
+- Remove duplication</p>
+<hr />
+<h3 id="inconsistent-search-limit-usage">⚠️ Inconsistent Search Limit Usage<a class="headerlink" href="#inconsistent-search-limit-usage" title="Permanent link">&para;</a></h3>
+<p><strong>Problem</strong>: Some searches use class constants, others use hardcoded values</p>
+<p><strong>Class Constants</strong> (Lines 207-211):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">DEFAULT_SEARCH_LIMIT</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">PROACTIVE_SEARCH_LIMIT</span> <span class="o">=</span> <span class="mi">10</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Usage</strong>:
+- ✅ Most searches use <code>limit=self.DEFAULT_SEARCH_LIMIT</code>
+- ✅ Proactive searches use <code>limit=self.PROACTIVE_SEARCH_LIMIT</code>
+- ⚠️ Some old code may still have <code>limit=3</code> or <code>limit=10</code> hardcoded</p>
+<p><strong>Recommendation</strong>: Verify all searches use class constants, not hardcoded values</p>
+<hr />
+<h2 id="unused-irrelevant-methods">Unused &amp; Irrelevant Methods<a class="headerlink" href="#unused-irrelevant-methods" title="Permanent link">&para;</a></h2>
+<h3 id="never-called-methods">⚠️ Never Called Methods<a class="headerlink" href="#never-called-methods" title="Permanent link">&para;</a></h3>
+<p><strong>Methods defined but NEVER called anywhere in codebase</strong>:</p>
+<h4 id="1-_get_selected_ginsconversation_state-line-3165">1. <code>_get_selected_gins(conversation_state)</code> (Line 3165)<a class="headerlink" href="#1-_get_selected_ginsconversation_state-line-3165" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: ⚠️ <strong>UNUSED</strong> - Defined but never called
+<strong>Purpose</strong>: Get list of all selected product GINs
+<strong>Calls</strong>: 0</p>
+<p><strong>Why Exists</strong>: Likely created for future feature (e.g., bulk validation, export)</p>
+<p><strong>Recommendation</strong>: Remove if no feature planned, or mark as TODO</p>
+<hr />
+<h4 id="2-_get_component_namestate-line-3545">2. <code>_get_component_name(state)</code> (Line 3545)<a class="headerlink" href="#2-_get_component_namestate-line-3545" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: ⚠️ <strong>UNUSED</strong> - Duplicate of <code>_state_to_component_name()</code>
+<strong>Purpose</strong>: Get component name for messages
+<strong>Calls</strong>: 0</p>
+<p><strong>Why Exists</strong>: Likely created as alternative to <code>_state_to_component_name()</code> but never adopted</p>
+<p><strong>Recommendation</strong>: Remove (duplicate functionality)</p>
+<hr />
+<h4 id="3-_has_meaningful_search_contentuser_message-master_parameters-line-3246">3. <code>_has_meaningful_search_content(user_message, master_parameters)</code> (Line 3246)<a class="headerlink" href="#3-_has_meaningful_search_contentuser_message-master_parameters-line-3246" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: ⚠️ <strong>UNUSED</strong> - Defined but never called
+<strong>Purpose</strong>: Determine if user message has meaningful search criteria for Lucene
+<strong>Calls</strong>: 0</p>
+<p><strong>Why Exists</strong>: Likely created for smart search routing but logic moved to product_search.py</p>
+<p><strong>Recommendation</strong>: Remove (functionality now in <code>_search_component_smart()</code> in product_search.py)</p>
+<hr />
+<h4 id="4-_generate_config_summaryconversation_state-line-3621">4. <code>_generate_config_summary(conversation_state)</code> (Line 3621)<a class="headerlink" href="#4-_generate_config_summaryconversation_state-line-3621" title="Permanent link">&para;</a></h4>
+<p><strong>Status</strong>: ⚠️ <strong>UNUSED</strong> - All calls removed per user request
+<strong>Purpose</strong>: Generate "Current Configuration" summary
+<strong>Calls</strong>: 0 (previously 4+)</p>
+<p><strong>Why Exists</strong>: Previously used to show configuration summary in chat messages</p>
+<p><strong>User Requested Removal</strong>: "I don't want Current Configuration displayed - we show it on the right"</p>
+<p><strong>Recommendation</strong>: Remove method entirely (no longer needed)</p>
+<hr />
+<h3 id="unused-methods-summary">📊 Unused Methods Summary<a class="headerlink" href="#unused-methods-summary" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Line</th>
+<th>Status</th>
+<th>Calls</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_get_selected_gins()</code></td>
+<td>3165</td>
+<td>Unused</td>
+<td>0</td>
+<td>Remove if no feature plan</td>
+</tr>
+<tr>
+<td><code>_get_component_name()</code></td>
+<td>3545</td>
+<td>Duplicate</td>
+<td>0</td>
+<td>Remove (duplicate of <code>_state_to_component_name()</code>)</td>
+</tr>
+<tr>
+<td><code>_has_meaningful_search_content()</code></td>
+<td>3246</td>
+<td>Unused</td>
+<td>0</td>
+<td>Remove (logic in product_search.py)</td>
+</tr>
+<tr>
+<td><code>_generate_config_summary()</code></td>
+<td>3621</td>
+<td>Deprecated</td>
+<td>0</td>
+<td>Remove (per user request)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total Potentially Removable</strong>: 4 methods (~150-200 lines of code)</p>
+<hr />
+<h3 id="refactoring-opportunities">🔄 Refactoring Opportunities<a class="headerlink" href="#refactoring-opportunities" title="Permanent link">&para;</a></h3>
+<p><strong>1. Extract Proactive Search Logic</strong> (~150 lines saved)
+- Create <code>_trigger_proactive_search(conversation_state, next_state)</code> method
+- Call from <code>_handle_skip()</code> and <code>select_product()</code>
+- Remove duplication in accessory preview logic</p>
+<p><strong>2. Consolidate Component Name Methods</strong> (~50 lines saved)
+- Keep <code>_state_to_component_name()</code> for user-facing names
+- Rename <code>_state_to_component_type()</code> to <code>_state_to_neo4j_category()</code>
+- Remove <code>_get_component_name()</code> (duplicate)</p>
+<p><strong>3. Standardize State Processor Names</strong> (no code reduction, clarity improvement)
+- Rename <code>_process_component_selection()</code> → <code>_process_generic_component_selection()</code>
+- Add "selection" suffix to conditional accessory methods</p>
+<p><strong>4. Remove Unused Methods</strong> (~150-200 lines saved)
+- Delete <code>_get_selected_gins()</code>
+- Delete <code>_get_component_name()</code>
+- Delete <code>_has_meaningful_search_content()</code>
+- Delete <code>_generate_config_summary()</code></p>
+<p><strong>Total Estimated Code Reduction</strong>: ~350-400 lines (~10-12% of file)</p>
+<hr />
+<h2 id="architecture-patterns">Architecture Patterns<a class="headerlink" href="#architecture-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="state-machine-pattern">State Machine Pattern<a class="headerlink" href="#state-machine-pattern" title="Permanent link">&para;</a></h3>
+<p><strong>Implementation</strong>: Sequential state progression with applicability-based skipping
+<strong>States</strong>: 12 states (S1-S12) from PowerSource selection to Finalize
+<strong>Transition Logic</strong>: <code>_find_next_applicable_state()</code> + component applicability rules</p>
+<h3 id="strategy-pattern">Strategy Pattern<a class="headerlink" href="#strategy-pattern" title="Permanent link">&para;</a></h3>
+<p><strong>Implementation</strong>: State-specific processors via <code>_route_to_state_processor()</code>
+<strong>Processors</strong>: 16 state-specific processing methods
+<strong>Selection</strong>: Based on <code>conversation_state.current_state</code> enum value</p>
+<h3 id="command-pattern">Command Pattern<a class="headerlink" href="#command-pattern" title="Permanent link">&para;</a></h3>
+<p><strong>Implementation</strong>: Special command handlers for "skip", "next", "done", "finalize", "show more"
+<strong>Handlers</strong>: <code>_handle_skip()</code>, <code>_handle_finalize()</code>, <code>_handle_show_more()</code>
+<strong>Detection</strong>: String matching in <code>process_message()</code></p>
+<h3 id="dependency-injection">Dependency Injection<a class="headerlink" href="#dependency-injection" title="Permanent link">&para;</a></h3>
+<p><strong>Implementation</strong>: Constructor injection of 3 service dependencies
+<strong>Services</strong>: ParameterExtractor (Agent 1), Neo4jProductSearch (Agent 2), MessageGenerator (Agent 3)
+<strong>Benefits</strong>: Testability, loose coupling, service independence</p>
+<hr />
+<p><strong>Document Version</strong>: 1.0
+<strong>Last Updated</strong>: 2025-11-12
+<strong>Author</strong>: Claude Code Analysis
+<strong>Total Methods Documented</strong>: 56
+<strong>Total Lines of Code</strong>: ~3700 lines
+<strong>Estimated Removable Code</strong>: ~350-400 lines (10-12% reduction)</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 ESAB
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/esab/configurator" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/esab-configurator/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../../javascripts/extra.js"></script>
+      
+    
+  </body>
+</html>

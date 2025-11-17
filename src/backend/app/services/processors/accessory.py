@@ -160,7 +160,26 @@ class AccessoryStateProcessor(StateProcessor):
 
         # Move to next accessory state or finalize
         if self.next_accessory_state:
-            # ✅ CONDITIONAL ACCESSORY DEPENDENCY CHECK
+            # ✅ PRIORITY 1: APPLICABILITY CHECK (NEW)
+            # Check if next accessory state is applicable for selected PowerSource
+            response_json = conversation_state.response_json
+            applicability = response_json.applicability.model_dump() if response_json.applicability else {}
+
+            component_key = self._get_component_api_key_from_state(self.next_accessory_state)
+            if component_key:
+                component_status = applicability.get(component_key)
+                if component_status not in ["mandatory", "optional", "Y", None]:  # not_applicable or N
+                    logger.info(
+                        f"⏭️  Skipping {self.next_accessory_state} "
+                        f"({component_key} applicability: {component_status})"
+                    )
+                    # Recursively find next applicable state
+                    return self._get_next_applicable_accessory_state(
+                        self.next_accessory_state,
+                        conversation_state
+                    )
+
+            # ✅ PRIORITY 2: CONDITIONAL ACCESSORY DEPENDENCY CHECK (EXISTING)
             # Check if next state is a conditional accessory state
             if self._is_conditional_accessory_state(self.next_accessory_state):
                 # Check if parent accessory category has selections
@@ -200,6 +219,28 @@ class AccessoryStateProcessor(StateProcessor):
         completion_keywords = ["done", "next", "skip", "finish", "finalize", "proceed", "continue", "that's all"]
 
         return any(keyword in last_message for keyword in completion_keywords)
+
+    def _get_component_api_key_from_state(self, state_name: str) -> str:
+        """
+        Map state name to component API key for applicability lookup.
+
+        Args:
+            state_name: State name (e.g., "feeder_accessories_selection")
+
+        Returns:
+            Component API key (e.g., "FeederAccessories") for applicability lookup
+        """
+        state_to_component_map = {
+            "powersource_accessories_selection": "PowerSourceAccessories",
+            "feeder_accessories_selection": "FeederAccessories",
+            "feeder_conditional_accessories": "FeederConditionalAccessories",
+            "interconnector_accessories_selection": "InterconnectorAccessories",
+            "remote_selection": "Remotes",
+            "remote_accessories_selection": "RemoteAccessories",
+            "remote_conditional_accessories": "RemoteConditionalAccessories",
+            "connectivity_selection": "Connectivity"
+        }
+        return state_to_component_map.get(state_name, "")
 
     def _is_conditional_accessory_state(self, state_name: str) -> bool:
         """
@@ -264,6 +305,68 @@ class AccessoryStateProcessor(StateProcessor):
         # Parent has selections
         logger.info(f"Parent {parent_field} has {len(parent_accessories)} selections")
         return True
+
+    def _get_next_applicable_accessory_state(self, current_state: str, conversation_state) -> str:
+        """
+        Recursively find next applicable accessory state (applicability-based skipping).
+
+        Checks if next state is applicable for selected PowerSource. If not_applicable,
+        recursively finds next applicable state.
+
+        Args:
+            current_state: Current state being skipped
+            conversation_state: Current ConversationState
+
+        Returns:
+            Next applicable state name (or "finalize" if no more states)
+        """
+        # Get configuration
+        from app.services.config.configuration_service import get_config_service
+        config_service = get_config_service()
+        component_types = config_service.get_component_types()
+
+        # Get full state sequence
+        full_state_sequence = component_types.get("state_sequence", [])
+
+        # Find current state in sequence
+        try:
+            current_index = full_state_sequence.index(current_state)
+        except ValueError:
+            logger.error(f"State {current_state} not found in state_sequence")
+            return "finalize"
+
+        # Get next state in sequence
+        if current_index + 1 < len(full_state_sequence):
+            next_state = full_state_sequence[current_index + 1]
+            logger.info(f"Checking next state after skipping {current_state}: {next_state}")
+
+            # Get applicability for next state
+            response_json = conversation_state.response_json
+            applicability = response_json.applicability.model_dump() if response_json.applicability else {}
+
+            component_key = self._get_component_api_key_from_state(next_state)
+            if component_key:
+                component_status = applicability.get(component_key)
+                # Check if next state is also not applicable (recursive check)
+                if component_status not in ["mandatory", "optional", "Y", None]:  # not_applicable or N
+                    logger.info(
+                        f"⏭️  Next state {next_state} also needs skipping "
+                        f"({component_key} applicability: {component_status})"
+                    )
+                    return self._get_next_applicable_accessory_state(next_state, conversation_state)
+
+            # Also check conditional dependency
+            if self._is_conditional_accessory_state(next_state):
+                if not self._has_parent_accessory_selections(next_state, conversation_state):
+                    logger.info(f"⏭️  Next state {next_state} also needs skipping (no parent selections)")
+                    return self._get_next_applicable_accessory_state(next_state, conversation_state)
+
+            logger.info(f"Found applicable state: {next_state}")
+            return next_state
+        else:
+            # No more states, go to finalize
+            logger.info("No more states after skipped, moving to finalize")
+            return "finalize"
 
     def _get_next_non_conditional_state(self, current_conditional_state: str, conversation_state) -> str:
         """

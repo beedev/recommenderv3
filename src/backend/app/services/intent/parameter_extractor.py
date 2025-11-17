@@ -64,14 +64,37 @@ class ParameterExtractor:
 
     def _get_fallback_config(self):
         """
-        NEW: Fallback configuration when config_service is not available
-        Allows testing and operation without full config infrastructure
+        Create fallback configuration when ConfigurationService is unavailable.
+
+        Provides minimal configuration for standalone operation and testing without
+        requiring full configuration infrastructure. Enables fuzzy matching and LLM
+        configuration using reasonable defaults.
+
+        Returns:
+            FallbackConfig: Simple config object with methods:
+                - get_fuzzy_match_config(): Returns fuzzy match settings from component_types.json
+                - get_llm_config(name): Returns default LLM settings (GPT-4, temp=0.3, max_tokens=2000)
+                - get_prompt(name): Returns basic system prompt for parameter extraction
+
+        Note:
+            This fallback allows the ParameterExtractor to work in environments where
+            the full ConfigurationService is not available (e.g., unit tests, standalone scripts).
+
+        Raises:
+            Exception: If component_types.json cannot be loaded for fuzzy matching config
+
+        Examples:
+            >>> extractor = ParameterExtractor(api_key, config_service=None)
+            >>> # Automatically uses fallback config
+            >>> fuzzy_config = extractor.config_service.get_fuzzy_match_config()
+            >>> fuzzy_config["enabled"]
+            True
         """
         class FallbackConfig:
             """Simple fallback config for testing/standalone operation"""
 
             def get_fuzzy_match_config(self):
-                # Rationalized Nov 15, 2024: components_enabled no longer in search_config
+                # Rationalized Nov 15, 2025: components_enabled no longer in search_config
                 # Load from component_types.json instead
                 from app.config.schema_loader import load_component_config
                 component_types = load_component_config()
@@ -99,8 +122,30 @@ class ParameterExtractor:
 
     def _load_product_names(self) -> Dict[str, List[str]]:
         """
-        Load product names from llm_context.json using fuzzy matching configuration
-        Consolidated Nov 15, 2024: Moved from product_names.json to llm_context.json
+        Load product names from llm_context.json filtered by fuzzy matching configuration.
+
+        Loads product names for fuzzy matching and selection intent detection. Only includes
+        components enabled for fuzzy matching in component_types.json to avoid huge prompts.
+
+        Returns:
+            Dict[str, List[str]]: Product names organized by component category.
+                Example: {
+                    "power_source": ["Aristo 500ix CE", "Warrior 400i CC/CV", ...],
+                    "feeder": ["RobustFeed U6 Water-cooled Euro", ...],
+                    "cooler": ["Cool2 Cooling Unit", ...]
+                }
+
+        Note:
+            - Consolidated Nov 15, 2025: Moved from product_names.json to llm_context.json
+            - Only loads components with fuzzy_matching_enabled=true in component_types.json
+            - Returns empty dict if llm_context.json cannot be loaded (logs warning)
+
+        Examples:
+            >>> extractor = ParameterExtractor(api_key)
+            >>> extractor.product_names["power_source"][:2]
+            ["Aristo 500ix CE", "Warrior 400i CC/CV"]
+            >>> len(extractor.product_names)  # Only enabled components
+            3
         """
         try:
             config_path = os.path.join(
@@ -112,7 +157,7 @@ class ParameterExtractor:
                 llm_context = json.load(f)
                 all_products = llm_context.get("product_names", {})
 
-            # Get components enabled for fuzzy matching from component_types.json (rationalized Nov 15, 2024)
+            # Get components enabled for fuzzy matching from component_types.json (rationalized Nov 15, 2025)
             fuzzy_config = self.config_service.get_fuzzy_match_config()
             # For backward compatibility, try to get from fuzzy_config first, else load from component_types
             components_enabled = fuzzy_config.get("components_enabled")
@@ -157,7 +202,7 @@ class ParameterExtractor:
             Updated complete MasterParameterJSON dict with optional _selection_metadata
 
         ENHANCED: Added selection intent detection for numbers and product names
-        FIXED (Nov 15, 2024): Clear current state component before extraction to prevent accumulation
+        FIXED (Nov 15, 2025): Clear current state component before extraction to prevent accumulation
         """
 
         try:
@@ -172,7 +217,7 @@ class ParameterExtractor:
                 result["_selection_metadata"] = selection_metadata
                 return result
 
-            # 🔧 FIX (Nov 15, 2024): Clear current state's component to prevent accumulation
+            # 🔧 FIX (Nov 15, 2025): Clear current state's component to prevent accumulation
             # User requirement: "Within a state, each new query should REPLACE parameters, not accumulate"
             # Example: In PowerSource state, "Aristo" then "Renegade" → show only Renegade
             master_parameters_cleared = self._clear_current_state_component(
@@ -217,8 +262,46 @@ class ParameterExtractor:
 
     def _detect_selection_intent(self, user_message: str) -> Optional[Dict[str, Any]]:
         """
-        Detect if user input is a selection (number or product name)
-        Returns selection metadata if detected, None otherwise
+        Detect if user input is a product selection (number index or product name).
+
+        Fast pre-LLM detection for common selection patterns to avoid unnecessary LLM calls.
+        Matches pure numbers (1-10), numbers with context ("option 2"), and explicit product
+        names from the loaded product catalog.
+
+        Args:
+            user_message: User's input text to analyze
+
+        Returns:
+            Optional[Dict[str, Any]]: Selection metadata dict if selection detected, None otherwise.
+                Structure when detected:
+                {
+                    "is_selection": True,
+                    "selected_index": int (1-10) or None,
+                    "selected_product_name": str or None,
+                    "skip_intent": False
+                }
+
+        Detection Patterns:
+            Pattern 1 - Pure number: "2", "3" (range 1-10)
+            Pattern 2 - Number with context: "option 2", "3rd one", "give me 1", "i want 4"
+            Pattern 3 - Explicit product name: Partial match against loaded product names
+
+        Examples:
+            >>> extractor._detect_selection_intent("2")
+            {"is_selection": True, "selected_index": 2, "selected_product_name": None, ...}
+
+            >>> extractor._detect_selection_intent("option 3")
+            {"is_selection": True, "selected_index": 3, "selected_product_name": None, ...}
+
+            >>> extractor._detect_selection_intent("Aristo 500ix")
+            {"is_selection": True, "selected_index": None, "selected_product_name": "Aristo 500ix CE", ...}
+
+            >>> extractor._detect_selection_intent("I need 500A MIG welder")
+            None  # Not a selection, requires LLM extraction
+
+        Note:
+            Selection metadata is returned to extract_parameters() which attaches it to
+            MasterParameterJSON as "_selection_metadata" for orchestrator processing.
         """
         import re
 
@@ -277,18 +360,42 @@ class ParameterExtractor:
         current_state: str
     ) -> Dict[str, Any]:
         """
-        Clear the component corresponding to current state to prevent accumulation.
+        Clear component parameters for current state to prevent accumulation.
 
-        User requirement (Nov 15, 2024): "Within a state, each new query should REPLACE
-        parameters, not accumulate. For example, in PowerSource state, asking for 'Aristo'
-        then 'Renegade' should show only Renegade, not both."
+        Implements replacement behavior: within a state, each new query replaces previous
+        parameters instead of accumulating them. Prevents "Aristo" + "Renegade" showing
+        both products when user only wants the latest request.
 
         Args:
             master_parameters: Existing MasterParameterJSON dict
-            current_state: Current state (e.g., "power_source_selection")
+            current_state: Current configurator state (e.g., "power_source_selection")
 
         Returns:
-            Modified master_parameters with current state's component cleared
+            Dict[str, Any]: Modified master_parameters with current state's component cleared to empty dict {}
+
+        State-to-Component Mapping:
+            - power_source_selection → power_source
+            - feeder_selection → feeder
+            - cooler_selection → cooler
+            - interconnector_selection → interconnector
+            - torch_selection → torch
+            - accessories_selection → accessories
+            - (and other accessory/remote states)
+
+        Examples:
+            >>> master_params = {"power_source": {"product_name": "Aristo 500ix"}, "feeder": {}}
+            >>> cleared = extractor._clear_current_state_component(master_params, "power_source_selection")
+            >>> cleared["power_source"]
+            {}  # Cleared for replacement
+            >>> cleared["feeder"]
+            {}  # Unchanged (different state)
+
+        Note:
+            User requirement (Nov 15, 2025): "Within a state, each new query should REPLACE
+            parameters, not accumulate. For example, in PowerSource state, asking for 'Aristo'
+            then 'Renegade' should show only Renegade, not both."
+
+            States that don't map to a component (e.g., "finalize") return parameters unchanged.
         """
         # Map state to component
         state_to_component = {
@@ -333,8 +440,69 @@ class ParameterExtractor:
         master_parameters: Dict[str, Any]
     ) -> str:
         """
-        Build extraction prompt with comprehensive technical specification extraction
-        ENHANCED: Better handling of complex queries, duty cycles, applications, and attributes
+        Build comprehensive LLM prompt for parameter extraction from user query.
+
+        Creates a massive ~750-line prompt with state-specific guidance, technical pattern examples,
+        product name fuzzy matching instructions, and operator extraction rules. This is the core
+        intelligence behind converting natural language to structured MasterParameterJSON.
+
+        Args:
+            user_message: User's natural language input (e.g., "500A MIG welder for aluminum")
+            current_state: Current configurator state (e.g., "power_source_selection")
+            master_parameters: Existing MasterParameterJSON dict (for context preservation)
+
+        Returns:
+            str: Complete prompt for OpenAI GPT-4 with:
+                - State-specific extraction guidance
+                - Technical specification patterns (current, voltage, duty cycle, etc.)
+                - Product name fuzzy matching instructions
+                - Comparison operator extraction rules (lte, gte, lt, gt, eq, range, approx)
+                - Compound request handling
+                - Known product names reference (from llm_context.json)
+                - Existing parameters for context
+                - Output format instructions
+
+        Prompt Sections:
+            1. State-Specific Guidance: Focused extraction based on current state
+            2. Product Name Reference: Top 10 known products per component (fuzzy matching)
+            3. Technical Specification Patterns: Current/duty cycle, process types, voltage, features
+            4. Comparison Operators: lte, gte, lt, gt, eq, range, approx with keyword examples
+            5. Compound Request Handling: Multi-component extraction in single message
+            6. Output Format: JSON structure with all components + english_query field
+
+        Examples:
+            State-specific guidance:
+            >>> # power_source_selection state
+            >>> prompt = extractor._build_extraction_prompt(
+            ...     "500A @60% MIG welder",
+            ...     "power_source_selection",
+            ...     master_params
+            ... )
+            >>> "Process types: MIG (GMAW)" in prompt
+            True
+            >>> "Current ratings with duty cycles" in prompt
+            True
+
+            Product name fuzzy matching:
+            >>> "Aristo 500ix CE" in prompt  # Known product name
+            True
+            >>> "FUZZY MATCHING & INFERENCE RULES" in prompt
+            True
+
+            Operator extraction:
+            >>> "max 300A" in prompt  # Example for lte operator
+            True
+            >>> "at least 500A" in prompt  # Example for gte operator
+            True
+
+        Note:
+            This is one of the most critical methods in the system. The prompt quality
+            directly determines extraction accuracy. Enhanced Nov 15, 2025 with:
+            - Better duty cycle extraction
+            - Comparison operator support
+            - Improved product name fuzzy matching
+            - GIN number detection
+            - Multilingual query translation
         """
 
         # Enhanced state-specific extraction guidance with detailed patterns
@@ -756,17 +924,70 @@ RETURN COMPLETE UPDATED JSON WITH ENGLISH TRANSLATION:
 
     def _validate_and_normalize_operators(self, component_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Validate and normalize operator format in extracted parameters
+        Validate and normalize comparison operator format in extracted parameters.
 
-        Supports dual-mode:
-        - Dict format: {"value": 300, "operator": "lte", "unit": "A"}
-        - String format: "300A" (backward compatible, defaults to "approx")
+        Ensures operator-based parameters follow correct structure and validates operator types.
+        Supports dual-mode: structured operator dict and backward-compatible string format.
 
         Args:
-            component_data: Component dict from LLM extraction
+            component_data: Component dict from LLM extraction (e.g., power_source dict)
 
         Returns:
-            Normalized component dict with validated operators
+            Dict[str, Any]: Normalized component dict with validated operators.
+                Invalid operators are logged as warnings and either corrected or skipped.
+
+        Supported Operators:
+            - lte (≤): Less than or equal (max, maximum, up to, at most)
+            - gte (≥): Greater than or equal (min, minimum, at least)
+            - lt (<): Less than (below, under, smaller than)
+            - gt (>): Greater than (above, over, larger than)
+            - eq (=): Exactly equal (only, precisely, exactly)
+            - range: Between min and max (X-Y, X to Y, between X and Y)
+            - approx (≈): Approximate (around, about, roughly, or no operator)
+
+        Parameter Formats:
+            Structured operator dict:
+                {"value": 300, "operator": "lte", "unit": "A"}
+                {"min": 300, "max": 500, "operator": "range", "unit": "A"}
+
+            Backward-compatible string:
+                "300A" (defaults to approx operator)
+
+        Validation Rules:
+            1. Operator must be in VALID_OPERATORS set
+            2. Range operator requires min and max fields
+            3. Non-range operators require value field
+            4. Invalid operators default to "approx"
+            5. Missing required fields cause parameter to be skipped (logged)
+
+        Examples:
+            Valid operator dict:
+            >>> component = {"current_rating": {"value": 300, "operator": "lte", "unit": "A"}}
+            >>> normalized = extractor._validate_and_normalize_operators(component)
+            >>> normalized["current_rating"]["operator"]
+            "lte"
+
+            Invalid operator (corrected):
+            >>> component = {"current_rating": {"value": 300, "operator": "invalid", "unit": "A"}}
+            >>> normalized = extractor._validate_and_normalize_operators(component)
+            >>> normalized["current_rating"]["operator"]
+            "approx"  # Defaulted
+
+            Range operator:
+            >>> component = {"current_rating": {"min": 300, "max": 500, "operator": "range", "unit": "A"}}
+            >>> normalized = extractor._validate_and_normalize_operators(component)
+            >>> (normalized["current_rating"]["min"], normalized["current_rating"]["max"])
+            (300, 500)
+
+            String format (backward compatible):
+            >>> component = {"current_rating": "300A"}
+            >>> normalized = extractor._validate_and_normalize_operators(component)
+            >>> normalized["current_rating"]
+            "300A"  # Unchanged (string pass-through)
+
+        Note:
+            This method is critical for Neo4j query generation, as operator dicts are
+            converted to Cypher WHERE clauses by the query builder.
         """
         VALID_OPERATORS = {"lte", "gte", "lt", "gt", "eq", "range", "approx"}
 
@@ -822,7 +1043,75 @@ RETURN COMPLETE UPDATED JSON WITH ENGLISH TRANSLATION:
         fallback_master: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
-        Parse LLM JSON response into MasterParameterJSON dict
+        Parse LLM text response into validated MasterParameterJSON dict.
+
+        Extracts JSON from LLM response (with or without code fences), validates structure,
+        normalizes operators, and ensures all required components exist. Handles multilingual
+        english_query extraction for Lucene search.
+
+        Args:
+            llm_response: Raw LLM response text (may contain ```json code fences or plain JSON)
+            fallback_master: Fallback MasterParameterJSON to return on parse failure
+
+        Returns:
+            Dict[str, Any]: Complete MasterParameterJSON dict with:
+                - All required components (power_source, feeder, cooler, etc.)
+                - Validated and normalized operators
+                - Optional _english_query field (multilingual support)
+                - Empty dicts {} for unspecified components
+
+        Parsing Steps:
+            1. Extract JSON from response (try ```json fences first, then regex)
+            2. Parse JSON string to dict
+            3. Extract and remove english_query field (temporary metadata)
+            4. Ensure all required components exist (from schema_loader)
+            5. Validate and normalize operators in each component
+            6. Add _english_query as temporary metadata if present
+            7. Log operator count and total features extracted
+
+        Examples:
+            LLM response with code fences:
+            >>> llm_response = '''```json
+            ... {
+            ...   "power_source": {"current_rating": "500A", "process": "MIG (GMAW)"},
+            ...   "feeder": {},
+            ...   "english_query": "MIG welder 500A"
+            ... }
+            ... ```'''
+            >>> parsed = extractor._parse_llm_response(llm_response, fallback)
+            >>> parsed["power_source"]["current_rating"]
+            "500A"
+            >>> parsed["_english_query"]
+            "MIG welder 500A"
+
+            LLM response without code fences:
+            >>> llm_response = '{"power_source": {"product_name": "Aristo 500ix"}, "feeder": {}}'
+            >>> parsed = extractor._parse_llm_response(llm_response, fallback)
+            >>> parsed["power_source"]["product_name"]
+            "Aristo 500ix"
+
+            Parse failure (returns fallback):
+            >>> llm_response = "Invalid JSON response"
+            >>> parsed = extractor._parse_llm_response(llm_response, fallback)
+            >>> parsed == fallback
+            True
+
+        Operator Validation:
+            >>> llm_response = '''```json
+            ... {
+            ...   "power_source": {"current_rating": {"value": 300, "operator": "lte", "unit": "A"}},
+            ...   "feeder": {}
+            ... }
+            ... ```'''
+            >>> parsed = extractor._parse_llm_response(llm_response, fallback)
+            >>> parsed["power_source"]["current_rating"]["operator"]
+            "lte"  # Validated
+
+        Note:
+            - Returns fallback_master on any parsing error (logged)
+            - english_query is extracted and stored as _english_query for orchestrator
+            - All components from master_parameter_schema.json are included (empty if not in response)
+            - Operator validation happens per-component via _validate_and_normalize_operators()
         """
         import re
 

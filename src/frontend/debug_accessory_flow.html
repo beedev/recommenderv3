@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Accessory Selection Flow Debugger</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #00ff00;
+        }
+        h1, h2 {
+            color: #00ff00;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 10px;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .panel {
+            background: #0a0a0a;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #00cc00;
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+        .output {
+            background: #000;
+            border: 1px solid #00ff00;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .step {
+            margin: 10px 0;
+            padding: 10px;
+            background: #0a0a0a;
+            border-left: 4px solid #00ff00;
+        }
+        .step-number {
+            color: #ffff00;
+            font-weight: bold;
+        }
+        .success { color: #00ff00; }
+        .error { color: #ff0000; }
+        .warning { color: #ffff00; }
+        .info { color: #00ccff; }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 5px 0;
+        }
+        .field-check {
+            padding: 5px 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+        .field-present {
+            background: #003300;
+            border-left: 4px solid #00ff00;
+        }
+        .field-empty {
+            background: #333300;
+            border-left: 4px solid #ffff00;
+        }
+        .field-missing {
+            background: #330000;
+            border-left: 4px solid #ff0000;
+        }
+        .cart-preview {
+            border: 2px dashed #00ff00;
+            padding: 15px;
+            margin-top: 10px;
+            background: #0a0a0a;
+        }
+        .log-entry {
+            border-bottom: 1px solid #333;
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Accessory Selection Flow Debugger</h1>
+    <p class="info">This tool tests the complete flow: PowerSource → Skip to Accessories → Select Accessory → Verify in response_json</p>
+
+    <div class="panel full-width">
+        <h2>Test Controls</h2>
+        <button onclick="runFullTest()">🧪 Run Full Test</button>
+        <button onclick="clearLogs()">🗑️ Clear Logs</button>
+        <div id="status" class="output"></div>
+    </div>
+
+    <div class="container">
+        <div class="panel">
+            <h2>📊 API Response Tracking</h2>
+            <div id="apiTracking" class="output"></div>
+        </div>
+
+        <div class="panel">
+            <h2>🛒 Cart State Tracking</h2>
+            <div id="cartTracking" class="output"></div>
+        </div>
+    </div>
+
+    <div class="panel full-width">
+        <h2>📋 Complete Flow Log</h2>
+        <div id="flowLog" class="output"></div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="common.js"></script>
+    <script>
+        let sessionId = null;
+        let userId = ESAB.UserManager.getUserId();
+        let stepNumber = 0;
+        let allResponses = [];
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('flowLog');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div class="log-entry ${type}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        function trackAPIResponse(stepName, data) {
+            stepNumber++;
+            const trackingDiv = document.getElementById('apiTracking');
+
+            // Store response
+            allResponses.push({
+                step: stepNumber,
+                name: stepName,
+                data: data
+            });
+
+            // Check response_json
+            const responseJson = data.response_json || {};
+            const powerSourceAccessories = responseJson.PowerSourceAccessories;
+
+            let html = `<div class="step">
+                <div class="step-number">Step ${stepNumber}: ${stepName}</div>
+                <div class="info">State: ${data.current_state}</div>`;
+
+            // Check PowerSourceAccessories field
+            if (powerSourceAccessories !== undefined) {
+                if (Array.isArray(powerSourceAccessories)) {
+                    if (powerSourceAccessories.length > 0) {
+                        html += `<div class="field-present">✅ PowerSourceAccessories: [${powerSourceAccessories.length} items]</div>`;
+                        powerSourceAccessories.forEach((acc, i) => {
+                            html += `<div class="success">  ${i+1}. ${acc.name} (GIN: ${acc.gin})</div>`;
+                        });
+                    } else {
+                        html += `<div class="field-empty">⚠️ PowerSourceAccessories: [] (empty)</div>`;
+                    }
+                } else {
+                    html += `<div class="field-missing">❌ PowerSourceAccessories: ${JSON.stringify(powerSourceAccessories)}</div>`;
+                }
+            } else {
+                html += `<div class="field-missing">❌ PowerSourceAccessories: MISSING from response</div>`;
+            }
+
+            html += `</div>`;
+            trackingDiv.innerHTML += html;
+            trackingDiv.scrollTop = trackingDiv.scrollHeight;
+        }
+
+        function updateCartTracking(responseJson) {
+            const cartDiv = document.getElementById('cartTracking');
+
+            // Generate cart HTML using CartManager
+            const cartHTML = ESAB.CartManager.generateCartHTML(responseJson);
+            const componentCount = ESAB.CartManager.getComponentCount(responseJson);
+
+            cartDiv.innerHTML = `
+                <div class="info">Total Components: ${componentCount}</div>
+                <div class="cart-preview">
+                    ${cartHTML}
+                </div>
+            `;
+        }
+
+        async function runFullTest() {
+            updateStatus('🚀 Starting full test...', 'info');
+            log('═══════════════════════════════════════════════', 'info');
+            log('🧪 ACCESSORY SELECTION FLOW TEST STARTED', 'info');
+            log('═══════════════════════════════════════════════', 'info');
+
+            document.getElementById('apiTracking').innerHTML = '';
+            document.getElementById('cartTracking').innerHTML = '';
+            stepNumber = 0;
+            allResponses = [];
+
+            try {
+                // Step 1: Start new session with PowerSource selection
+                log('Step 1: Selecting PowerSource "Warrior 500i"', 'info');
+                updateStatus('Step 1: Selecting PowerSource...', 'info');
+
+                let data = await fetch(`${ESAB.Config.apiEndpoint('/api/v1/configurator/message')}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: 'Warrior 500i',
+                        language: 'en'
+                    })
+                }).then(r => r.json());
+
+                sessionId = data.session_id;
+                log(`✅ Session created: ${sessionId}`, 'success');
+                trackAPIResponse('PowerSource Search', data);
+                updateCartTracking(data.response_json);
+
+                // Auto-select PowerSource if only one result
+                if (data.products && data.products.length > 0) {
+                    const product = data.products[0];
+                    log(`Step 2: Auto-selecting PowerSource: ${product.name} (GIN: ${product.gin})`, 'info');
+                    updateStatus('Step 2: Auto-selecting PowerSource...', 'info');
+
+                    data = await fetch(`${ESAB.Config.apiEndpoint('/api/v1/configurator/select')}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            session_id: sessionId,
+                            product_gin: product.gin,
+                            product_data: product
+                        })
+                    }).then(r => r.json());
+
+                    log(`✅ PowerSource selected: ${product.name}`, 'success');
+                    trackAPIResponse('PowerSource Selected', data);
+                    updateCartTracking(data.response_json);
+                }
+
+                // Step 3: Skip to PowerSourceAccessories state
+                log('Step 3: Skipping to PowerSourceAccessories state...', 'info');
+                updateStatus('Step 3: Skipping states...', 'info');
+
+                let skipCount = 0;
+                while (data.current_state !== 'powersource_accessories_selection' && skipCount < 10) {
+                    data = await fetch(`${ESAB.Config.apiEndpoint('/api/v1/configurator/message')}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            session_id: sessionId,
+                            message: 'done',
+                            language: 'en'
+                        })
+                    }).then(r => r.json());
+
+                    skipCount++;
+                    log(`  Skipped to: ${data.current_state}`, 'info');
+                    trackAPIResponse(`Skip ${skipCount}`, data);
+                    updateCartTracking(data.response_json);
+                }
+
+                if (data.current_state !== 'powersource_accessories_selection') {
+                    log(`❌ FAILED: Could not reach powersource_accessories_selection`, 'error');
+                    updateStatus('❌ Test Failed: Could not reach accessory state', 'error');
+                    return;
+                }
+
+                log(`✅ Reached powersource_accessories_selection`, 'success');
+                log(`  Available products: ${data.products ? data.products.length : 0}`, 'info');
+
+                // Step 4: Select first PowerSourceAccessory
+                if (data.products && data.products.length > 0) {
+                    const accessory = data.products[0];
+                    log(`Step 4: Selecting PowerSourceAccessory: ${accessory.name} (GIN: ${accessory.gin})`, 'info');
+                    updateStatus('Step 4: Selecting accessory...', 'info');
+
+                    data = await fetch(`${ESAB.Config.apiEndpoint('/api/v1/configurator/select')}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            session_id: sessionId,
+                            product_gin: accessory.gin,
+                            product_data: accessory
+                        })
+                    }).then(r => r.json());
+
+                    log(`✅ Accessory selection API call completed`, 'success');
+                    trackAPIResponse('Accessory Selected', data);
+                    updateCartTracking(data.response_json);
+
+                    // CRITICAL CHECK
+                    const powerSourceAccessories = data.response_json?.PowerSourceAccessories;
+                    log('', 'info');
+                    log('═══════════════════════════════════════════════', 'info');
+                    log('🔍 CRITICAL CHECK: PowerSourceAccessories in response_json', 'warning');
+                    log('═══════════════════════════════════════════════', 'info');
+
+                    if (powerSourceAccessories !== undefined) {
+                        log(`✅ PowerSourceAccessories field is PRESENT`, 'success');
+
+                        if (Array.isArray(powerSourceAccessories)) {
+                            log(`✅ PowerSourceAccessories is an array`, 'success');
+                            log(`   Length: ${powerSourceAccessories.length}`, 'info');
+
+                            if (powerSourceAccessories.length > 0) {
+                                log(``, 'info');
+                                log(`✅✅✅ SUCCESS! Accessory found in response_json!`, 'success');
+                                log(``, 'info');
+                                powerSourceAccessories.forEach((acc, i) => {
+                                    log(`   ${i+1}. ${acc.name} (GIN: ${acc.gin})`, 'success');
+                                });
+                                updateStatus('✅ TEST PASSED: Accessory is in response_json!', 'success');
+                            } else {
+                                log(``, 'error');
+                                log(`❌❌❌ FAILED: PowerSourceAccessories is empty []`, 'error');
+                                log(`   Expected to contain: ${accessory.name} (GIN: ${accessory.gin})`, 'error');
+                                log(``, 'error');
+                                updateStatus('❌ TEST FAILED: PowerSourceAccessories is empty', 'error');
+                            }
+                        } else {
+                            log(`❌ PowerSourceAccessories is NOT an array: ${JSON.stringify(powerSourceAccessories)}`, 'error');
+                            updateStatus('❌ TEST FAILED: PowerSourceAccessories is not an array', 'error');
+                        }
+                    } else {
+                        log(`❌ PowerSourceAccessories field MISSING from response_json`, 'error');
+                        updateStatus('❌ TEST FAILED: PowerSourceAccessories field missing', 'error');
+                    }
+
+                    log('═══════════════════════════════════════════════', 'info');
+
+                } else {
+                    log(`❌ No accessories available to test`, 'error');
+                    updateStatus('❌ No accessories available', 'error');
+                }
+
+            } catch (error) {
+                log(`❌ ERROR: ${error.message}`, 'error');
+                updateStatus(`❌ ERROR: ${error.message}`, 'error');
+                console.error('Test error:', error);
+            }
+        }
+
+        function clearLogs() {
+            document.getElementById('flowLog').innerHTML = '';
+            document.getElementById('apiTracking').innerHTML = '';
+            document.getElementById('cartTracking').innerHTML = '';
+            document.getElementById('status').innerHTML = '';
+            stepNumber = 0;
+            allResponses = [];
+        }
+
+        // Auto-run test on load
+        window.addEventListener('load', () => {
+            log('🔍 Accessory Selection Flow Debugger loaded', 'info');
+            log('Click "Run Full Test" to start', 'info');
+        });
+    </script>
+</body>
+</html>

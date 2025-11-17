@@ -1,0 +1,1555 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="AI-powered welding equipment configurator - Technical documentation">
+      
+      
+        <meta name="author" content="ESAB Development Team">
+      
+      
+        <link rel="canonical" href="https://esab-configurator.readthedocs.io/archive/pre-refactoring/OPERATOR_FILTERING_PROPOSAL/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Operator Filtering Proposal - Natural Language Constraint Support - ESAB Configurator Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#operator-filtering-proposal-natural-language-constraint-support" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="ESAB Configurator Documentation" class="md-header__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ESAB Configurator Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Operator Filtering Proposal - Natural Language Constraint Support
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../CODE_ARCHITECTURE_OVERVIEW/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../deployment/README.md" class="md-tabs__link">
+          
+  
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ESAB Configurator Documentation" class="md-nav__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ESAB Configurator Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CODE_ARCHITECTURE_OVERVIEW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CORRECTED_STATE_FLOW_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ORCHESTRATOR_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestrator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTEXT_BASED_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Search Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MASTER_PARAMETER_JSON_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Parameter JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MULTILINGUAL_FLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multilingual Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    System Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONFIGURATION_SYSTEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OBSERVABILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deployment/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../testing-guide.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/runbook.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="operator-filtering-proposal-natural-language-constraint-support">Operator Filtering Proposal - Natural Language Constraint Support<a class="headerlink" href="#operator-filtering-proposal-natural-language-constraint-support" title="Permanent link">&para;</a></h1>
+<p><strong>Date</strong>: 2025-01-09
+<strong>Status</strong>: Investigated but NOT Implemented
+<strong>Version</strong>: 1.0</p>
+<hr />
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>This document proposes adding natural language operator support to the ESAB Welding Equipment Configurator, enabling queries like:
+- "I am satisfied with a <strong>maximum output of 300 Amps</strong>" → Filter products ≤300A
+- "I need <strong>at least 500A</strong>" → Filter products ≥500A
+- "Between 300-500A" → Filter products in range</p>
+<p><strong>Business Value:</strong>
+- Improved search precision
+- Better user experience (natural language constraints)
+- Reduced irrelevant results
+- More accurate product recommendations</p>
+<p><strong>Implementation Status:</strong>
+- ❌ NOT IMPLEMENTED (rolled back after investigation)
+- ✅ Root cause identified
+- ✅ Solution designed
+- ✅ Test scripts created
+- 📋 Documented for future implementation</p>
+<hr />
+<h2 id="problem-statement">Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link">&para;</a></h2>
+<p><strong>User Issue:</strong> Query "I am satisfied with a maximum output of 300 Amps" returns ALL power sources (including 400A, 500A models) instead of only those ≤300A.</p>
+<p><strong>Expected Behavior:</strong> Only show products matching the constraint (e.g., Renegade ES300i)</p>
+<p><strong>Actual Behavior:</strong> All 6 power sources shown without filtering</p>
+<hr />
+<h2 id="root-cause-analysis">Root Cause Analysis<a class="headerlink" href="#root-cause-analysis" title="Permanent link">&para;</a></h2>
+<h3 id="issue-1-feature-key-mismatch">Issue 1: Feature Key Mismatch<a class="headerlink" href="#issue-1-feature-key-mismatch" title="Permanent link">&para;</a></h3>
+<p><strong>Critical Discovery:</strong> Three different sources use inconsistent field names:</p>
+<ol>
+<li>
+<p><strong>Schema Definition</strong> (<code>app/config/master_parameter_schema.json:11</code>):
+   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;power_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="s2">&quot;current_output&quot;</span><span class="p">,</span><span class="w">  </span><span class="err">←</span><span class="w"> </span><span class="err">Schema</span><span class="w"> </span><span class="err">de</span><span class="kc">f</span><span class="err">i</span><span class="kc">nes</span><span class="w"> </span><span class="s2">&quot;current_output&quot;</span>
+<span class="w">      </span><span class="s2">&quot;voltage&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;process&quot;</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+</li>
+<li>
+<p><strong>LLM Prompt</strong> (<code>app/services/intent/parameter_extractor.py:372-586</code>):
+   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 40+ examples use &quot;current_rating&quot;</span>
+<span class="o">-</span> <span class="s2">&quot;500A @60%&quot;</span> <span class="err">→</span> <span class="p">{{</span><span class="s2">&quot;current_rating&quot;</span><span class="p">:</span> <span class="s2">&quot;500A&quot;</span><span class="p">,</span> <span class="s2">&quot;duty_cycle&quot;</span><span class="p">:</span> <span class="s2">&quot;60%&quot;</span><span class="p">}}</span>
+<span class="o">-</span> <span class="s2">&quot;max 300A&quot;</span> <span class="err">→</span> <span class="p">{{</span><span class="s2">&quot;current_rating&quot;</span><span class="p">:</span> <span class="p">{{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;lte&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">}}}}</span>
+</code></pre></div></td></tr></table></div></p>
+</li>
+<li>
+<p><strong>Product Search</strong> (<code>app/services/neo4j/product_search.py:833</code>):
+   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">technical_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;current_output&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>  <span class="c1"># Expects &quot;current_output&quot;</span>
+</code></pre></div></td></tr></table></div></p>
+</li>
+<li>
+<p><strong>LLM Category Features</strong> (<code>app/config/category_features_llm.json:374</code>):
+   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;Powersource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;features&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;numeric_specs&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Current Output&quot;</span><span class="p">}</span><span class="w">  </span><span class="err">←</span><span class="w"> </span><span class="err">Normalized</span><span class="w"> </span><span class="kc">t</span><span class="err">o</span><span class="w"> </span><span class="s2">&quot;current_output&quot;</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+</li>
+</ol>
+<p><strong>Result:</strong> LLM extracts <code>current_rating</code>, but feature filter looks for <code>current_output</code> → Filter check is skipped → All products pass through.</p>
+<hr />
+<h3 id="issue-2-schema-is-documentation-only">Issue 2: Schema is Documentation-Only<a class="headerlink" href="#issue-2-schema-is-documentation-only" title="Permanent link">&para;</a></h3>
+<p><strong>Critical Finding:</strong> The <code>master_parameter_schema.json</code> file does NOT control LLM extraction behavior at runtime.</p>
+<p><strong>Investigation Results:</strong></p>
+<ol>
+<li><strong>Schema Loading</strong> (<code>app/config/schema_loader.py</code>):</li>
+<li>Loads component names: <code>["power_source", "feeder", "cooler", ...]</code></li>
+<li>Loads feature lists: <code>["current_output", "voltage", "process", ...]</code></li>
+<li>
+<p><strong>BUT</strong>: Feature lists are NOT used to generate LLM prompts</p>
+</li>
+<li>
+<p><strong>Model Creation</strong> (<code>app/models/conversation.py:193-257</code>):
+   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># MasterParameterJSON uses Dict[str, Any] - NO KEY VALIDATION</span>
+<span class="n">field_definitions</span><span class="p">[</span><span class="n">component_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>  <span class="c1"># ← Accepts ANY keys</span>
+    <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+</li>
+<li>
+<p><strong>LLM Prompt Generation</strong> (<code>app/services/intent/parameter_extractor.py:248-631</code>):</p>
+</li>
+<li>Prompt is <strong>100% hardcoded</strong></li>
+<li>Does NOT read schema features</li>
+<li>
+<p>Uses fixed examples with <code>current_rating</code></p>
+</li>
+<li>
+<p><strong>Validation</strong> (<code>app/config/schema_loader.py:101-134</code>):
+   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">validate_component_dict</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Validates keys against schema&quot;&quot;&quot;</span>
+    <span class="c1"># Function exists BUT is NEVER CALLED in extraction pipeline</span>
+</code></pre></div></td></tr></table></div></p>
+</li>
+</ol>
+<p><strong>Conclusion:</strong> Schema is purely documentation. LLM behavior is determined by hardcoded prompt examples.</p>
+<hr />
+<h2 id="data-flow-analysis">Data Flow Analysis<a class="headerlink" href="#data-flow-analysis" title="Permanent link">&para;</a></h2>
+<p><strong>Current Flow:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code>User: &quot;I am satisfied with a maximum output of 300 Amps&quot;
+    ↓
+ParameterExtractor (LLM with hardcoded prompt)
+    → Extracts: {&quot;power_source&quot;: {&quot;current_rating&quot;: {&quot;value&quot;: 300, &quot;operator&quot;: &quot;lte&quot;, &quot;unit&quot;: &quot;A&quot;}}}
+    ↓
+Product Search (expects &quot;current_output&quot;)
+    → Looks for: master_parameters.get(&quot;current_output&quot;)
+    → Finds: Nothing (key is &quot;current_rating&quot;)
+    → Falls back to: Lucene full-text search only
+    ↓
+Feature Filter (_matches_feature_requirements)
+    → Checks: &quot;current_output&quot; in master_parameters
+    → Result: False (key is &quot;current_rating&quot;)
+    → Action: SKIP numeric constraint check
+    → Outcome: ALL products pass through
+    ↓
+Result: All 6 power sources returned
+</code></pre></div></td></tr></table></div>
+<p><strong>Why Filter Fails:</strong></p>
+<p>File: <code>app/services/neo4j/product_search.py:401-428</code></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">_matches_feature_requirements</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">num_spec</span> <span class="ow">in</span> <span class="n">features</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;numeric_specs&quot;</span><span class="p">,</span> <span class="p">[]):</span>
+        <span class="n">spec_name</span> <span class="o">=</span> <span class="n">num_spec</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)</span>  <span class="c1"># &quot;Current Output&quot; → &quot;current_output&quot;</span>
+
+        <span class="k">if</span> <span class="n">spec_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">master_parameters</span><span class="p">:</span>  <span class="c1"># ← Checking for &quot;current_output&quot;</span>
+            <span class="k">continue</span>  <span class="c1"># ← SKIPS because master_parameters has &quot;current_rating&quot;!</span>
+
+        <span class="c1"># Operator constraint check never runs</span>
+        <span class="n">user_constraint</span> <span class="o">=</span> <span class="n">master_parameters</span><span class="p">[</span><span class="n">spec_name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_matches_numeric_constraint</span><span class="p">(</span><span class="n">user_constraint</span><span class="p">,</span> <span class="n">product_value</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># All products pass (constraint check was skipped)</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="proposed-solution">Proposed Solution<a class="headerlink" href="#proposed-solution" title="Permanent link">&para;</a></h2>
+<h3 id="option-1-align-llm-prompt-with-schema-recommended">Option 1: Align LLM Prompt with Schema (RECOMMENDED)<a class="headerlink" href="#option-1-align-llm-prompt-with-schema-recommended" title="Permanent link">&para;</a></h3>
+<p><strong>Approach:</strong> Update all hardcoded <code>current_rating</code> examples to use <code>current_output</code> (matching schema).</p>
+<p><strong>Changes Required:</strong></p>
+<p><strong>File:</strong> <code>app/services/intent/parameter_extractor.py</code>
+- <strong>Operation:</strong> Find/Replace <code>"current_rating"</code> → <code>"current_output"</code>
+- <strong>Estimated:</strong> 40+ occurrences (lines 372-586)
+- <strong>Scope:</strong> LLM prompt examples and instructions only</p>
+<p><strong>Why This Approach:</strong>
+- ✅ Schema is source of truth (align with it)
+- ✅ Single file change (minimal risk)
+- ✅ LLM category features already use <code>current_output</code>
+- ✅ Product search already expects <code>current_output</code>
+- ✅ No breaking changes (downstream code handles both)</p>
+<p><strong>Implementation Steps:</strong></p>
+<ol>
+<li>
+<p><strong>Update LLM Prompt Examples:</strong>
+   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># BEFORE (Lines 372-387):</span>
+<span class="o">-</span> <span class="s2">&quot;500A @60%&quot;</span> <span class="err">→</span> <span class="p">{{</span><span class="s2">&quot;current_rating&quot;</span><span class="p">:</span> <span class="s2">&quot;500A&quot;</span><span class="p">,</span> <span class="s2">&quot;duty_cycle&quot;</span><span class="p">:</span> <span class="s2">&quot;60%&quot;</span><span class="p">}}</span>
+<span class="o">-</span> <span class="s2">&quot;max 300A&quot;</span> <span class="err">→</span> <span class="p">{{</span><span class="s2">&quot;current_rating&quot;</span><span class="p">:</span> <span class="p">{{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;lte&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">}}}}</span>
+
+<span class="c1"># AFTER:</span>
+<span class="o">-</span> <span class="s2">&quot;500A @60%&quot;</span> <span class="err">→</span> <span class="p">{{</span><span class="s2">&quot;current_output&quot;</span><span class="p">:</span> <span class="s2">&quot;500A&quot;</span><span class="p">,</span> <span class="s2">&quot;duty_cycle&quot;</span><span class="p">:</span> <span class="s2">&quot;60%&quot;</span><span class="p">}}</span>
+<span class="o">-</span> <span class="s2">&quot;max 300A&quot;</span> <span class="err">→</span> <span class="p">{{</span><span class="s2">&quot;current_output&quot;</span><span class="p">:</span> <span class="p">{{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;lte&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">}}}}</span>
+</code></pre></div></td></tr></table></div></p>
+</li>
+<li>
+<p><strong>Restart Server:</strong></p>
+</li>
+<li>Clear Python cache: <code>rm -rf __pycache__</code></li>
+<li>
+<p>Restart uvicorn to reload prompt</p>
+</li>
+<li>
+<p><strong>Verify Extraction:</strong></p>
+</li>
+<li>Run test: <code>python test_max_300a_query.py</code></li>
+<li>
+<p>Expected output: <code>{"power_source": {"current_output": {...}}}</code></p>
+</li>
+<li>
+<p><strong>Test Filtering:</strong></p>
+</li>
+<li>Query: "I am satisfied with a maximum output of 300 Amps"</li>
+<li>Expected: Only Renegade ES300i shown (300A)</li>
+<li>Verify: Server logs show <code>✨ LLM feature filter: 1 products matched (was 6)</code></li>
+</ol>
+<hr />
+<h3 id="option-2-add-key-mapping-layer-not-recommended">Option 2: Add Key Mapping Layer (NOT RECOMMENDED)<a class="headerlink" href="#option-2-add-key-mapping-layer-not-recommended" title="Permanent link">&para;</a></h3>
+<p><strong>Approach:</strong> Add translation layer in feature filter to map <code>current_rating</code> → <code>current_output</code></p>
+<p><strong>Why NOT Recommended:</strong>
+- ❌ Maintains inconsistency (technical debt)
+- ❌ More complex code
+- ❌ Doesn't fix root cause
+- ❌ Makes future refactoring harder</p>
+<hr />
+<h2 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h2>
+<h3 id="test-file-created">Test File Created<a class="headerlink" href="#test-file-created" title="Permanent link">&para;</a></h3>
+<p><strong>Location:</strong> <code>src/backend/test_max_300a_query.py</code></p>
+<p><strong>Purpose:</strong> Isolated test for parameter extraction verification</p>
+<p><strong>Usage:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>src/backend
+python<span class="w"> </span>test_max_300a_query.py
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Expected Output (After Fix):</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+  <span class="s1">&#39;power_source&#39;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s1">&#39;current_output&#39;</span><span class="p">:</span> <span class="p">{</span>  <span class="c1"># ← Should be &quot;current_output&quot; not &quot;current_rating&quot;</span>
+      <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+      <span class="s1">&#39;operator&#39;</span><span class="p">:</span> <span class="s1">&#39;lte&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;unit&#39;</span><span class="p">:</span> <span class="s1">&#39;A&#39;</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<h3 id="end-to-end-testing">End-to-End Testing<a class="headerlink" href="#end-to-end-testing" title="Permanent link">&para;</a></h3>
+<p><strong>Test Queries:</strong></p>
+<ol>
+<li><strong>Maximum Constraint:</strong></li>
+<li>Query: "I am satisfied with a maximum output of 300 Amps"</li>
+<li>Expected: Only Renegade ES300i (300A)</li>
+<li>
+<p>NOT shown: Warrior 400i (400A), Warrior 500i (500A)</p>
+</li>
+<li>
+<p><strong>Minimum Constraint:</strong></p>
+</li>
+<li>Query: "I need at least 500A"</li>
+<li>Expected: Only Warrior 500i and higher</li>
+<li>
+<p>NOT shown: Renegade ES300i (300A), Warrior 400i (400A)</p>
+</li>
+<li>
+<p><strong>Exact Match:</strong></p>
+</li>
+<li>Query: "Exactly 380V"</li>
+<li>
+<p>Expected: Products with 380V (±tolerance)</p>
+</li>
+<li>
+<p><strong>Range:</strong></p>
+</li>
+<li>Query: "Between 300-500A"</li>
+<li>Expected: Renegade ES300i, Warrior 400i, Warrior 500i</li>
+<li>
+<p>NOT shown: Products outside range</p>
+</li>
+<li>
+<p><strong>Approximate:</strong></p>
+</li>
+<li>Query: "Around 500A"</li>
+<li>Expected: Products ≈500A (with tolerance)</li>
+</ol>
+<h3 id="verification-checklist">Verification Checklist<a class="headerlink" href="#verification-checklist" title="Permanent link">&para;</a></h3>
+<p>After implementing fix:</p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>test_max_300a_query.py</code> returns <code>current_output</code> (not <code>current_rating</code>)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Server logs show feature filter reducing product count</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> UI query "max 300A" shows only ≤300A products</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Operator extraction works for all types (lte, gte, lt, gt, eq, range, approx)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Feature filter logs show <code>✨ LLM feature filter: N products matched (was M)</code> where N &lt; M</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> No regression: String format still works ("500A @60%")</li>
+</ul>
+<hr />
+<h2 id="known-issues">Known Issues<a class="headerlink" href="#known-issues" title="Permanent link">&para;</a></h2>
+<h3 id="issue-1-multiple-sources-of-truth">Issue 1: Multiple Sources of Truth<a class="headerlink" href="#issue-1-multiple-sources-of-truth" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Three files define feature names independently:
+1. <code>master_parameter_schema.json</code> → <code>current_output</code>
+2. <code>parameter_extractor.py</code> (LLM prompt) → <code>current_rating</code>
+3. <code>category_features_llm.json</code> → <code>Current Output</code></p>
+<p><strong>Impact:</strong> Difficult to maintain consistency</p>
+<p><strong>Solution:</strong> See "Future Enhancements" below</p>
+<hr />
+<h3 id="issue-2-no-schema-validation">Issue 2: No Schema Validation<a class="headerlink" href="#issue-2-no-schema-validation" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> <code>validate_component_dict()</code> function exists but is never called</p>
+<p><strong>Impact:</strong> LLM can extract ANY keys, not just schema-defined features</p>
+<p><strong>Solution:</strong> Add validation call after parameter extraction:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># In parameter_extractor.py extract_parameters() method:</span>
+<span class="n">extracted_params</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_llm</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="c1"># Add validation (future enhancement):</span>
+<span class="k">for</span> <span class="n">component_name</span><span class="p">,</span> <span class="n">component_dict</span> <span class="ow">in</span> <span class="n">extracted_params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">validate_component_dict</span><span class="p">(</span><span class="n">component_name</span><span class="p">,</span> <span class="n">component_dict</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid keys in </span><span class="si">{</span><span class="n">component_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">component_dict</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Optionally: Remove invalid keys or reject extraction</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h3 id="issue-3-score-threshold-too-aggressive-separate-issue">Issue 3: Score Threshold Too Aggressive (Separate Issue)<a class="headerlink" href="#issue-3-score-threshold-too-aggressive-separate-issue" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Lucene score threshold (25%) can eliminate valid products before operator filtering</p>
+<p><strong>Example:</strong> "max 300A" query:
+- Warrior 400i: Score 7.1982 (kept)
+- Renegade ES300i: Score 3.2751 (eliminated by threshold)</p>
+<p><strong>Analysis:</strong> See <code>docs/RENEGADE_ISSUE_ANALYSIS.md</code></p>
+<p><strong>Solution:</strong> Either:
+1. Disable score threshold for PowerSource (<code>score_threshold_percent: 0</code>)
+2. Apply operator filter BEFORE score threshold
+3. Lower threshold to 5-10%</p>
+<p><strong>Status:</strong> Separate from operator filtering issue</p>
+<hr />
+<h2 id="implementation-phases">Implementation Phases<a class="headerlink" href="#implementation-phases" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1-quick-fix-immediate">Phase 1: Quick Fix (Immediate)<a class="headerlink" href="#phase-1-quick-fix-immediate" title="Permanent link">&para;</a></h3>
+<p><strong>Goal:</strong> Align LLM prompt with schema</p>
+<p><strong>Tasks:</strong>
+1. Update <code>parameter_extractor.py</code> (replace <code>current_rating</code> → <code>current_output</code>)
+2. Restart server
+3. Test with <code>test_max_300a_query.py</code>
+4. Verify UI queries work</p>
+<p><strong>Estimated Time:</strong> 30 minutes
+<strong>Risk:</strong> Low (single file change)</p>
+<hr />
+<h3 id="phase-2-add-validation-medium-priority">Phase 2: Add Validation (Medium Priority)<a class="headerlink" href="#phase-2-add-validation-medium-priority" title="Permanent link">&para;</a></h3>
+<p><strong>Goal:</strong> Enable schema validation in extraction pipeline</p>
+<p><strong>Tasks:</strong>
+1. Call <code>validate_component_dict()</code> after LLM extraction
+2. Log warnings for invalid keys
+3. Optionally: Filter out invalid keys
+4. Add unit tests for validation</p>
+<p><strong>Estimated Time:</strong> 2-3 hours
+<strong>Risk:</strong> Low (additive change, backward compatible)</p>
+<hr />
+<h3 id="phase-3-schema-driven-prompts-future-enhancement">Phase 3: Schema-Driven Prompts (Future Enhancement)<a class="headerlink" href="#phase-3-schema-driven-prompts-future-enhancement" title="Permanent link">&para;</a></h3>
+<p><strong>Goal:</strong> Generate LLM prompts dynamically from schema</p>
+<p><strong>Tasks:</strong>
+1. Create prompt template builder that reads schema
+2. Generate examples from feature definitions
+3. Ensure all components use schema-defined features
+4. Deprecate hardcoded examples</p>
+<p><strong>Estimated Time:</strong> 1-2 days
+<strong>Risk:</strong> Medium (major refactoring)</p>
+<p><strong>Benefits:</strong>
+- Single source of truth (schema controls everything)
+- Easier to add new features (just update schema)
+- Prevents schema/prompt drift
+- Automatic validation alignment</p>
+<hr />
+<h2 id="future-enhancements">Future Enhancements<a class="headerlink" href="#future-enhancements" title="Permanent link">&para;</a></h2>
+<h3 id="enhancement-1-unified-configuration-system">Enhancement 1: Unified Configuration System<a class="headerlink" href="#enhancement-1-unified-configuration-system" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Configuration scattered across multiple files:
+- <code>master_parameter_schema.json</code>
+- <code>category_features_llm.json</code>
+- <code>component_applicability.json</code>
+- Hardcoded prompts in Python</p>
+<p><strong>Proposal:</strong> Consolidate into single configuration source</p>
+<p><strong>Benefits:</strong>
+- Single source of truth
+- Easier maintenance
+- Prevents inconsistencies
+- Version control friendly</p>
+<hr />
+<h3 id="enhancement-2-dynamic-feature-matching">Enhancement 2: Dynamic Feature Matching<a class="headerlink" href="#enhancement-2-dynamic-feature-matching" title="Permanent link">&para;</a></h3>
+<p><strong>Current:</strong> Hardcoded <code>technical_fields</code> list in product_search.py</p>
+<p><strong>Proposal:</strong> Read technical fields from schema at runtime</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Instead of:</span>
+<span class="n">technical_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;thickness&quot;</span><span class="p">,</span> <span class="s2">&quot;current_output&quot;</span><span class="p">,</span> <span class="s2">&quot;voltage&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+<span class="c1"># Use:</span>
+<span class="n">technical_fields</span> <span class="o">=</span> <span class="n">get_component_features</span><span class="p">(</span><span class="s2">&quot;power_source&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h3 id="enhancement-3-operator-support-for-all-components">Enhancement 3: Operator Support for All Components<a class="headerlink" href="#enhancement-3-operator-support-for-all-components" title="Permanent link">&para;</a></h3>
+<p><strong>Current:</strong> Operator support designed for PowerSource only</p>
+<p><strong>Proposal:</strong> Extend to all components:
+- Feeder: <code>{"wire_diameter": {"min": 0.8, "max": 1.2, "operator": "range"}}</code>
+- Cooler: <code>{"cooling_capacity": {"value": 10, "operator": "gte", "unit": "kW"}}</code>
+- Torch: <code>{"current_rating": {"value": 500, "operator": "approx"}}</code></p>
+<hr />
+<h2 id="migration-path">Migration Path<a class="headerlink" href="#migration-path" title="Permanent link">&para;</a></h2>
+<p><strong>If implementing later:</strong></p>
+<ol>
+<li><strong>Check for Code Changes:</strong></li>
+<li>Has <code>parameter_extractor.py</code> been modified since this investigation?</li>
+<li>Has schema structure changed?</li>
+<li>
+<p>Are there new components or features?</p>
+</li>
+<li>
+<p><strong>Re-run Test:</strong>
+   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>python<span class="w"> </span>test_max_300a_query.py
+</code></pre></div></td></tr></table></div></p>
+</li>
+<li>Verify extraction still uses <code>current_rating</code></li>
+<li>
+<p>Update fix if code has evolved</p>
+</li>
+<li>
+<p><strong>Apply Fix:</strong></p>
+</li>
+<li>Follow Phase 1 steps</li>
+<li>
+<p>Test thoroughly before deploying</p>
+</li>
+<li>
+<p><strong>Consider Phase 2:</strong></p>
+</li>
+<li>Add schema validation if system has grown</li>
+<li>Prevents future schema/prompt drift</li>
+</ol>
+<hr />
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<p><strong>Related Documents:</strong>
+- <code>docs/RENEGADE_ISSUE_ANALYSIS.md</code> - Score threshold filtering issue
+- <code>docs/MASTER_PARAMETER_JSON_ARCHITECTURE.md</code> - Data model documentation
+- <code>docs/LLM_ENTITY_EXTRACTION_ARCHITECTURE.md</code> - Parameter extraction design</p>
+<p><strong>Test Files:</strong>
+- <code>src/backend/test_max_300a_query.py</code> - Operator extraction test
+- <code>src/backend/test_lucene_300a.py</code> - Lucene search test (if exists)</p>
+<p><strong>Code Locations:</strong>
+- <code>app/services/intent/parameter_extractor.py:372-586</code> - LLM prompt examples
+- <code>app/services/neo4j/product_search.py:401-428</code> - Feature filter logic
+- <code>app/services/neo4j/product_search.py:231-344</code> - Operator matching logic
+- <code>app/config/master_parameter_schema.json:11</code> - Schema feature definition
+- <code>app/config/category_features_llm.json:374</code> - LLM category features</p>
+<hr />
+<h2 id="appendix-operator-implementation-details">Appendix: Operator Implementation Details<a class="headerlink" href="#appendix-operator-implementation-details" title="Permanent link">&para;</a></h2>
+<p><strong>Operator Support Already Implemented (Phase 2 - Rolled Back):</strong></p>
+<h3 id="supported-operators">Supported Operators<a class="headerlink" href="#supported-operators" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># app/services/neo4j/product_search.py:231-344</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_matches_numeric_constraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_constraint</span><span class="p">,</span> <span class="n">product_value</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Operators:</span>
+<span class="sd">    - lte (≤): Less than or equal to</span>
+<span class="sd">    - gte (≥): Greater than or equal to</span>
+<span class="sd">    - lt (&lt;): Less than</span>
+<span class="sd">    - gt (&gt;): Greater than</span>
+<span class="sd">    - eq (=): Equal to (exact match)</span>
+<span class="sd">    - range: Between min and max</span>
+<span class="sd">    - approx (≈): Approximately equal (with tolerance)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="example-constraints">Example Constraints<a class="headerlink" href="#example-constraints" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Maximum (Less Than or Equal)</span>
+<span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;lte&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">}</span>
+<span class="c1"># Matches: 200A, 250A, 300A</span>
+<span class="c1"># Excludes: 350A, 400A</span>
+
+<span class="c1"># Minimum (Greater Than or Equal)</span>
+<span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;gte&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">}</span>
+<span class="c1"># Matches: 500A, 550A, 600A</span>
+<span class="c1"># Excludes: 300A, 400A</span>
+
+<span class="c1"># Range</span>
+<span class="p">{</span><span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;range&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">}</span>
+<span class="c1"># Matches: 300A, 400A, 500A</span>
+<span class="c1"># Excludes: 200A, 600A</span>
+
+<span class="c1"># Approximate (±20% default tolerance)</span>
+<span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;approx&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">}</span>
+<span class="c1"># Matches: 400A-600A (500 ± 20%)</span>
+<span class="c1"># Excludes: 300A, 700A</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="backward-compatibility">Backward Compatibility<a class="headerlink" href="#backward-compatibility" title="Permanent link">&para;</a></h3>
+<p><strong>String Format Still Supported:</strong>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Old format (tolerance-based matching)</span>
+<span class="p">{</span><span class="s2">&quot;current_output&quot;</span><span class="p">:</span> <span class="s2">&quot;500A&quot;</span><span class="p">}</span>
+<span class="c1"># Matches products ≈500A (±20% tolerance)</span>
+
+<span class="c1"># New format (operator-based)</span>
+<span class="p">{</span><span class="s2">&quot;current_output&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">:</span> <span class="s2">&quot;lte&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">}}</span>
+<span class="c1"># Matches products ≤500A (precise constraint)</span>
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<p><strong>Document Version:</strong> 1.0
+<strong>Last Updated:</strong> 2025-01-09
+<strong>Author:</strong> Claude Code Investigation
+<strong>Status:</strong> Ready for Implementation</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 ESAB
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/esab/configurator" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/esab-configurator/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../../javascripts/extra.js"></script>
+      
+    
+  </body>
+</html>

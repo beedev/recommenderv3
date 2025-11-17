@@ -1,0 +1,18 @@
+# Documentation Generation Dependencies
+# Install with: pip install -r requirements-docs.txt
+
+# MkDocs - Static site generator for project documentation
+mkdocs>=1.5.0
+
+# Material theme for MkDocs - Modern, responsive documentation theme
+mkdocs-material>=9.4.0
+
+# MkDocstrings - Automatic documentation from docstrings
+# [python] extra includes handlers for Python code
+mkdocstrings[python]>=0.24.0
+
+# Optional: Enhanced markdown support
+pymdown-extensions>=10.0
+
+# Optional: Mermaid diagram support
+mkdocs-mermaid2-plugin>=1.0.0

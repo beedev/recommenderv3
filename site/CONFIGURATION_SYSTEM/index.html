@@ -1,0 +1,3061 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="AI-powered welding equipment configurator - Technical documentation">
+      
+      
+        <meta name="author" content="ESAB Development Team">
+      
+      
+        <link rel="canonical" href="https://esab-configurator.readthedocs.io/CONFIGURATION_SYSTEM/">
+      
+      
+        <link rel="prev" href="../MULTILINGUAL_FLOW/">
+      
+      
+        <link rel="next" href="../OBSERVABILITY/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Configuration System - ESAB Configurator Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#configuration-system-architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ESAB Configurator Documentation" class="md-header__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ESAB Configurator Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Configuration System
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../CODE_ARCHITECTURE_OVERVIEW/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../deployment/README.md" class="md-tabs__link">
+          
+  
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ESAB Configurator Documentation" class="md-nav__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ESAB Configurator Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_ARCHITECTURE_OVERVIEW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORRECTED_STATE_FLOW_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ORCHESTRATOR_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestrator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTEXT_BASED_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Search Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MASTER_PARAMETER_JSON_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Parameter JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MULTILINGUAL_FLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multilingual Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    System Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration System
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture Pattern
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture Pattern">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#singleton-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Singleton Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lru-caching-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LRU Caching Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#core-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-centralized-configuration-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Centralized Configuration Directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-lazy-loading-with-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Lazy Loading with Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-type-safety-and-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Type Safety and Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-global-singleton-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Global Singleton Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Files
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#component_typesjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        component_types.json
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state_configjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        state_config.json
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component_applicabilityjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        component_applicability.json
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#master_parameter_schemajson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        master_parameter_schema.json
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#search_configjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        search_config.json
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#llm_configjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        llm_config.json
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#promptsjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        prompts.json
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#languagesjson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        languages.json
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Methods
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#__init__config_dir-optionalstr-none" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __init__(config_dir: Optional[str] = None)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#load_configconfig_name-str-dictstr-any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        load_config(config_name: str) -&gt; Dict[str, Any]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reload_configconfig_name-str-dictstr-any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        reload_config(config_name: str) -&gt; Dict[str, Any]
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specialized-accessors-30-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Specialized Accessors (30+ Methods)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Specialized Accessors (30+ Methods)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#component-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_component_types-dictstr-any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_component_types() -&gt; Dict[str, Any]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_component_applicability-dictstr-any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_component_applicability() -&gt; Dict[str, Any]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_master_parameter_schema-dictstr-any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_master_parameter_schema() -&gt; Dict[str, Any]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_response_json_field_namecomponent_key-str-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_response_json_field_name(component_key: str) -&gt; str
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_master_parameters_field_namecomponent_key-str-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_master_parameters_field_name(component_key: str) -&gt; str
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_neo4j_labelcomponent_key-str-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_neo4j_label(component_key: str) -&gt; str
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check_dependencies_satisfiedcomponent_key-str-selected_components-any-tuplebool-liststr-dictstr-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        check_dependencies_satisfied(component_key: str, selected_components: Any) -&gt; Tuple[bool, List[str], Dict[str, str]]
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="State Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_state_config-dictstr-any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_state_config() -&gt; Dict[str, Any]
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#search-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Search Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_search_config-dictstr-any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_search_config() -&gt; Dict[str, Any]
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#llm-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LLM Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LLM Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_llm_configpurpose-str-dictstr-any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_llm_config(purpose: str) -&gt; Dict[str, Any]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_promptprompt_key-str-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_prompt(prompt_key: str) -&gt; str
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#language-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Language Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Language Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_supported_languages-dictstr-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_supported_languages() -&gt; Dict[str, str]
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_default_language-str" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_default_language() -&gt; str
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Session Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_session_ttl-int" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_session_ttl() -&gt; int
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-1-component-type-lookup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 1: Component Type Lookup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-loading-component-applicability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 2: Loading Component Applicability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-3-state-processor-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 3: State Processor Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-4-search-strategy-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 4: Search Strategy Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-5-llm-configuration-for-parameter-extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 5: LLM Configuration for Parameter Extraction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-6-field-name-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 6: Field Name Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Optimization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Optimization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lru-cache-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LRU Cache Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-efficiency-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cache Efficiency Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hot-reload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hot Reload
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Hot Reload">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hot-reload-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hot Reload Process
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-clearing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cache Clearing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#production-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Production Considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-location" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Location
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OBSERVABILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-guide.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operations/runbook.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="configuration-system-architecture">Configuration System Architecture<a class="headerlink" href="#configuration-system-architecture" title="Permanent link">&para;</a></h1>
+<p><strong>File</strong>: <code>src/backend/app/services/config/configuration_service.py</code></p>
+<p>The Configuration System is a centralized, cached service for loading and managing all application configurations in the ESAB Configurator.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#architecture-pattern">Architecture Pattern</a></li>
+<li><a href="#core-features">Core Features</a></li>
+<li><a href="#configuration-files">Configuration Files</a></li>
+<li><a href="#api-reference">API Reference</a></li>
+<li><a href="#usage-examples">Usage Examples</a></li>
+<li><a href="#performance-optimization">Performance Optimization</a></li>
+<li><a href="#hot-reload">Hot Reload</a></li>
+<li><a href="#related-documentation">Related Documentation</a></li>
+</ul>
+<hr />
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The ConfigurationService provides a single source of truth for all application configuration with:</p>
+<ul>
+<li><strong>Centralized Loading</strong>: All configs loaded from <code>app/config/</code> directory</li>
+<li><strong>LRU Caching</strong>: Fast repeated access with <code>@lru_cache(maxsize=32)</code></li>
+<li><strong>Hot Reload</strong>: Runtime config updates via <code>reload_config()</code></li>
+<li><strong>Type Safety</strong>: Validation and schema checking</li>
+<li><strong>Global Access</strong>: Singleton pattern with <code>get_config_service()</code></li>
+</ul>
+<p><strong>Architecture</strong>: Singleton Pattern + LRU Caching</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code>Application Code
+    ↓
+get_config_service() [Global Singleton]
+    ↓
+ConfigurationService
+    ├─→ @lru_cache(maxsize=32)
+    ├─→ load_config(&quot;config_name&quot;)
+    ├─→ 30+ specialized methods
+    └─→ /app/config/*.json files
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="architecture-pattern">Architecture Pattern<a class="headerlink" href="#architecture-pattern" title="Permanent link">&para;</a></h2>
+<h3 id="singleton-pattern">Singleton Pattern<a class="headerlink" href="#singleton-pattern" title="Permanent link">&para;</a></h3>
+<p><strong>Implementation</strong> (<code>configuration_service.py:477-483</code>):</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Global singleton instance</span>
+<span class="n">_config_service</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ConfigurationService</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_config_service</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ConfigurationService</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get global ConfigurationService singleton instance&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_config_service</span>
+    <span class="k">if</span> <span class="n">_config_service</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_config_service</span> <span class="o">=</span> <span class="n">ConfigurationService</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">_config_service</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Benefits</strong>:
+- Single instance across entire application
+- Shared cache across all modules
+- Consistent configuration state
+- Memory efficient (one copy of each config)</p>
+<p><strong>Usage</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">app.services.config.configuration_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_config_service</span>
+
+<span class="n">config_service</span> <span class="o">=</span> <span class="n">get_config_service</span><span class="p">()</span>
+<span class="n">component_types</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_component_types</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div></p>
+<h3 id="lru-caching-pattern">LRU Caching Pattern<a class="headerlink" href="#lru-caching-pattern" title="Permanent link">&para;</a></h3>
+<p><strong>Implementation</strong> (<code>configuration_service.py:39-48</code>):</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
+
+<span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load configuration from JSON file with caching&quot;&quot;&quot;</span>
+    <span class="n">config_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config_name</span><span class="si">}</span><span class="s2">.json&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">config</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Cache Characteristics</strong>:
+- <strong>Size</strong>: 32 entries (sufficient for all config files)
+- <strong>Eviction Policy</strong>: Least Recently Used (LRU)
+- <strong>Key</strong>: Config name string (e.g., "component_types", "state_config")
+- <strong>Value</strong>: Parsed JSON dict
+- <strong>Performance</strong>: O(1) for cache hits, file I/O for cache misses</p>
+<hr />
+<h2 id="core-features">Core Features<a class="headerlink" href="#core-features" title="Permanent link">&para;</a></h2>
+<h3 id="1-centralized-configuration-directory">1. Centralized Configuration Directory<a class="headerlink" href="#1-centralized-configuration-directory" title="Permanent link">&para;</a></h3>
+<p><strong>Location</strong>: <code>src/backend/app/config/</code></p>
+<p>All configuration files are JSON-based and stored in a single directory:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code>app/config/
+├── component_applicability.json     # Y/N component rules per power source
+├── component_types.json             # Component metadata and state sequence
+├── master_parameter_schema.json     # Dynamic MasterParameterJSON schema
+├── product_names.json               # Product lookup cache
+├── prompts.json                     # LLM prompt templates
+├── state_config.json                # State processor configuration
+├── search_config.json               # Search strategy configuration
+├── llm_config.json                  # LLM model configuration
+└── languages.json                   # Supported languages
+</code></pre></div></td></tr></table></div>
+<h3 id="2-lazy-loading-with-caching">2. Lazy Loading with Caching<a class="headerlink" href="#2-lazy-loading-with-caching" title="Permanent link">&para;</a></h3>
+<p><strong>First Call</strong> (cache miss):
+1. Reads JSON file from disk
+2. Parses JSON
+3. Stores in LRU cache
+4. Returns dict</p>
+<p><strong>Subsequent Calls</strong> (cache hit):
+1. Returns dict directly from cache
+2. No disk I/O
+3. Sub-millisecond response time</p>
+<h3 id="3-type-safety-and-validation">3. Type Safety and Validation<a class="headerlink" href="#3-type-safety-and-validation" title="Permanent link">&para;</a></h3>
+<p>All configuration loading methods include:
+- <strong>Schema validation</strong> (JSON structure checking)
+- <strong>Key existence validation</strong> (required fields)
+- <strong>Type coercion</strong> (int, float, bool conversion)
+- <strong>Default values</strong> (fallback for missing fields)</p>
+<p><strong>Example</strong> (<code>get_session_ttl</code> method):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_session_ttl</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get Redis session TTL in seconds (default: 3600)&quot;&quot;&quot;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;session_config&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ttl&quot;</span><span class="p">,</span> <span class="mi">3600</span><span class="p">)</span>  <span class="c1"># Default to 1 hour</span>
+</code></pre></div></td></tr></table></div></p>
+<h3 id="4-global-singleton-access">4. Global Singleton Access<a class="headerlink" href="#4-global-singleton-access" title="Permanent link">&para;</a></h3>
+<p><strong>Pattern</strong>: Global instance created on first access</p>
+<p><strong>Thread Safety</strong>: Python GIL ensures thread-safe singleton initialization</p>
+<p><strong>Benefits</strong>:
+- No dependency injection needed
+- Import anywhere in codebase
+- Consistent state across modules
+- Shared cache across all services</p>
+<hr />
+<h2 id="configuration-files">Configuration Files<a class="headerlink" href="#configuration-files" title="Permanent link">&para;</a></h2>
+<h3 id="component_typesjson">component_types.json<a class="headerlink" href="#component_typesjson" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Defines all component types, their metadata, and state sequence</p>
+<p><strong>Structure</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;component_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;PowerSource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;state_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;power_source_selection&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;neo4j_label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Product&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;category_field&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;category&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;category_value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;field_name_in_response_json&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;PowerSource&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;field_name_in_master_parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;power_source&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;Feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;Cooler&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;state_sequence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;power_source_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;feeder_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;cooler_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;interconnector_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;torch_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;powersource_accessories_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;feeder_accessories_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;feeder_conditional_accessories&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;interconnector_accessories_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;remote_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;remote_accessories_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;remote_conditional_accessories&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;connectivity_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;finalize&quot;</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Used By</strong>:
+- StateProcessorRegistry (processor initialization)
+- ConversationState (state transitions)
+- SearchOrchestrator (component type mapping)
+- AccessoryStateProcessor (state sequencing)</p>
+<p><strong>Accessor</strong>: <code>get_component_types() -&gt; Dict[str, Any]</code></p>
+<h3 id="state_configjson">state_config.json<a class="headerlink" href="#state_configjson" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Configuration for all 14 state processors</p>
+<p><strong>Structure</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;states&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;power_source_selection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;state_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Power Source Selection&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;mandatory&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;proactive_display&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;search_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;preview_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;multi_select&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;allow_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;feeder_selection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;state_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feeder Selection&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;mandatory&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;proactive_display&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;search_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;preview_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;multi_select&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;allow_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="cm">/* ... 12 more states */</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Used By</strong>:
+- StateProcessorRegistry (processor configuration)
+- StateProcessor base class (configuration extraction)</p>
+<p><strong>Accessor</strong>: <code>get_state_config() -&gt; Dict[str, Any]</code></p>
+<h3 id="component_applicabilityjson">component_applicability.json<a class="headerlink" href="#component_applicabilityjson" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Defines which components are applicable (Y/N) for each power source</p>
+<p><strong>Structure</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;power_sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;0446200880&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Aristo 500ix&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;applicability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;Feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Cooler&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Interconnector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Torch&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Accessories&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;PowerSourceAccessories&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;FeederAccessories&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;FeederConditionalAccessories&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;InterconnectorAccessories&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Remotes&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;RemoteAccessories&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;RemoteConditionalAccessories&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Connectivity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;default_policy&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Default Policy&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;applicability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;Feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;Cooler&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="cm">/* ... all components default to Y */</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Used By</strong>:
+- StateByStateOrchestrator (applicability loading after S1)
+- ConversationState (state transition logic with auto-skip)</p>
+<p><strong>Accessor</strong>: <code>get_component_applicability() -&gt; Dict[str, Any]</code></p>
+<h3 id="master_parameter_schemajson">master_parameter_schema.json<a class="headerlink" href="#master_parameter_schemajson" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Defines schema for dynamically creating MasterParameterJSON model</p>
+<p><strong>Structure</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;power_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;product_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;process&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;current_output&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;material&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;voltage&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;product_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;cooling_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;wire_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;cooler&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;product_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;cooling_capacity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="cm">/* ... other components */</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Used By</strong>:
+- Schema loader (dynamic Pydantic model creation)
+- ParameterExtractor (LLM extraction schema)</p>
+<p><strong>Accessor</strong>: <code>get_master_parameter_schema() -&gt; Dict[str, Any]</code></p>
+<h3 id="search_configjson">search_config.json<a class="headerlink" href="#search_configjson" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Configuration for search strategies and orchestrator</p>
+<p><strong>Structure</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;strategies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;cypher&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;priority&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.4</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;lucene&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;priority&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.3</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;min_score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;vector&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;priority&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.2</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;min_score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.6</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;embedding_model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;text-embedding-3-large&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;embedding_dims&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3072</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;llm&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;priority&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;weight&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;retrieval_method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;combined&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;retrieval_limit&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;top_k&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;consolidation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;max_results&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;deduplication&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;normalization&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;min-max&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Used By</strong>:
+- SearchOrchestrator (strategy configuration)
+- VectorSearchStrategy (embedding config)
+- LLMSearchStrategy (retrieval config)</p>
+<p><strong>Accessor</strong>: <code>get_search_config() -&gt; Dict[str, Any]</code></p>
+<h3 id="llm_configjson">llm_config.json<a class="headerlink" href="#llm_configjson" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Configuration for LLM models used across the application</p>
+<p><strong>Structure</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;parameter_extraction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gpt-4&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;temperature&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;max_tokens&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2000</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;llm_search_reranking&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;temperature&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;response_format&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;json_object&quot;</span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;message_generation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;temperature&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.7</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;max_tokens&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;translation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gpt-4o-mini&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;temperature&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.3</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;max_tokens&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1000</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Used By</strong>:
+- ParameterExtractor (parameter extraction config)
+- LLMSearchStrategy (reranking config)
+- MessageGenerator (response generation config)
+- MultilingualTranslator (translation config)</p>
+<p><strong>Accessor</strong>: <code>get_llm_config(purpose: str) -&gt; Dict[str, Any]</code></p>
+<h3 id="promptsjson">prompts.json<a class="headerlink" href="#promptsjson" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: LLM prompt templates for parameter extraction, reranking, and translation</p>
+<p><strong>Structure</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;parameter_extraction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;system&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;You are an expert welding equipment specialist...&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;user&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Extract parameters from: {user_message}\n\nCurrent state: {current_state}...&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;llm_reranking&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;system&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;You are an expert welding equipment specialist. Rank products...&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;user&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Query: {user_message}\n\nProducts:\n{products}&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;translation&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;system&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;You are a professional translator...&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;user&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Translate to {target_language}: {text}&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Used By</strong>:
+- ParameterExtractor (LLM prompt construction)
+- LLMSearchStrategy (reranking prompt)
+- MultilingualTranslator (translation prompt)</p>
+<p><strong>Accessor</strong>: <code>get_prompt(prompt_key: str) -&gt; str</code></p>
+<h3 id="languagesjson">languages.json<a class="headerlink" href="#languagesjson" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose</strong>: Supported languages configuration</p>
+<p><strong>Structure</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;supported_languages&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;en&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;English&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;es&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Español&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;fr&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Français&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;de&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deutsch&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;pt&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Português&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;it&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Italiano&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;sv&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Svenska&quot;</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;default_language&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;en&quot;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Used By</strong>:
+- MultilingualTranslator (language validation)
+- MessageGenerator (multilingual responses)
+- FastAPI endpoints (language parameter validation)</p>
+<p><strong>Accessor</strong>: <code>get_supported_languages() -&gt; Dict[str, str]</code></p>
+<hr />
+<h2 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h2>
+<h3 id="core-methods">Core Methods<a class="headerlink" href="#core-methods" title="Permanent link">&para;</a></h3>
+<h4 id="__init__config_dir-optionalstr-none"><code>__init__(config_dir: Optional[str] = None)</code><a class="headerlink" href="#__init__config_dir-optionalstr-none" title="Permanent link">&para;</a></h4>
+<p>Initialize ConfigurationService with config directory.</p>
+<p><strong>Parameters</strong>:
+- <code>config_dir</code> (Optional[str]): Path to config directory (defaults to <code>app/config/</code>)</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Use default config directory</span>
+<span class="n">config_service</span> <span class="o">=</span> <span class="n">ConfigurationService</span><span class="p">()</span>
+
+<span class="c1"># Use custom config directory</span>
+<span class="n">config_service</span> <span class="o">=</span> <span class="n">ConfigurationService</span><span class="p">(</span><span class="n">config_dir</span><span class="o">=</span><span class="s2">&quot;/path/to/configs&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<h4 id="load_configconfig_name-str-dictstr-any"><code>load_config(config_name: str) -&gt; Dict[str, Any]</code><a class="headerlink" href="#load_configconfig_name-str-dictstr-any" title="Permanent link">&para;</a></h4>
+<p>Load configuration from JSON file with LRU caching.</p>
+<p><strong>Parameters</strong>:
+- <code>config_name</code> (str): Config file name without .json extension</p>
+<p><strong>Returns</strong>: Parsed JSON dict</p>
+<p><strong>Caching</strong>: Result cached with <code>@lru_cache(maxsize=32)</code></p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">component_types</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;component_types&quot;</span><span class="p">)</span>
+<span class="n">state_config</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;state_config&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<h4 id="reload_configconfig_name-str-dictstr-any"><code>reload_config(config_name: str) -&gt; Dict[str, Any]</code><a class="headerlink" href="#reload_configconfig_name-str-dictstr-any" title="Permanent link">&para;</a></h4>
+<p>Force reload of configuration (clears cache and reloads from disk).</p>
+<p><strong>Parameters</strong>:
+- <code>config_name</code> (str): Config file name without .json extension</p>
+<p><strong>Returns</strong>: Freshly loaded JSON dict</p>
+<p><strong>Use Cases</strong>:
+- Hot reload after config file changes
+- Development/testing with dynamic configs
+- Runtime configuration updates</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Modify config file on disk</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;app/config/search_config.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">new_config</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># Reload configuration</span>
+<span class="n">config_service</span><span class="o">.</span><span class="n">reload_config</span><span class="p">(</span><span class="s2">&quot;search_config&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<h3 id="specialized-accessors-30-methods">Specialized Accessors (30+ Methods)<a class="headerlink" href="#specialized-accessors-30-methods" title="Permanent link">&para;</a></h3>
+<h4 id="component-configuration">Component Configuration<a class="headerlink" href="#component-configuration" title="Permanent link">&para;</a></h4>
+<h5 id="get_component_types-dictstr-any"><code>get_component_types() -&gt; Dict[str, Any]</code><a class="headerlink" href="#get_component_types-dictstr-any" title="Permanent link">&para;</a></h5>
+<p>Get component types configuration including state sequence.</p>
+<p><strong>Returns</strong>: Component types dict with metadata and state sequence</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">component_types</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_component_types</span><span class="p">()</span>
+<span class="n">state_sequence</span> <span class="o">=</span> <span class="n">component_types</span><span class="p">[</span><span class="s2">&quot;state_sequence&quot;</span><span class="p">]</span>  <span class="c1"># List of all states</span>
+<span class="n">power_source_config</span> <span class="o">=</span> <span class="n">component_types</span><span class="p">[</span><span class="s2">&quot;component_types&quot;</span><span class="p">][</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div></p>
+<h5 id="get_component_applicability-dictstr-any"><code>get_component_applicability() -&gt; Dict[str, Any]</code><a class="headerlink" href="#get_component_applicability-dictstr-any" title="Permanent link">&para;</a></h5>
+<p>Get component applicability configuration (Y/N rules per power source).</p>
+<p><strong>Returns</strong>: Applicability dict with power source rules</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">applicability</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_component_applicability</span><span class="p">()</span>
+<span class="n">aristo_500ix_rules</span> <span class="o">=</span> <span class="n">applicability</span><span class="p">[</span><span class="s2">&quot;power_sources&quot;</span><span class="p">][</span><span class="s2">&quot;0446200880&quot;</span><span class="p">][</span><span class="s2">&quot;applicability&quot;</span><span class="p">]</span>
+<span class="n">default_rules</span> <span class="o">=</span> <span class="n">applicability</span><span class="p">[</span><span class="s2">&quot;default_policy&quot;</span><span class="p">][</span><span class="s2">&quot;applicability&quot;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div></p>
+<h5 id="get_master_parameter_schema-dictstr-any"><code>get_master_parameter_schema() -&gt; Dict[str, Any]</code><a class="headerlink" href="#get_master_parameter_schema-dictstr-any" title="Permanent link">&para;</a></h5>
+<p>Get master parameter schema for dynamic model creation.</p>
+<p><strong>Returns</strong>: Schema dict defining all component parameters</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">schema</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_master_parameter_schema</span><span class="p">()</span>
+<span class="n">power_source_fields</span> <span class="o">=</span> <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;power_source&quot;</span><span class="p">]</span>  <span class="c1"># Dict of field names and types</span>
+</code></pre></div></td></tr></table></div></p>
+<h5 id="get_response_json_field_namecomponent_key-str-str"><code>get_response_json_field_name(component_key: str) -&gt; str</code><a class="headerlink" href="#get_response_json_field_namecomponent_key-str-str" title="Permanent link">&para;</a></h5>
+<p>Get ResponseJSON field name for a component type.</p>
+<p><strong>Parameters</strong>:
+- <code>component_key</code> (str): Component type key (e.g., "PowerSource", "Feeder")</p>
+<p><strong>Returns</strong>: Field name in ResponseJSON (e.g., "PowerSource", "FeederAccessories")</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">field_name</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_response_json_field_name</span><span class="p">(</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">)</span>
+<span class="c1"># Returns: &quot;PowerSource&quot;</span>
+
+<span class="n">field_name</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_response_json_field_name</span><span class="p">(</span><span class="s2">&quot;FeederAccessories&quot;</span><span class="p">)</span>
+<span class="c1"># Returns: &quot;FeederAccessories&quot;</span>
+</code></pre></div></td></tr></table></div></p>
+<h5 id="get_master_parameters_field_namecomponent_key-str-str"><code>get_master_parameters_field_name(component_key: str) -&gt; str</code><a class="headerlink" href="#get_master_parameters_field_namecomponent_key-str-str" title="Permanent link">&para;</a></h5>
+<p>Get MasterParameterJSON field name for a component type.</p>
+<p><strong>Parameters</strong>:
+- <code>component_key</code> (str): Component type key</p>
+<p><strong>Returns</strong>: Field name in MasterParameterJSON (snake_case)</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">field_name</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_master_parameters_field_name</span><span class="p">(</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">)</span>
+<span class="c1"># Returns: &quot;power_source&quot;</span>
+
+<span class="n">field_name</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_master_parameters_field_name</span><span class="p">(</span><span class="s2">&quot;FeederAccessories&quot;</span><span class="p">)</span>
+<span class="c1"># Returns: &quot;feeder_accessories&quot;</span>
+</code></pre></div></td></tr></table></div></p>
+<h5 id="get_neo4j_labelcomponent_key-str-str"><code>get_neo4j_label(component_key: str) -&gt; str</code><a class="headerlink" href="#get_neo4j_labelcomponent_key-str-str" title="Permanent link">&para;</a></h5>
+<p>Get Neo4j node label for a component type.</p>
+<p><strong>Parameters</strong>:
+- <code>component_key</code> (str): Component type key</p>
+<p><strong>Returns</strong>: Neo4j node label (e.g., "Product", "Accessory")</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">label</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_neo4j_label</span><span class="p">(</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">)</span>
+<span class="c1"># Returns: &quot;Product&quot;</span>
+
+<span class="n">label</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_neo4j_label</span><span class="p">(</span><span class="s2">&quot;FeederAccessories&quot;</span><span class="p">)</span>
+<span class="c1"># Returns: &quot;Product&quot; (all components use Product label with category field)</span>
+</code></pre></div></td></tr></table></div></p>
+<h5 id="check_dependencies_satisfiedcomponent_key-str-selected_components-any-tuplebool-liststr-dictstr-str"><code>check_dependencies_satisfied(component_key: str, selected_components: Any) -&gt; Tuple[bool, List[str], Dict[str, str]]</code><a class="headerlink" href="#check_dependencies_satisfiedcomponent_key-str-selected_components-any-tuplebool-liststr-dictstr-str" title="Permanent link">&para;</a></h5>
+<p>Check if dependencies for a component are satisfied.</p>
+<p><strong>Parameters</strong>:
+- <code>component_key</code> (str): Component type key
+- <code>selected_components</code> (ResponseJSON): Selected components</p>
+<p><strong>Returns</strong>: Tuple of (satisfied: bool, missing_deps: List[str], parent_info: Dict[str, str])</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">satisfied</span><span class="p">,</span> <span class="n">missing</span><span class="p">,</span> <span class="n">parents</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">check_dependencies_satisfied</span><span class="p">(</span>
+    <span class="s2">&quot;FeederConditionalAccessories&quot;</span><span class="p">,</span>
+    <span class="n">response_json</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">satisfied</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing dependencies: </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">parents</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ready to show conditional accessories for </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">parents</span><span class="p">)</span><span class="si">}</span><span class="s2"> parents&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<h4 id="state-configuration">State Configuration<a class="headerlink" href="#state-configuration" title="Permanent link">&para;</a></h4>
+<h5 id="get_state_config-dictstr-any"><code>get_state_config() -&gt; Dict[str, Any]</code><a class="headerlink" href="#get_state_config-dictstr-any" title="Permanent link">&para;</a></h5>
+<p>Get state processor configuration for all 14 states.</p>
+<p><strong>Returns</strong>: State config dict with processor settings</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">state_config</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_state_config</span><span class="p">()</span>
+<span class="n">power_source_config</span> <span class="o">=</span> <span class="n">state_config</span><span class="p">[</span><span class="s2">&quot;states&quot;</span><span class="p">][</span><span class="s2">&quot;power_source_selection&quot;</span><span class="p">]</span>
+<span class="n">mandatory</span> <span class="o">=</span> <span class="n">power_source_config</span><span class="p">[</span><span class="s2">&quot;mandatory&quot;</span><span class="p">]</span>  <span class="c1"># True</span>
+<span class="n">multi_select</span> <span class="o">=</span> <span class="n">power_source_config</span><span class="p">[</span><span class="s2">&quot;multi_select&quot;</span><span class="p">]</span>  <span class="c1"># False</span>
+</code></pre></div></td></tr></table></div></p>
+<h4 id="search-configuration">Search Configuration<a class="headerlink" href="#search-configuration" title="Permanent link">&para;</a></h4>
+<h5 id="get_search_config-dictstr-any"><code>get_search_config() -&gt; Dict[str, Any]</code><a class="headerlink" href="#get_search_config-dictstr-any" title="Permanent link">&para;</a></h5>
+<p>Get search configuration (strategies, weights, limits).</p>
+<p><strong>Returns</strong>: Search config dict</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">search_config</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_search_config</span><span class="p">()</span>
+<span class="n">strategies</span> <span class="o">=</span> <span class="n">search_config</span><span class="p">[</span><span class="s2">&quot;strategies&quot;</span><span class="p">]</span>
+<span class="n">cypher_config</span> <span class="o">=</span> <span class="n">strategies</span><span class="p">[</span><span class="s2">&quot;cypher&quot;</span><span class="p">]</span>
+<span class="n">vector_config</span> <span class="o">=</span> <span class="n">strategies</span><span class="p">[</span><span class="s2">&quot;vector&quot;</span><span class="p">]</span>
+</code></pre></div></td></tr></table></div></p>
+<h4 id="llm-configuration">LLM Configuration<a class="headerlink" href="#llm-configuration" title="Permanent link">&para;</a></h4>
+<h5 id="get_llm_configpurpose-str-dictstr-any"><code>get_llm_config(purpose: str) -&gt; Dict[str, Any]</code><a class="headerlink" href="#get_llm_configpurpose-str-dictstr-any" title="Permanent link">&para;</a></h5>
+<p>Get LLM configuration for specific purpose.</p>
+<p><strong>Parameters</strong>:
+- <code>purpose</code> (str): Purpose key (e.g., "parameter_extraction", "llm_search_reranking")</p>
+<p><strong>Returns</strong>: LLM config dict with model, temperature, max_tokens</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">extraction_config</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_llm_config</span><span class="p">(</span><span class="s2">&quot;parameter_extraction&quot;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">extraction_config</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span>  <span class="c1"># &quot;gpt-4&quot;</span>
+<span class="n">temperature</span> <span class="o">=</span> <span class="n">extraction_config</span><span class="p">[</span><span class="s2">&quot;temperature&quot;</span><span class="p">]</span>  <span class="c1"># 0.1</span>
+
+<span class="n">reranking_config</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_llm_config</span><span class="p">(</span><span class="s2">&quot;llm_search_reranking&quot;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">reranking_config</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span>  <span class="c1"># &quot;gpt-4o-mini&quot;</span>
+</code></pre></div></td></tr></table></div></p>
+<h5 id="get_promptprompt_key-str-str"><code>get_prompt(prompt_key: str) -&gt; str</code><a class="headerlink" href="#get_promptprompt_key-str-str" title="Permanent link">&para;</a></h5>
+<p>Get LLM prompt template by key.</p>
+<p><strong>Parameters</strong>:
+- <code>prompt_key</code> (str): Prompt key (e.g., "parameter_extraction", "llm_reranking")</p>
+<p><strong>Returns</strong>: Prompt template string</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">extraction_prompt</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="s2">&quot;parameter_extraction&quot;</span><span class="p">)</span>
+<span class="c1"># Returns: {&quot;system&quot;: &quot;...&quot;, &quot;user&quot;: &quot;...&quot;}</span>
+
+<span class="n">reranking_prompt</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="s2">&quot;llm_reranking&quot;</span><span class="p">)</span>
+<span class="c1"># Returns: {&quot;system&quot;: &quot;...&quot;, &quot;user&quot;: &quot;...&quot;}</span>
+</code></pre></div></td></tr></table></div></p>
+<h4 id="language-configuration">Language Configuration<a class="headerlink" href="#language-configuration" title="Permanent link">&para;</a></h4>
+<h5 id="get_supported_languages-dictstr-str"><code>get_supported_languages() -&gt; Dict[str, str]</code><a class="headerlink" href="#get_supported_languages-dictstr-str" title="Permanent link">&para;</a></h5>
+<p>Get supported languages configuration.</p>
+<p><strong>Returns</strong>: Dict of {language_code: language_name}</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">languages</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_supported_languages</span><span class="p">()</span>
+<span class="c1"># Returns: {&quot;en&quot;: &quot;English&quot;, &quot;es&quot;: &quot;Español&quot;, ...}</span>
+
+<span class="k">if</span> <span class="s2">&quot;fr&quot;</span> <span class="ow">in</span> <span class="n">languages</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;French supported: </span><span class="si">{</span><span class="n">languages</span><span class="p">[</span><span class="s1">&#39;fr&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<h5 id="get_default_language-str"><code>get_default_language() -&gt; str</code><a class="headerlink" href="#get_default_language-str" title="Permanent link">&para;</a></h5>
+<p>Get default language code.</p>
+<p><strong>Returns</strong>: ISO 639-1 language code (default: "en")</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">default_lang</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_default_language</span><span class="p">()</span>
+<span class="c1"># Returns: &quot;en&quot;</span>
+</code></pre></div></td></tr></table></div></p>
+<h4 id="session-configuration">Session Configuration<a class="headerlink" href="#session-configuration" title="Permanent link">&para;</a></h4>
+<h5 id="get_session_ttl-int"><code>get_session_ttl() -&gt; int</code><a class="headerlink" href="#get_session_ttl-int" title="Permanent link">&para;</a></h5>
+<p>Get Redis session TTL in seconds.</p>
+<p><strong>Returns</strong>: TTL in seconds (default: 3600)</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ttl</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_session_ttl</span><span class="p">()</span>
+<span class="c1"># Returns: 3600 (1 hour)</span>
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="usage-examples">Usage Examples<a class="headerlink" href="#usage-examples" title="Permanent link">&para;</a></h2>
+<h3 id="example-1-component-type-lookup">Example 1: Component Type Lookup<a class="headerlink" href="#example-1-component-type-lookup" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">app.services.config.configuration_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_config_service</span>
+
+<span class="c1"># Get singleton instance</span>
+<span class="n">config_service</span> <span class="o">=</span> <span class="n">get_config_service</span><span class="p">()</span>
+
+<span class="c1"># Get component types configuration</span>
+<span class="n">component_types</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_component_types</span><span class="p">()</span>
+
+<span class="c1"># Extract state sequence</span>
+<span class="n">state_sequence</span> <span class="o">=</span> <span class="n">component_types</span><span class="p">[</span><span class="s2">&quot;state_sequence&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total states: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">state_sequence</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Output: Total states: 14</span>
+
+<span class="c1"># Get PowerSource configuration</span>
+<span class="n">power_source_config</span> <span class="o">=</span> <span class="n">component_types</span><span class="p">[</span><span class="s2">&quot;component_types&quot;</span><span class="p">][</span><span class="s2">&quot;PowerSource&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;State name: </span><span class="si">{</span><span class="n">power_source_config</span><span class="p">[</span><span class="s1">&#39;state_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Neo4j label: </span><span class="si">{</span><span class="n">power_source_config</span><span class="p">[</span><span class="s1">&#39;neo4j_label&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Output:</span>
+<span class="c1"># State name: power_source_selection</span>
+<span class="c1"># Neo4j label: Product</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="example-2-loading-component-applicability">Example 2: Loading Component Applicability<a class="headerlink" href="#example-2-loading-component-applicability" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># After S1 (PowerSource selection)</span>
+<span class="n">selected_ps_gin</span> <span class="o">=</span> <span class="s2">&quot;0446200880&quot;</span>  <span class="c1"># Aristo 500ix</span>
+
+<span class="c1"># Load applicability</span>
+<span class="n">applicability_config</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_component_applicability</span><span class="p">()</span>
+<span class="n">power_sources</span> <span class="o">=</span> <span class="n">applicability_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;power_sources&quot;</span><span class="p">,</span> <span class="p">{})</span>
+
+<span class="n">ps_config</span> <span class="o">=</span> <span class="n">power_sources</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">selected_ps_gin</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">ps_config</span><span class="p">:</span>
+    <span class="n">applicability</span> <span class="o">=</span> <span class="n">ps_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;applicability&quot;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Feeder applicable: </span><span class="si">{</span><span class="n">applicability</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Feeder&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cooler applicable: </span><span class="si">{</span><span class="n">applicability</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Cooler&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Use default policy</span>
+    <span class="n">default_policy</span> <span class="o">=</span> <span class="n">applicability_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default_policy&quot;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="n">applicability</span> <span class="o">=</span> <span class="n">default_policy</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;applicability&quot;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using default applicability policy&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="example-3-state-processor-configuration">Example 3: State Processor Configuration<a class="headerlink" href="#example-3-state-processor-configuration" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Get state configuration for processor initialization</span>
+<span class="n">state_config_dict</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_state_config</span><span class="p">()</span>
+
+<span class="c1"># Extract configuration for specific state</span>
+<span class="n">power_source_config</span> <span class="o">=</span> <span class="n">state_config_dict</span><span class="p">[</span><span class="s2">&quot;states&quot;</span><span class="p">][</span><span class="s2">&quot;power_source_selection&quot;</span><span class="p">]</span>
+
+<span class="c1"># Use configuration</span>
+<span class="n">mandatory</span> <span class="o">=</span> <span class="n">power_source_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mandatory&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">proactive</span> <span class="o">=</span> <span class="n">power_source_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;proactive_display&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">search_limit</span> <span class="o">=</span> <span class="n">power_source_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;search_limit&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">multi_select</span> <span class="o">=</span> <span class="n">power_source_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;multi_select&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mandatory: </span><span class="si">{</span><span class="n">mandatory</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Proactive display: </span><span class="si">{</span><span class="n">proactive</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Search limit: </span><span class="si">{</span><span class="n">search_limit</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Multi-select: </span><span class="si">{</span><span class="n">multi_select</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Output:</span>
+<span class="c1"># Mandatory: True</span>
+<span class="c1"># Proactive display: True</span>
+<span class="c1"># Search limit: 10</span>
+<span class="c1"># Multi-select: False</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="example-4-search-strategy-configuration">Example 4: Search Strategy Configuration<a class="headerlink" href="#example-4-search-strategy-configuration" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Get search configuration for SearchOrchestrator</span>
+<span class="n">search_config</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_search_config</span><span class="p">()</span>
+
+<span class="c1"># Check which strategies are enabled</span>
+<span class="n">strategies</span> <span class="o">=</span> <span class="n">search_config</span><span class="p">[</span><span class="s2">&quot;strategies&quot;</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">strategy_name</span><span class="p">,</span> <span class="n">strategy_config</span> <span class="ow">in</span> <span class="n">strategies</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">enabled</span> <span class="o">=</span> <span class="n">strategy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;enabled&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">enabled</span><span class="p">:</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">strategy_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">strategy_name</span><span class="si">}</span><span class="s2">: enabled (weight=</span><span class="si">{</span><span class="n">weight</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+<span class="c1"># Output:</span>
+<span class="c1"># cypher: enabled (weight=0.4)</span>
+<span class="c1"># lucene: enabled (weight=0.3)</span>
+<span class="c1"># vector: enabled (weight=0.2)</span>
+<span class="c1"># llm: enabled (weight=0.1)</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="example-5-llm-configuration-for-parameter-extraction">Example 5: LLM Configuration for Parameter Extraction<a class="headerlink" href="#example-5-llm-configuration-for-parameter-extraction" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Get LLM configuration for parameter extraction</span>
+<span class="n">extraction_config</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_llm_config</span><span class="p">(</span><span class="s2">&quot;parameter_extraction&quot;</span><span class="p">)</span>
+
+<span class="c1"># Extract settings</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">extraction_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">,</span> <span class="s2">&quot;gpt-4&quot;</span><span class="p">)</span>
+<span class="n">temperature</span> <span class="o">=</span> <span class="n">extraction_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">max_tokens</span> <span class="o">=</span> <span class="n">extraction_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_tokens&quot;</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model: </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Temperature: </span><span class="si">{</span><span class="n">temperature</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max tokens: </span><span class="si">{</span><span class="n">max_tokens</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Output:</span>
+<span class="c1"># Model: gpt-4</span>
+<span class="c1"># Temperature: 0.1</span>
+<span class="c1"># Max tokens: 2000</span>
+
+<span class="c1"># Get prompt template</span>
+<span class="n">prompt</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="s2">&quot;parameter_extraction&quot;</span><span class="p">)</span>
+<span class="n">system_prompt</span> <span class="o">=</span> <span class="n">prompt</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span>
+<span class="n">user_prompt_template</span> <span class="o">=</span> <span class="n">prompt</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span>
+
+<span class="c1"># Use in OpenAI API call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openai</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncOpenAI</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">AsyncOpenAI</span><span class="p">()</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+    <span class="n">max_tokens</span><span class="o">=</span><span class="n">max_tokens</span><span class="p">,</span>
+    <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">system_prompt</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">user_prompt_template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">user_message</span><span class="o">=</span><span class="s2">&quot;I need a 500A MIG welder&quot;</span><span class="p">,</span>
+            <span class="n">current_state</span><span class="o">=</span><span class="s2">&quot;power_source_selection&quot;</span>
+        <span class="p">)}</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="example-6-field-name-mapping">Example 6: Field Name Mapping<a class="headerlink" href="#example-6-field-name-mapping" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Map component type to ResponseJSON field name</span>
+<span class="n">component_key</span> <span class="o">=</span> <span class="s2">&quot;FeederAccessories&quot;</span>
+<span class="n">field_name</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_response_json_field_name</span><span class="p">(</span><span class="n">component_key</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ResponseJSON field: </span><span class="si">{</span><span class="n">field_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Output: ResponseJSON field: FeederAccessories</span>
+
+<span class="c1"># Map component type to MasterParameterJSON field name</span>
+<span class="n">master_field_name</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_master_parameters_field_name</span><span class="p">(</span><span class="n">component_key</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MasterParameterJSON field: </span><span class="si">{</span><span class="n">master_field_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Output: MasterParameterJSON field: feeder_accessories</span>
+
+<span class="c1"># Map component type to Neo4j label</span>
+<span class="n">neo4j_label</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_neo4j_label</span><span class="p">(</span><span class="n">component_key</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Neo4j label: </span><span class="si">{</span><span class="n">neo4j_label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Output: Neo4j label: Product</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="performance-optimization">Performance Optimization<a class="headerlink" href="#performance-optimization" title="Permanent link">&para;</a></h2>
+<h3 id="lru-cache-performance">LRU Cache Performance<a class="headerlink" href="#lru-cache-performance" title="Permanent link">&para;</a></h3>
+<p><strong>Cache Hit Scenario</strong> (most common):
+- <strong>Lookup Time</strong>: O(1) - dict lookup in memory
+- <strong>Response Time</strong>: &lt; 1ms
+- <strong>Disk I/O</strong>: None
+- <strong>CPU Usage</strong>: Minimal</p>
+<p><strong>Cache Miss Scenario</strong> (first access):
+- <strong>File I/O</strong>: Read JSON file from disk (~5-10ms)
+- <strong>Parsing</strong>: JSON deserialization (~1-5ms)
+- <strong>Total Time</strong>: ~10-15ms
+- <strong>Cache Storage</strong>: O(1) dict insertion</p>
+<p><strong>Cache Size</strong>:
+- <strong>Max Entries</strong>: 32
+- <strong>Actual Usage</strong>: ~10-15 config files
+- <strong>Memory Per Entry</strong>: ~1-10 KB (varies by config size)
+- <strong>Total Memory</strong>: ~50-150 KB (negligible)</p>
+<h3 id="cache-efficiency-metrics">Cache Efficiency Metrics<a class="headerlink" href="#cache-efficiency-metrics" title="Permanent link">&para;</a></h3>
+<p><strong>Hit Rate</strong>: 99%+ after initial warmup</p>
+<p><strong>Warmup Time</strong>: First request to each config (~10-15ms)</p>
+<p><strong>Steady State</strong>: All requests &lt; 1ms</p>
+<p><strong>Memory Overhead</strong>: &lt; 200 KB total</p>
+<h3 id="performance-comparison">Performance Comparison<a class="headerlink" href="#performance-comparison" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Without Cache</th>
+<th>With Cache</th>
+<th>Improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>First load</td>
+<td>~10-15ms</td>
+<td>~10-15ms</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Second load</td>
+<td>~10-15ms</td>
+<td>&lt; 1ms</td>
+<td><strong>10-15x faster</strong></td>
+</tr>
+<tr>
+<td>100 loads</td>
+<td>~1000-1500ms</td>
+<td>&lt; 100ms</td>
+<td><strong>10-15x faster</strong></td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>0 KB</td>
+<td>~150 KB</td>
+<td>Minimal overhead</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="hot-reload">Hot Reload<a class="headerlink" href="#hot-reload" title="Permanent link">&para;</a></h2>
+<h3 id="use-cases">Use Cases<a class="headerlink" href="#use-cases" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Development</strong>: Rapid iteration on config files without server restart</li>
+<li><strong>Testing</strong>: Dynamic config changes in test scenarios</li>
+<li><strong>Production</strong>: Runtime config updates for emergency fixes</li>
+</ol>
+<h3 id="hot-reload-process">Hot Reload Process<a class="headerlink" href="#hot-reload-process" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Step 1: Modify config file</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">config_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;app/config/search_config.json&quot;</span><span class="p">)</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">config_path</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+<span class="n">config</span><span class="p">[</span><span class="s2">&quot;strategies&quot;</span><span class="p">][</span><span class="s2">&quot;vector&quot;</span><span class="p">][</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Disable vector search</span>
+<span class="n">config_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="c1"># Step 2: Reload configuration</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">app.services.config.configuration_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_config_service</span>
+
+<span class="n">config_service</span> <span class="o">=</span> <span class="n">get_config_service</span><span class="p">()</span>
+<span class="n">config_service</span><span class="o">.</span><span class="n">reload_config</span><span class="p">(</span><span class="s2">&quot;search_config&quot;</span><span class="p">)</span>
+
+<span class="c1"># Step 3: Verify changes</span>
+<span class="n">search_config</span> <span class="o">=</span> <span class="n">config_service</span><span class="o">.</span><span class="n">get_search_config</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vector enabled: </span><span class="si">{</span><span class="n">search_config</span><span class="p">[</span><span class="s1">&#39;strategies&#39;</span><span class="p">][</span><span class="s1">&#39;vector&#39;</span><span class="p">][</span><span class="s1">&#39;enabled&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Output: Vector enabled: False</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="cache-clearing">Cache Clearing<a class="headerlink" href="#cache-clearing" title="Permanent link">&para;</a></h3>
+<p>The <code>reload_config()</code> method clears the LRU cache before reloading:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">reload_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Force reload of configuration (clears cache)&quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">load_config</span><span class="o">.</span><span class="n">cache_clear</span><span class="p">()</span>  <span class="c1"># Clear entire LRU cache</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_config</span><span class="p">(</span><span class="n">config_name</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Note</strong>: <code>cache_clear()</code> clears <strong>all</strong> cached configs, not just the one being reloaded. This ensures consistency if configs reference each other.</p>
+<h3 id="production-considerations">Production Considerations<a class="headerlink" href="#production-considerations" title="Permanent link">&para;</a></h3>
+<p><strong>Caution</strong>: Hot reload in production can cause temporary inconsistencies if:
+- Multiple workers are running (each has separate cache)
+- Configs are reloaded during active requests
+- Related configs are not reloaded together</p>
+<p><strong>Best Practice</strong>: Use hot reload for emergency fixes only. Prefer full deployment for config changes.</p>
+<hr />
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><a href="../ORCHESTRATOR_ARCHITECTURE/">State Processor Architecture</a></strong> - How processors use configuration</li>
+<li><strong><a href="../SEARCH_STRATEGIES_AND_SCORING/">Search Strategies</a></strong> - Search configuration usage</li>
+<li><strong><a href="../MASTER_PARAMETER_JSON_ARCHITECTURE/">Master Parameter JSON Architecture</a></strong> - Schema loading</li>
+<li><strong><a href="../CORRECTED_STATE_FLOW_ARCHITECTURE/">State Flow Architecture</a></strong> - State sequence configuration</li>
+</ul>
+<hr />
+<h2 id="file-location">File Location<a class="headerlink" href="#file-location" title="Permanent link">&para;</a></h2>
+<p><strong>Source</strong>: <code>src/backend/app/services/config/configuration_service.py</code></p>
+<p><strong>Related Files</strong>:
+- <code>app/config/*.json</code> - All configuration files
+- <code>app/services/processors/registry.py</code> - Uses state_config.json
+- <code>app/services/search/orchestrator.py</code> - Uses search_config.json
+- <code>app/models/conversation.py</code> - Uses master_parameter_schema.json</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 ESAB
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/esab/configurator" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/esab-configurator/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../javascripts/extra.js"></script>
+      
+    
+  </body>
+</html>

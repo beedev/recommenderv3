@@ -1,0 +1,133 @@
+site_name: ESAB Configurator Documentation
+site_description: AI-powered welding equipment configurator - Technical documentation
+site_author: ESAB Development Team
+site_url: https://esab-configurator.readthedocs.io
+
+repo_name: esab-configurator
+repo_url: https://github.com/esab/configurator
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+plugins:
+  - search:
+      lang: en
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src/backend]
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_toc_entry: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            members_order: source
+            group_by_category: true
+            show_category_heading: true
+            show_if_no_docstring: false
+            inherited_members: false
+            filters: ["!^_"]
+
+nav:
+  - Home: index.md
+  - Architecture:
+      - Overview: CODE_ARCHITECTURE_OVERVIEW.md
+      - State Flow: CORRECTED_STATE_FLOW_ARCHITECTURE.md
+      - Orchestrator: ORCHESTRATOR_ARCHITECTURE.md
+      - Search Strategies: CONTEXT_BASED_STRATEGIES.md
+      - Master Parameter JSON: MASTER_PARAMETER_JSON_ARCHITECTURE.md
+      - Multilingual Flow: MULTILINGUAL_FLOW.md
+      - System Components:
+          - Configuration System: CONFIGURATION_SYSTEM.md
+          - Observability: OBSERVABILITY.md
+  # API Reference disabled - mkdocstrings import issues need resolution
+  # Access Python docstrings via: python -c "from app.services.orchestrator.state_orchestrator import StateByStateOrchestrator; help(StateByStateOrchestrator)"
+  # - API Reference:
+  #     - Orchestration: api/orchestrator.md
+  #     - Data Models: api/models.md
+  - Operations:
+      - Deployment: deployment/README.md
+      - Testing: testing-guide.md
+      - Operations Runbook: operations/runbook.md
+  # Analysis section disabled - files archived/moved
+  # - Analysis:
+  #     - Threshold Filtering: THRESHOLD_FILTERING_ANALYSIS.md
+  #     - Auto-Advance Fix: AUTO_ADVANCE_FINALIZE_FIX.md
+  #     - Accessory Cart: ACCESSORY_CART_ANALYSIS.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - codehilite:
+      guess_lang: false
+  - def_list
+  - footnotes
+  - meta
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/esab/configurator
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/esab-configurator/
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/extra.js
+
+copyright: Copyright &copy; 2025 ESAB

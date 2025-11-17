@@ -1,0 +1,2507 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="AI-powered welding equipment configurator - Technical documentation">
+      
+      
+        <meta name="author" content="ESAB Development Team">
+      
+      
+        <link rel="canonical" href="https://esab-configurator.readthedocs.io/archive/pre-refactoring/ADDING_NEW_STATES/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Adding New States to the Dynamic State Machine - ESAB Configurator Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#adding-new-states-to-the-dynamic-state-machine" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="ESAB Configurator Documentation" class="md-header__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ESAB Configurator Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Adding New States to the Dynamic State Machine
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../CODE_ARCHITECTURE_OVERVIEW/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../deployment/README.md" class="md-tabs__link">
+          
+  
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ESAB Configurator Documentation" class="md-nav__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ESAB Configurator Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CODE_ARCHITECTURE_OVERVIEW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CORRECTED_STATE_FLOW_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ORCHESTRATOR_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestrator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTEXT_BASED_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Search Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MASTER_PARAMETER_JSON_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Parameter JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MULTILINGUAL_FLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multilingual Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    System Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONFIGURATION_SYSTEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OBSERVABILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deployment/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../testing-guide.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/runbook.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="adding-new-states-to-the-dynamic-state-machine">Adding New States to the Dynamic State Machine<a class="headerlink" href="#adding-new-states-to-the-dynamic-state-machine" title="Permanent link">&para;</a></h1>
+<p><strong>Complete Guide for Extending S1→SN Flow</strong></p>
+<p>This guide explains how to add new states (S8, S9, etc.) to the dynamic state machine <strong>without writing any Python code</strong>.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#prerequisites">Prerequisites</a></li>
+<li><a href="#quick-start-adding-a-new-state">Quick Start: Adding a New State</a></li>
+<li><a href="#configuration-files-reference">Configuration Files Reference</a></li>
+<li><a href="#step-by-step-tutorial">Step-by-Step Tutorial</a></li>
+<li><a href="#advanced-scenarios">Advanced Scenarios</a></li>
+<li><a href="#testing-your-changes">Testing Your Changes</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ol>
+<hr />
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The dynamic state machine is fully configuration-driven. Adding a new state requires only JSON configuration changes:</p>
+<h3 id="what-changes-automatically">What Changes Automatically<a class="headerlink" href="#what-changes-automatically" title="Permanent link">&para;</a></h3>
+<p>✅ ConfiguratorState enum (e.g., <code>NEW_STATE_SELECTION</code>)
+✅ State transition logic
+✅ Processor assignment (single/multi/custom)
+✅ Message generation
+✅ API responses
+✅ State validation</p>
+<h3 id="what-you-need-to-update">What You Need to Update<a class="headerlink" href="#what-you-need-to-update" title="Permanent link">&para;</a></h3>
+<p>📝 <code>component_types.json</code> - Define the new component
+📝 <code>state_prompts.json</code> - Add user-facing prompts
+📝 <code>component_applicability.json</code> - Add applicability rules (if needed)</p>
+<h3 id="zero-code-changes-required">Zero Code Changes Required<a class="headerlink" href="#zero-code-changes-required" title="Permanent link">&para;</a></h3>
+<p>No Python code changes needed for standard single/multi selection states!</p>
+<hr />
+<h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<p><strong>Required Knowledge:</strong>
+- Basic JSON syntax
+- Understanding of S1→SN configuration-driven flow
+- Component categories (PowerSource, Feeder, etc.)</p>
+<p><strong>Tools:</strong>
+- Text editor with JSON support
+- Access to configuration files in <code>src/backend/app/config/</code></p>
+<p><strong>Optional but Recommended:</strong>
+- JSON schema validator
+- API testing tool (Postman, curl, etc.)</p>
+<hr />
+<h2 id="quick-start-adding-a-new-state">Quick Start: Adding a New State<a class="headerlink" href="#quick-start-adding-a-new-state" title="Permanent link">&para;</a></h2>
+<h3 id="example-adding-cable-selection-as-s8">Example: Adding "Cable Selection" as S8<a class="headerlink" href="#example-adding-cable-selection-as-s8" title="Permanent link">&para;</a></h3>
+<p><strong>Step 1: Edit <code>component_types.json</code></strong></p>
+<p>Add new component entry:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;component_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;power_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="c1">// ... existing components ...</span>
+<span class="w">    </span><span class="nt">&quot;cable&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;class_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cable&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;display_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cable&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;api_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cable&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;db_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cable&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;state_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cable_selection&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;state_order&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;is_mandatory&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;can_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;default_skip_behavior&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;optional&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;selection_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;single&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supports_search&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;requires_compatibility_check&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;compatible_with&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;power_source&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feeder&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;state_sequence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;power_source_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;feeder_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;cooler_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;interconnector_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;torch_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;accessories_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;cable_selection&quot;</span><span class="w">  </span><span class="c1">// Add here</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;finalize_state&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;finalize&quot;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Step 2: Edit <code>state_prompts.json</code></strong></p>
+<p>Add prompt configuration:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;states&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;power_source_selection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">...</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="c1">// ... existing states ...</span>
+<span class="w">    </span><span class="nt">&quot;cable_selection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;icon&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;🔌&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;step_number&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Cable Selection&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;is_required&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;can_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;prompt_simple&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;🔌 **Step 8: Cable Selection**\n\nDo you need cables?\n- Specify length and type requirements\n- Or say **&#39;skip&#39;** if not needed&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;guidance_bullets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;Specify length and type requirements&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;Or say &#39;skip&#39; if not needed&quot;</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Step 3: Edit <code>component_applicability.json</code> (Optional)</strong></p>
+<p>Add applicability rules for each power source:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;power_sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;0446200880&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Aristo 500ix&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;applicability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;Feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Cooler&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Interconnector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Torch&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Accessories&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Cable&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="w">  </span><span class="c1">// Add here</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// Repeat for all power sources</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Step 4: Restart the Application</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Stop the server</span>
+<span class="c1"># Ctrl+C or kill process</span>
+
+<span class="c1"># Start the server</span>
+uvicorn<span class="w"> </span>app.main:app<span class="w"> </span>--reload
+
+<span class="c1"># Check startup logs for confirmation</span>
+<span class="c1"># Look for: &quot;✓ ConfiguratorState enum initialized&quot;</span>
+<span class="c1"># Look for: &quot;✓ Processor registry initialized&quot;</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Step 5: Verify</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Test the health endpoint</span>
+curl<span class="w"> </span>http://localhost:8000/api/v1/health/config
+
+<span class="c1"># Test state transitions</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/api/v1/configurator/message<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;message&quot;: &quot;I need cables&quot;}&#39;</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>That's it!</strong> Your new state is now active. ✨</p>
+<hr />
+<h2 id="configuration-files-reference">Configuration Files Reference<a class="headerlink" href="#configuration-files-reference" title="Permanent link">&para;</a></h2>
+<h3 id="1-component_typesjson">1. component_types.json<a class="headerlink" href="#1-component_typesjson" title="Permanent link">&para;</a></h3>
+<p><strong>Location:</strong> <code>src/backend/app/config/component_types.json</code></p>
+<p><strong>Purpose:</strong> Defines all components and their state machine behavior</p>
+<p><strong>Key Fields:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>class_name</code></td>
+<td>string</td>
+<td>✅</td>
+<td>Neo4j node label (e.g., "Cable")</td>
+</tr>
+<tr>
+<td><code>display_name</code></td>
+<td>string</td>
+<td>✅</td>
+<td>User-friendly name</td>
+</tr>
+<tr>
+<td><code>api_key</code></td>
+<td>string</td>
+<td>✅</td>
+<td>Key in ResponseJSON (e.g., "Cable")</td>
+</tr>
+<tr>
+<td><code>db_key</code></td>
+<td>string</td>
+<td>✅</td>
+<td>Database identifier</td>
+</tr>
+<tr>
+<td><code>state_name</code></td>
+<td>string</td>
+<td>✅</td>
+<td>State machine identifier (snake_case)</td>
+</tr>
+<tr>
+<td><code>state_order</code></td>
+<td>integer</td>
+<td>✅</td>
+<td>Position in sequence (1-based)</td>
+</tr>
+<tr>
+<td><code>is_mandatory</code></td>
+<td>boolean</td>
+<td>✅</td>
+<td>Must complete? (true/false)</td>
+</tr>
+<tr>
+<td><code>can_skip</code></td>
+<td>boolean</td>
+<td>✅</td>
+<td>Allow skip? (true/false)</td>
+</tr>
+<tr>
+<td><code>selection_type</code></td>
+<td>string</td>
+<td>✅</td>
+<td>"single", "multi", or "custom"</td>
+</tr>
+<tr>
+<td><code>supports_search</code></td>
+<td>boolean</td>
+<td>✅</td>
+<td>Enable product search?</td>
+</tr>
+<tr>
+<td><code>requires_compatibility_check</code></td>
+<td>boolean</td>
+<td>✅</td>
+<td>Validate compatibility?</td>
+</tr>
+<tr>
+<td><code>compatible_with</code></td>
+<td>array</td>
+<td>❌</td>
+<td>List of required components</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Selection Types:</strong></p>
+<ul>
+<li><strong><code>single</code></strong>: Select one product (Feeder, Cooler, Torch, etc.)</li>
+<li>Uses <code>SingleSelectionProcessor</code></li>
+<li>User selects by index or product name</li>
+<li>
+<p>Can skip if <code>can_skip: true</code></p>
+</li>
+<li>
+<p><strong><code>multi</code></strong>: Select multiple products (Accessories)</p>
+</li>
+<li>Uses <code>MultiSelectionProcessor</code></li>
+<li>User can select multiple times</li>
+<li>
+<p>Type "done" to finish</p>
+</li>
+<li>
+<p><strong><code>custom</code></strong>: Custom logic required</p>
+</li>
+<li>Requires custom processor class</li>
+<li>Must implement <code>BaseStateProcessor</code></li>
+<li>Specify <code>processor_class</code> field</li>
+</ul>
+<p><strong>Example: Single Selection State</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">&quot;torch&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;class_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Torch&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;display_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Welding Torch&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;api_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Torch&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;db_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Torch&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;state_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;torch_selection&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;state_order&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;is_mandatory&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;can_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;default_skip_behavior&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;optional&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;selection_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;single&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;supports_search&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;requires_compatibility_check&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;compatible_with&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;power_source&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Example: Multi Selection State</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">&quot;accessories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;class_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Accessory&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;display_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Accessories&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;api_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Accessories&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;db_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Accessory&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;state_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;accessories_selection&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;state_order&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;is_mandatory&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;can_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;default_skip_behavior&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;optional&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;selection_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;multi&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;supports_search&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;requires_compatibility_check&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;compatible_with&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;power_source&quot;</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="2-state_promptsjson">2. state_prompts.json<a class="headerlink" href="#2-state_promptsjson" title="Permanent link">&para;</a></h3>
+<p><strong>Location:</strong> <code>src/backend/app/config/state_prompts.json</code></p>
+<p><strong>Purpose:</strong> Defines user-facing prompts and UI text for each state</p>
+<p><strong>Key Fields:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>icon</code></td>
+<td>string</td>
+<td>✅</td>
+<td>Emoji or icon (e.g., "🔌")</td>
+</tr>
+<tr>
+<td><code>step_number</code></td>
+<td>integer</td>
+<td>✅</td>
+<td>Display step number</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>string</td>
+<td>✅</td>
+<td>State title</td>
+</tr>
+<tr>
+<td><code>is_required</code></td>
+<td>boolean</td>
+<td>❌</td>
+<td>Display as required?</td>
+</tr>
+<tr>
+<td><code>can_skip</code></td>
+<td>boolean</td>
+<td>❌</td>
+<td>Display skip option?</td>
+</tr>
+<tr>
+<td><code>prompt_simple</code></td>
+<td>string</td>
+<td>❌</td>
+<td>Basic prompt text</td>
+</tr>
+<tr>
+<td><code>prompt_template</code></td>
+<td>string</td>
+<td>❌</td>
+<td>Template with variables</td>
+</tr>
+<tr>
+<td><code>prompt_with_details</code></td>
+<td>string</td>
+<td>❌</td>
+<td>Contextual prompt</td>
+</tr>
+<tr>
+<td><code>guidance_bullets</code></td>
+<td>array</td>
+<td>❌</td>
+<td>Help text bullets</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Template Variables:</strong></p>
+<p>Variables you can use in prompts:</p>
+<ul>
+<li><code>{power_source_name}</code> - Selected power source name</li>
+<li><code>{product_name}</code> - Mentioned product name</li>
+<li><code>{details}</code> - Extracted parameter details</li>
+<li><code>{processes}</code> - Welding process examples</li>
+<li><code>{materials}</code> - Material examples</li>
+</ul>
+<p><strong>Example: Simple Prompt</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">&quot;torch_selection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;icon&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;🔦&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;step_number&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Welding Torch Selection&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;is_required&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;can_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;prompt_simple&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;🔦 **Step 5: Welding Torch Selection**\n\nDo you need a welding torch?\n- Specify torch type (TIG/MIG), current rating, cooling type\n- Or say **&#39;skip&#39;** if not needed&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;guidance_bullets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;Specify torch type (TIG/MIG), current rating, cooling type&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;Or say &#39;skip&#39; if not needed&quot;</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Example: Dynamic Prompt with Context</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">&quot;feeder_selection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;icon&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;🔌&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;step_number&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Wire Feeder Selection&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;is_required&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;can_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;prompt_simple&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;🔌 **Step 2: Wire Feeder Selection**\n\nBased on your selected power source: **{power_source_name}**\n\nDo you need a wire feeder?\n- Provide requirements (portability, wire feed speed, etc.)\n- Or say **&#39;skip&#39;** if not needed&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;prompt_with_details&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;🔌 **Step 2: Wire Feeder Selection**\n\nBased on your selected power source: **{power_source_name}**\n\nI see you mentioned: {details}\n\nWould you like to:\n- Confirm this feeder (just say the product name again or &#39;yes&#39;)\n- Add more requirements (portability, wire feed speed, etc.)\n- Or say **&#39;skip&#39;** if not needed&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;guidance_bullets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;Provide requirements (portability, wire feed speed, etc.)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;Or say &#39;skip&#39; if not needed&quot;</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="3-component_applicabilityjson">3. component_applicability.json<a class="headerlink" href="#3-component_applicabilityjson" title="Permanent link">&para;</a></h3>
+<p><strong>Location:</strong> <code>src/backend/app/config/component_applicability.json</code></p>
+<p><strong>Purpose:</strong> Defines which components are applicable for each power source</p>
+<p><strong>Structure:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;power_sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;&lt;power_source_gin&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;power_source_name&gt;&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;applicability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;&lt;ComponentApiKey&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="w"> </span><span class="err">or</span><span class="w"> </span><span class="s2">&quot;N&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Rules:</strong></p>
+<ul>
+<li><code>"Y"</code> - Component state is shown (applicability = Y)</li>
+<li><code>"N"</code> - Component state is auto-skipped (applicability = N)</li>
+<li>Missing entry - Defaults to <code>"Y"</code> (shown)</li>
+</ul>
+<p><strong>Example:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;power_sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;0446200880&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Aristo 500ix&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;applicability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;Feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Cooler&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Interconnector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Torch&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Accessories&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Cable&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;N&quot;</span><span class="w">  </span><span class="c1">// Cables not needed for this model</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;0123456789&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Another Model&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;applicability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;Feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Cooler&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;N&quot;</span><span class="p">,</span><span class="w">  </span><span class="c1">// This model has built-in cooler</span>
+<span class="w">        </span><span class="nt">&quot;Interconnector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Torch&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Accessories&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Cable&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="step-by-step-tutorial">Step-by-Step Tutorial<a class="headerlink" href="#step-by-step-tutorial" title="Permanent link">&para;</a></h2>
+<h3 id="scenario-adding-safety-equipment-as-s9">Scenario: Adding "Safety Equipment" as S9<a class="headerlink" href="#scenario-adding-safety-equipment-as-s9" title="Permanent link">&para;</a></h3>
+<p>Let's add a new state for selecting safety equipment like welding helmets, gloves, etc.</p>
+<h4 id="step-1-plan-your-component">Step 1: Plan Your Component<a class="headerlink" href="#step-1-plan-your-component" title="Permanent link">&para;</a></h4>
+<p><strong>Decisions to make:</strong></p>
+<ol>
+<li><strong>Component Name:</strong> "Safety Equipment"</li>
+<li><strong>Selection Type:</strong> Multi (users can select multiple items)</li>
+<li><strong>Is Mandatory?:</strong> No (optional)</li>
+<li><strong>Can Skip?:</strong> Yes</li>
+<li><strong>Requires Compatibility?:</strong> No (universal compatibility)</li>
+<li><strong>State Order:</strong> 9 (after cables, before finalize)</li>
+</ol>
+<h4 id="step-2-update-component_typesjson">Step 2: Update component_types.json<a class="headerlink" href="#step-2-update-component_typesjson" title="Permanent link">&para;</a></h4>
+<p>Open: <code>src/backend/app/config/component_types.json</code></p>
+<p><strong>Add the new component:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;component_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ... existing components ...</span>
+<span class="w">    </span><span class="nt">&quot;safety_equipment&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;class_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SafetyEquipment&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;display_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Safety Equipment&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;api_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SafetyEquipment&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;db_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SafetyEquipment&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;state_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;safety_equipment_selection&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;state_order&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;is_mandatory&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;can_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;default_skip_behavior&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;optional&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;selection_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;multi&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supports_search&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;requires_compatibility_check&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;compatible_with&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;state_sequence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;power_source_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;feeder_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;cooler_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;interconnector_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;torch_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;accessories_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;cable_selection&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">&quot;safety_equipment_selection&quot;</span><span class="w">  </span><span class="c1">// Add here</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;finalize_state&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;finalize&quot;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Validation checklist:</strong>
+- [ ] <code>class_name</code> matches Neo4j node label
+- [ ] <code>api_key</code> follows PascalCase (matches ResponseJSON)
+- [ ] <code>state_name</code> is unique and follows snake_case
+- [ ] <code>state_order</code> is sequential (no gaps)
+- [ ] <code>selection_type</code> is valid ("single", "multi", or "custom")
+- [ ] Added to <code>state_sequence</code> array</p>
+<h4 id="step-3-update-state_promptsjson">Step 3: Update state_prompts.json<a class="headerlink" href="#step-3-update-state_promptsjson" title="Permanent link">&para;</a></h4>
+<p>Open: <code>src/backend/app/config/state_prompts.json</code></p>
+<p><strong>Add prompt configuration:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;states&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// ... existing states ...</span>
+<span class="w">    </span><span class="nt">&quot;safety_equipment_selection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;icon&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;🦺&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;step_number&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Safety Equipment Selection&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;is_required&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;can_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;prompt_simple&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;🦺 **Step 9: Safety Equipment Selection**\n\nDo you need any safety equipment?\n- Welding helmets\n- Protective gloves\n- Safety jackets\n- Eye protection\n\nSelect items one at a time, or say **&#39;done&#39;** to finish.&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;guidance_bullets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="s2">&quot;Welding helmets&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;Protective gloves&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;Safety jackets&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;Eye protection&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;Say &#39;done&#39; when finished&quot;</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Validation checklist:</strong>
+- [ ] <code>icon</code> is an appropriate emoji
+- [ ] <code>step_number</code> matches state_order
+- [ ] <code>title</code> is user-friendly
+- [ ] <code>prompt_simple</code> includes clear instructions
+- [ ] For multi-selection: mentions "done" command</p>
+<h4 id="step-4-update-component_applicabilityjson">Step 4: Update component_applicability.json<a class="headerlink" href="#step-4-update-component_applicabilityjson" title="Permanent link">&para;</a></h4>
+<p>Open: <code>src/backend/app/config/component_applicability.json</code></p>
+<p><strong>Add applicability for all power sources:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;power_sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;0446200880&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Aristo 500ix&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;applicability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;Feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Cooler&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Interconnector&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Torch&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Accessories&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;Cable&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;SafetyEquipment&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="w">  </span><span class="c1">// Add for each power source</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// Repeat for ALL power sources in the file</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Important:</strong> Update EVERY power source entry. Missing entries default to "Y" but explicit is better.</p>
+<h4 id="step-5-add-neo4j-data-if-needed">Step 5: Add Neo4j Data (if needed)<a class="headerlink" href="#step-5-add-neo4j-data-if-needed" title="Permanent link">&para;</a></h4>
+<p>If you're adding a new component category, you'll need to add product data to Neo4j:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// Create SafetyEquipment nodes</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="p">(</span><span class="n">helmet</span><span class="p">:</span><span class="n">SafetyEquipment</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">gin</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;HELMET001&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Auto-Darkening Welding Helmet&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Professional welding helmet with auto-darkening lens&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="n">category</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Helmet&quot;</span>
+<span class="p">})</span>
+
+<span class="c1">// Create compatibility relationships (if needed)</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">ps</span><span class="p">:</span><span class="n">PowerSource</span><span class="w"> </span><span class="p">{</span><span class="n">gin</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;0446200880&quot;</span><span class="p">})</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">helmet</span><span class="p">:</span><span class="n">SafetyEquipment</span><span class="w"> </span><span class="p">{</span><span class="n">gin</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;HELMET001&quot;</span><span class="p">})</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="p">(</span><span class="n">helmet</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">COMPATIBLE_WITH</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<h4 id="step-6-validate-configuration">Step 6: Validate Configuration<a class="headerlink" href="#step-6-validate-configuration" title="Permanent link">&para;</a></h4>
+<p>Run the config validator:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>src/backend
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from app.services.config.config_validator import validate_configs_on_startup; print(validate_configs_on_startup())&quot;</span>
+</code></pre></div></td></tr></table></div>
+<p>Expected output:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>(True, {...})  # True = validation passed
+</code></pre></div></td></tr></table></div></p>
+<p>Check for errors:
+- Schema validation errors
+- Consistency check errors
+- Missing required fields</p>
+<h4 id="step-7-restart-and-test">Step 7: Restart and Test<a class="headerlink" href="#step-7-restart-and-test" title="Permanent link">&para;</a></h4>
+<p><strong>Restart the server:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Stop current server (Ctrl+C)</span>
+
+<span class="c1"># Start with reload</span>
+<span class="nb">cd</span><span class="w"> </span>src/backend
+uvicorn<span class="w"> </span>app.main:app<span class="w"> </span>--host<span class="w"> </span><span class="m">0</span>.0.0.0<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span><span class="w"> </span>--reload
+</code></pre></div></td></tr></table></div>
+<p><strong>Check startup logs:</strong></p>
+<p>Look for these lines:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>✓ Configuration validation passed
+✓ ConfiguratorState enum initialized
+✓ Processor registry initialized
+✓ Orchestrator initialized with dynamic routing
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Test the new state:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Start a session</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/api/v1/configurator/message<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;message&quot;: &quot;I need a 500A power source&quot;,</span>
+<span class="s1">    &quot;language&quot;: &quot;en&quot;</span>
+<span class="s1">  }&#39;</span>
+
+<span class="c1"># Navigate through states until you reach safety_equipment_selection</span>
+<span class="c1"># (Select power source, skip other components, etc.)</span>
+
+<span class="c1"># Test safety equipment selection</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/api/v1/configurator/message<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;session_id&quot;: &quot;&lt;your_session_id&gt;&quot;,</span>
+<span class="s1">    &quot;message&quot;: &quot;I need a welding helmet&quot;,</span>
+<span class="s1">    &quot;language&quot;: &quot;en&quot;</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="advanced-scenarios">Advanced Scenarios<a class="headerlink" href="#advanced-scenarios" title="Permanent link">&para;</a></h2>
+<h3 id="scenario-1-adding-a-custom-processor">Scenario 1: Adding a Custom Processor<a class="headerlink" href="#scenario-1-adding-a-custom-processor" title="Permanent link">&para;</a></h3>
+<p>For states with unique logic that doesn't fit single/multi selection:</p>
+<p><strong>Step 1: Create custom processor class</strong></p>
+<p>Create <code>app/services/orchestrator/custom_processors.py</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">.state_processors</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseStateProcessor</span><span class="p">,</span> <span class="n">ProcessorResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomEquipmentProcessor</span><span class="p">(</span><span class="n">BaseStateProcessor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom processor for equipment with special validation logic</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">conversation_state</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">user_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">orchestrator</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProcessorResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process custom equipment selection&quot;&quot;&quot;</span>
+
+        <span class="c1"># Your custom logic here</span>
+        <span class="c1"># ...</span>
+
+        <span class="k">return</span> <span class="n">ProcessorResult</span><span class="o">.</span><span class="n">success_result</span><span class="p">(</span>
+            <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Custom processing complete&quot;</span><span class="p">,</span>
+            <span class="n">products</span><span class="o">=</span><span class="p">[],</span>
+            <span class="n">awaiting_selection</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Step 2: Register in component_types.json</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">&quot;custom_equipment&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;class_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CustomEquipment&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;display_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Custom Equipment&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;api_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CustomEquipment&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;db_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CustomEquipment&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;state_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;custom_equipment_selection&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;state_order&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;is_mandatory&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;can_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;selection_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;custom&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;processor_class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;custom_processors.CustomEquipmentProcessor&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;supports_search&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;requires_compatibility_check&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Step 3: Import and register in state_processors.py</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># In state_processors.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.custom_processors</span><span class="w"> </span><span class="kn">import</span> <span class="n">CustomEquipmentProcessor</span>
+
+<span class="c1"># In StateProcessorRegistry.create_from_config():</span>
+<span class="k">elif</span> <span class="n">selection_type</span> <span class="o">==</span> <span class="s2">&quot;custom&quot;</span><span class="p">:</span>
+    <span class="n">processor_class_path</span> <span class="o">=</span> <span class="n">comp_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;processor_class&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">processor_class_path</span><span class="p">:</span>
+        <span class="c1"># Dynamic import</span>
+        <span class="n">module_name</span><span class="p">,</span> <span class="n">class_name</span> <span class="o">=</span> <span class="n">processor_class_path</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;app.services.orchestrator.</span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="n">class_name</span><span class="p">])</span>
+        <span class="n">ProcessorClass</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">class_name</span><span class="p">)</span>
+        <span class="n">processor</span> <span class="o">=</span> <span class="n">ProcessorClass</span><span class="p">(</span><span class="n">state_name</span><span class="p">,</span> <span class="n">comp_key</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="scenario-2-conditional-state-visibility">Scenario 2: Conditional State Visibility<a class="headerlink" href="#scenario-2-conditional-state-visibility" title="Permanent link">&para;</a></h3>
+<p>Make a state appear only for specific power sources:</p>
+<p><strong>In component_applicability.json:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;power_sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;0446200880&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Aristo 500ix&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;applicability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;SpecialComponent&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="w">  </span><span class="c1">// Shows for this model</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;0123456789&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Basic Model&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;applicability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;SpecialComponent&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;N&quot;</span><span class="w">  </span><span class="c1">// Hidden for this model</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>State will auto-skip when applicability = "N".</p>
+<h3 id="scenario-3-mandatory-state-cannot-skip">Scenario 3: Mandatory State (Cannot Skip)<a class="headerlink" href="#scenario-3-mandatory-state-cannot-skip" title="Permanent link">&para;</a></h3>
+<p><strong>In component_types.json:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">&quot;critical_component&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;is_mandatory&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;can_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;default_skip_behavior&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;required&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="c1">// ... other fields</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>In state_prompts.json:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">&quot;critical_component_selection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;is_required&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;can_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;prompt_simple&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;⚠️ **Required: Critical Component**\n\nThis component is required. Please select one.&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="c1">// ... other fields</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>System will prevent skipping and require selection.</p>
+<h3 id="scenario-4-dynamic-prompt-based-on-previous-selections">Scenario 4: Dynamic Prompt Based on Previous Selections<a class="headerlink" href="#scenario-4-dynamic-prompt-based-on-previous-selections" title="Permanent link">&para;</a></h3>
+<p><strong>In state_prompts.json:</strong></p>
+<p>Use template variables:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">&quot;dynamic_selection&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;prompt_simple&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Based on your {power_source_name}, we recommend...&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;prompt_with_details&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;You selected {product_name}. Would you like to:\n- Confirm\n- Modify requirements: {details}\n- Skip&quot;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p>Variables are automatically populated by MessageGenerator.</p>
+<hr />
+<h2 id="testing-your-changes">Testing Your Changes<a class="headerlink" href="#testing-your-changes" title="Permanent link">&para;</a></h2>
+<h3 id="1-configuration-validation-test">1. Configuration Validation Test<a class="headerlink" href="#1-configuration-validation-test" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>src/backend/tests
+
+<span class="c1"># Run config validation tests</span>
+python<span class="w"> </span>test_config_validation.py
+
+<span class="c1"># Expected output:</span>
+<span class="c1"># [OK] All validations passed</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="2-integration-test">2. Integration Test<a class="headerlink" href="#2-integration-test" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Run full integration test</span>
+python<span class="w"> </span>test_integration_phase6.py
+
+<span class="c1"># Expected output:</span>
+<span class="c1"># [SUCCESS] Integration test passed!</span>
+<span class="c1"># ConfiguratorState enum created with X states</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="3-health-check-endpoint">3. Health Check Endpoint<a class="headerlink" href="#3-health-check-endpoint" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Check config health</span>
+curl<span class="w"> </span>http://localhost:8000/api/v1/health/config
+
+<span class="c1"># Expected response:</span>
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;status&quot;</span>:<span class="w"> </span><span class="s2">&quot;healthy&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;configs&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;component_types&quot;</span>:<span class="w"> </span><span class="o">{</span><span class="s2">&quot;status&quot;</span>:<span class="w"> </span><span class="s2">&quot;healthy&quot;</span>,<span class="w"> </span>...<span class="o">}</span>,
+<span class="w">    </span><span class="s2">&quot;state_prompts&quot;</span>:<span class="w"> </span><span class="o">{</span><span class="s2">&quot;status&quot;</span>:<span class="w"> </span><span class="s2">&quot;healthy&quot;</span>,<span class="w"> </span>...<span class="o">}</span>,
+<span class="w">    </span><span class="s2">&quot;component_applicability&quot;</span>:<span class="w"> </span><span class="o">{</span><span class="s2">&quot;status&quot;</span>:<span class="w"> </span><span class="s2">&quot;healthy&quot;</span>,<span class="w"> </span>...<span class="o">}</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;summary&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;total_configs&quot;</span>:<span class="w"> </span><span class="m">3</span>,
+<span class="w">    </span><span class="s2">&quot;healthy&quot;</span>:<span class="w"> </span><span class="m">3</span>,
+<span class="w">    </span><span class="s2">&quot;warnings&quot;</span>:<span class="w"> </span><span class="m">0</span>,
+<span class="w">    </span><span class="s2">&quot;errors&quot;</span>:<span class="w"> </span><span class="m">0</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="4-manual-api-testing">4. Manual API Testing<a class="headerlink" href="#4-manual-api-testing" title="Permanent link">&para;</a></h3>
+<p><strong>Test new state flow:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 1. Start session</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/api/v1/configurator/message<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;message&quot;: &quot;I need welding equipment&quot;}&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="p">|</span><span class="w"> </span>jq
+
+<span class="c1"># 2. Save session_id from response</span>
+
+<span class="c1"># 3. Navigate to your new state</span>
+<span class="c1"># (Select power source, skip components until you reach new state)</span>
+
+<span class="c1"># 4. Test new state</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/api/v1/configurator/message<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;session_id&quot;: &quot;&lt;session_id&gt;&quot;,</span>
+<span class="s1">    &quot;message&quot;: &quot;I need &lt;your_component&gt;&quot;</span>
+<span class="s1">  }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
+
+<span class="c1"># Verify response includes:</span>
+<span class="c1"># - current_state: &quot;&lt;your_state_name&gt;&quot;</span>
+<span class="c1"># - products: [...]</span>
+<span class="c1"># - awaiting_selection: true/false</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="5-state-transition-test">5. State Transition Test<a class="headerlink" href="#5-state-transition-test" title="Permanent link">&para;</a></h3>
+<p>Test that state skipping works correctly:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Test auto-skip when applicability = &quot;N&quot;</span>
+<span class="c1"># Select a power source where your component is &quot;N&quot;</span>
+<span class="c1"># Verify the state is skipped automatically</span>
+
+<span class="c1"># Test manual skip</span>
+<span class="c1"># When prompted for your component</span>
+curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/api/v1/configurator/message<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;session_id&quot;: &quot;&lt;session_id&gt;&quot;,</span>
+<span class="s1">    &quot;message&quot;: &quot;skip&quot;</span>
+<span class="s1">  }&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
+
+<span class="c1"># Verify moves to next state</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="common-issues">Common Issues<a class="headerlink" href="#common-issues" title="Permanent link">&para;</a></h3>
+<h4 id="issue-1-configuratorstate-enum-not-created">Issue 1: "ConfiguratorState enum not created"<a class="headerlink" href="#issue-1-configuratorstate-enum-not-created" title="Permanent link">&para;</a></h4>
+<p><strong>Symptom:</strong> Server fails to start with enum initialization error</p>
+<p><strong>Causes:</strong>
+- Invalid JSON in component_types.json
+- Missing required fields
+- Duplicate state names</p>
+<p><strong>Solution:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Validate JSON syntax</span>
+python<span class="w"> </span>-m<span class="w"> </span>json.tool<span class="w"> </span>app/config/component_types.json
+
+<span class="c1"># Check validator errors</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">from app.services.config.config_validator import get_validator</span>
+<span class="s2">validator = get_validator()</span>
+<span class="s2">result = validator.validate_config_schema(&#39;component_types&#39;)</span>
+<span class="s2">print(result.errors)</span>
+<span class="s2">&quot;</span>
+</code></pre></div></td></tr></table></div>
+<h4 id="issue-2-no-processor-registered-for-state">Issue 2: "No processor registered for state"<a class="headerlink" href="#issue-2-no-processor-registered-for-state" title="Permanent link">&para;</a></h4>
+<p><strong>Symptom:</strong> Warning in logs: "No processor registered for state: <state_name>"</p>
+<p><strong>Causes:</strong>
+- State in state_sequence but not in component_types
+- Missing selection_type field
+- Typo in state_name</p>
+<p><strong>Solution:</strong></p>
+<p>Check consistency:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Check state consistency</span>
+curl<span class="w"> </span>http://localhost:8000/api/v1/health/config/consistency
+
+<span class="c1"># Look for errors:</span>
+<span class="c1"># &quot;State in sequence but not in component_types&quot;</span>
+<span class="c1"># &quot;State orders not sequential&quot;</span>
+</code></pre></div></td></tr></table></div>
+<p>Fix by ensuring state_name in component_types matches state_sequence.</p>
+<h4 id="issue-3-prompt-not-showing-correctly">Issue 3: Prompt not showing correctly<a class="headerlink" href="#issue-3-prompt-not-showing-correctly" title="Permanent link">&para;</a></h4>
+<p><strong>Symptom:</strong> Default prompt shown instead of custom prompt</p>
+<p><strong>Causes:</strong>
+- State name mismatch between files
+- Missing prompt_simple field
+- Template variable syntax error</p>
+<p><strong>Solution:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Validate state_prompts.json</span>
+python<span class="w"> </span>-m<span class="w"> </span>json.tool<span class="w"> </span>app/config/state_prompts.json
+
+<span class="c1"># Check state names match</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">import json</span>
+<span class="s2">ct = json.load(open(&#39;app/config/component_types.json&#39;))</span>
+<span class="s2">sp = json.load(open(&#39;app/config/state_prompts.json&#39;))</span>
+
+<span class="s2">ct_states = set(comp[&#39;state_name&#39;] for comp in ct[&#39;component_types&#39;].values())</span>
+<span class="s2">sp_states = set(sp[&#39;states&#39;].keys())</span>
+
+<span class="s2">print(&#39;In component_types but not state_prompts:&#39;, ct_states - sp_states)</span>
+<span class="s2">print(&#39;In state_prompts but not component_types:&#39;, sp_states - ct_states)</span>
+<span class="s2">&quot;</span>
+</code></pre></div></td></tr></table></div>
+<h4 id="issue-4-state-auto-skipped-unexpectedly">Issue 4: State auto-skipped unexpectedly<a class="headerlink" href="#issue-4-state-auto-skipped-unexpectedly" title="Permanent link">&para;</a></h4>
+<p><strong>Symptom:</strong> New state is skipped even though applicability should be "Y"</p>
+<p><strong>Causes:</strong>
+- Applicability set to "N" for current power source
+- State not added to applicability config (defaults to "Y", but check)
+- api_key mismatch</p>
+<p><strong>Solution:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Check applicability for current session</span>
+curl<span class="w"> </span>http://localhost:8000/api/v1/configurator/state/&lt;session_id&gt;<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.response_json.applicability&#39;</span>
+
+<span class="c1"># Verify api_key in component_types matches applicability key</span>
+<span class="c1"># &quot;api_key&quot;: &quot;YourComponent&quot; should match</span>
+<span class="c1"># &quot;applicability&quot;: {&quot;YourComponent&quot;: &quot;Y&quot;}</span>
+</code></pre></div></td></tr></table></div>
+<h4 id="issue-5-products-not-found">Issue 5: Products not found<a class="headerlink" href="#issue-5-products-not-found" title="Permanent link">&para;</a></h4>
+<p><strong>Symptom:</strong> "No compatible products found" message</p>
+<p><strong>Causes:</strong>
+- No products in Neo4j for this category
+- class_name doesn't match Neo4j node label
+- Compatibility relationships missing
+- requires_compatibility_check is true but no relationships exist</p>
+<p><strong>Solution:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Check Neo4j (Cypher)</span>
+MATCH<span class="w"> </span><span class="o">(</span>n:YourComponentLabel<span class="o">)</span><span class="w"> </span>RETURN<span class="w"> </span>count<span class="o">(</span>n<span class="o">)</span>
+<span class="c1"># Should return count &gt; 0</span>
+
+<span class="c1"># Check compatibility relationships</span>
+MATCH<span class="w"> </span><span class="o">(</span>comp:YourComponentLabel<span class="o">)</span>-<span class="o">[</span>:COMPATIBLE_WITH<span class="o">]</span>-&gt;<span class="o">(</span>ps:PowerSource<span class="o">)</span>
+RETURN<span class="w"> </span>comp.name,<span class="w"> </span>ps.name
+<span class="c1"># Should return relationships if requires_compatibility_check = true</span>
+
+<span class="c1"># Or set requires_compatibility_check = false for universal compatibility</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="validation-checklist">Validation Checklist<a class="headerlink" href="#validation-checklist" title="Permanent link">&para;</a></h3>
+<p>Before declaring your new state complete:</p>
+<p><strong>Configuration:</strong>
+- [ ] Added to component_types.json with all required fields
+- [ ] Added to state_sequence array in correct position
+- [ ] Added to state_prompts.json with appropriate prompts
+- [ ] Updated ALL power source entries in component_applicability.json
+- [ ] JSON syntax is valid (use <code>json.tool</code>)</p>
+<p><strong>Testing:</strong>
+- [ ] Config validation passes (health check endpoint)
+- [ ] Server starts without errors
+- [ ] Enum includes new state
+- [ ] Processor registered for new state
+- [ ] State appears in correct order during flow
+- [ ] Can select products for new state
+- [ ] Can skip state (if can_skip = true)
+- [ ] Auto-skip works when applicability = "N"
+- [ ] Finalize still works after new state</p>
+<p><strong>Neo4j (if applicable):</strong>
+- [ ] Products exist for new component category
+- [ ] Node label matches class_name
+- [ ] COMPATIBLE_WITH relationships created
+- [ ] Products have required properties (gin, name, description)</p>
+<p><strong>Documentation:</strong>
+- [ ] Updated team documentation
+- [ ] Added to API documentation (if public-facing)
+- [ ] Noted any special behavior or requirements</p>
+<hr />
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
+<h3 id="1-naming-conventions">1. Naming Conventions<a class="headerlink" href="#1-naming-conventions" title="Permanent link">&para;</a></h3>
+<p><strong>State Names (snake_case):</strong>
+- Good: <code>cable_selection</code>, <code>safety_equipment_selection</code>
+- Bad: <code>CableSelection</code>, <code>cable-selection</code>, <code>select_cable</code></p>
+<p><strong>API Keys (PascalCase):</strong>
+- Good: <code>Cable</code>, <code>SafetyEquipment</code>
+- Bad: <code>cable</code>, <code>safety_equipment</code>, <code>CABLE</code></p>
+<p><strong>Class Names (PascalCase):</strong>
+- Good: <code>Cable</code>, <code>SafetyEquipment</code>
+- Bad: <code>cable</code>, <code>Cables</code>, <code>safety_equipment</code></p>
+<h3 id="2-state-order-best-practices">2. State Order Best Practices<a class="headerlink" href="#2-state-order-best-practices" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Keep related states together</li>
+<li>Put optional states after mandatory ones</li>
+<li>Keep accessories near the end</li>
+<li>Finalize is always last</li>
+<li>No gaps in state_order numbers</li>
+</ul>
+<h3 id="3-applicability-rules">3. Applicability Rules<a class="headerlink" href="#3-applicability-rules" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Default to "Y" unless component is truly incompatible</li>
+<li>Use "N" sparingly</li>
+<li>Document why a component is "N" for specific power sources</li>
+<li>Update ALL power source entries when adding new components</li>
+</ul>
+<h3 id="4-prompt-writing-tips">4. Prompt Writing Tips<a class="headerlink" href="#4-prompt-writing-tips" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Be clear and concise</li>
+<li>Always mention "skip" option if can_skip = true</li>
+<li>For multi-selection: mention "done" command</li>
+<li>Use emojis consistently (one per state)</li>
+<li>Include examples in guidance_bullets</li>
+<li>Test prompts with non-technical users</li>
+</ul>
+<h3 id="5-selection-type-guidelines">5. Selection Type Guidelines<a class="headerlink" href="#5-selection-type-guidelines" title="Permanent link">&para;</a></h3>
+<p><strong>Use <code>single</code> when:</strong>
+- User selects exactly one product
+- Product is physical hardware (torch, cooler, etc.)
+- Selection replaces any previous choice</p>
+<p><strong>Use <code>multi</code> when:</strong>
+- User can select multiple products
+- Products are additive (accessories, cables, etc.)
+- "Done" command makes sense</p>
+<p><strong>Use <code>custom</code> when:</strong>
+- Complex validation required
+- Special business logic needed
+- Standard processors insufficient</p>
+<h3 id="6-version-control">6. Version Control<a class="headerlink" href="#6-version-control" title="Permanent link">&para;</a></h3>
+<p>After adding a new state:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Commit configuration changes</span>
+git<span class="w"> </span>add<span class="w"> </span>app/config/*.json
+git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;feat: add &lt;component_name&gt; state (S&lt;number&gt;)</span>
+
+<span class="s2">- Added &lt;component_name&gt; to component_types.json</span>
+<span class="s2">- Added prompts to state_prompts.json</span>
+<span class="s2">- Updated applicability rules</span>
+<span class="s2">- State order: &lt;number&gt;</span>
+<span class="s2">- Selection type: &lt;single/multi/custom&gt;&quot;</span>
+
+<span class="c1"># Tag with version</span>
+git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>v2.1.0<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Added &lt;component_name&gt; state&quot;</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="7-testing-strategy">7. Testing Strategy<a class="headerlink" href="#7-testing-strategy" title="Permanent link">&para;</a></h3>
+<p>Always test:
+1. <strong>Happy path:</strong> Normal state flow through new state
+2. <strong>Skip path:</strong> Manual skip of new state
+3. <strong>Auto-skip path:</strong> Applicability = "N" auto-skip
+4. <strong>Edge cases:</strong> Empty search results, invalid input
+5. <strong>Regression:</strong> Existing states still work</p>
+<h3 id="8-documentation">8. Documentation<a class="headerlink" href="#8-documentation" title="Permanent link">&para;</a></h3>
+<p>Keep these documents updated:
+- This guide (if you discover new patterns)
+- API documentation (if endpoints change)
+- Team wiki or internal docs
+- <code>README.md</code> with current state count</p>
+<hr />
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p><strong>To add a new state (S8, S9, etc.):</strong></p>
+<ol>
+<li>✅ Add component to <code>component_types.json</code></li>
+<li>✅ Add to <code>state_sequence</code> array</li>
+<li>✅ Add prompts to <code>state_prompts.json</code></li>
+<li>✅ Update <code>component_applicability.json</code></li>
+<li>✅ Restart server</li>
+<li>✅ Verify with health check</li>
+<li>✅ Test the flow</li>
+</ol>
+<p><strong>No Python code changes needed!</strong> 🎉</p>
+<p><strong>Common Patterns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Selection Type</th>
+<th>Required Fields</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard hardware</td>
+<td><code>single</code></td>
+<td>All from table above</td>
+</tr>
+<tr>
+<td>Multiple items</td>
+<td><code>multi</code></td>
+<td>+ "done" in prompt</td>
+</tr>
+<tr>
+<td>Complex logic</td>
+<td><code>custom</code></td>
+<td>+ <code>processor_class</code></td>
+</tr>
+<tr>
+<td>Conditional visibility</td>
+<td>Any</td>
+<td>Applicability rules</td>
+</tr>
+<tr>
+<td>Mandatory state</td>
+<td>Any</td>
+<td><code>is_mandatory: true</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resources:</strong></p>
+<ul>
+<li>Config Validator: <code>app/services/config/config_validator.py</code></li>
+<li>Health Endpoints: <code>GET /api/v1/health/config/*</code></li>
+<li>Example Tests: <code>tests/test_integration_phase6.py</code></li>
+<li>Architecture Docs: <code>docs/DYNAMIC_STATE_ARCHITECTURE.md</code></li>
+</ul>
+<p><strong>Support:</strong></p>
+<p>For questions or issues:
+1. Check health endpoint: <code>/api/v1/health/config</code>
+2. Review logs: Look for validation errors
+3. Run tests: <code>python tests/test_integration_phase6.py</code>
+4. Check this guide: Search for your error message</p>
+<hr />
+<p><strong>Happy state building!</strong> 🚀</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 ESAB
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/esab/configurator" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/esab-configurator/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../../javascripts/extra.js"></script>
+      
+    
+  </body>
+</html>

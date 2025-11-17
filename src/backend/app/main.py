@@ -436,6 +436,12 @@ if (static_dir / "index.html").exists():
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
     logger.info(f"✓ Static files mounted from: {static_dir}")
 
+# Mount MkDocs documentation
+docs_dir = Path(__file__).parent.parent.parent.parent / "site"
+if docs_dir.exists():
+    app.mount("/mkdocs", StaticFiles(directory=str(docs_dir), html=True), name="mkdocs")
+    logger.info(f"✓ MkDocs documentation mounted at /mkdocs from: {docs_dir}")
+
 
 @app.get("/")
 async def root():

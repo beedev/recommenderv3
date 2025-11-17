@@ -1,0 +1,2279 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="AI-powered welding equipment configurator - Technical documentation">
+      
+      
+        <meta name="author" content="ESAB Development Team">
+      
+      
+        <link rel="canonical" href="https://esab-configurator.readthedocs.io/CONTEXT_BASED_STRATEGIES/">
+      
+      
+        <link rel="prev" href="../ORCHESTRATOR_ARCHITECTURE/">
+      
+      
+        <link rel="next" href="../MASTER_PARAMETER_JSON_ARCHITECTURE/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Search Strategies - ESAB Configurator Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#context-based-search-strategies" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ESAB Configurator Documentation" class="md-header__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ESAB Configurator Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Search Strategies
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../CODE_ARCHITECTURE_OVERVIEW/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../deployment/README.md" class="md-tabs__link">
+          
+  
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ESAB Configurator Documentation" class="md-nav__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ESAB Configurator Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_ARCHITECTURE_OVERVIEW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORRECTED_STATE_FLOW_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ORCHESTRATOR_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestrator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Search Strategies
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Search Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configuration-location" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Location
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-gets-configured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Gets Configured
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#compatibility-validation-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compatibility Validation Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Compatibility Validation Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#critical-understanding-all-strategies-validate-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⭐ Critical Understanding: All Strategies Validate Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compatibility-validation-comparison-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compatibility Validation Comparison Table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation Implementation Details
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Validation Implementation Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-cypher-strategy-query-level-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Cypher Strategy - Query-Level Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-lucene-strategy-query-level-validation-same-as-cypher" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Lucene Strategy - Query-Level Validation (Same as Cypher)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-vector-strategy-post-processing-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Vector Strategy - Post-Processing Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-llm-strategy-inherited-validation-from-retrieval-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. LLM Strategy - Inherited Validation from Retrieval Strategies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-driven-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration-Driven Compatibility
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technical-deep-dive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical Deep-Dive
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technical Deep-Dive">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mode-detection-algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mode Detection Algorithm
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strategy-selection-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategy Selection Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#strategy-filtering-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategy Filtering Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-impact-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Impact Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Impact Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#proactive-display-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proactive Display Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-intent-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Intent Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scoring-and-quality-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scoring and Quality Impact
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scoring and Quality Impact">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#proactive-display-scoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proactive Display Scoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-intent-scoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Intent Scoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-trade-offs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Trade-offs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Trade-offs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-current-configuration-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 1: Current Configuration (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-performance-optimized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 2: Performance-Optimized
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-3-quality-optimized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 3: Quality-Optimized
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#practical-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Practical Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Practical Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-1-state-transition-proactive-display" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 1: State Transition (Proactive Display)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-product-search-user-intent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 2: Product Search (User Intent)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monitoring-and-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Monitoring and Debugging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Monitoring and Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#log-markers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log Markers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MASTER_PARAMETER_JSON_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Parameter JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MULTILINGUAL_FLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multilingual Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    System Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONFIGURATION_SYSTEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OBSERVABILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-guide.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operations/runbook.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="context-based-search-strategies">Context-Based Search Strategies<a class="headerlink" href="#context-based-search-strategies" title="Permanent link">&para;</a></h1>
+<h2 id="executive-summary">Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p><strong>Purpose</strong>: Dynamic search strategy selection based on user interaction context to optimize performance and relevance.</p>
+<p><strong>Two Operating Modes</strong>:
+1. <strong>Proactive Display</strong> (50-200ms) - Fast compatibility checking when entering new states
+2. <strong>User Intent</strong> (200-800ms) - Comprehensive semantic matching for explicit search requirements</p>
+<p><strong>Key Benefit</strong>: 60-75% faster response time for navigation commands while maintaining high relevance for actual searches.</p>
+<p><strong>Critical Clarification</strong>: ALL strategies validate COMPATIBLE_WITH relationships - the difference is HOW they validate (query-level vs post-processing).</p>
+<hr />
+<h2 id="configuration-overview">Configuration Overview<a class="headerlink" href="#configuration-overview" title="Permanent link">&para;</a></h2>
+<h3 id="configuration-location">Configuration Location<a class="headerlink" href="#configuration-location" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>src/backend/app/config/search_config.json</code>
+<strong>Lines</strong>: 137-146</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;context_based_strategies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Strategy selection based on search context (proactive vs user intent)&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;proactive_display&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;enabled_strategies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;cypher&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Proactive display uses only Cypher for fast compatibility checking when entering a new state&quot;</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;user_intent&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;enabled_strategies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;cypher&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;lucene&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;vector&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;llm&quot;</span><span class="p">],</span>
+<span class="w">      </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User intent uses all strategies for comprehensive semantic matching when user provides search requirements.&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="what-gets-configured">What Gets Configured<a class="headerlink" href="#what-gets-configured" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Values</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>proactive_display.enabled_strategies</code></td>
+<td><code>["cypher"]</code></td>
+<td>Fast compatibility-only search</td>
+</tr>
+<tr>
+<td><code>user_intent.enabled_strategies</code></td>
+<td><code>["cypher", "lucene", "vector", "llm"]</code></td>
+<td>Full semantic search pipeline</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="compatibility-validation-architecture">Compatibility Validation Architecture<a class="headerlink" href="#compatibility-validation-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="critical-understanding-all-strategies-validate-compatibility">⭐ Critical Understanding: All Strategies Validate Compatibility<a class="headerlink" href="#critical-understanding-all-strategies-validate-compatibility" title="Permanent link">&para;</a></h3>
+<p><strong>Common Misconception</strong>: "Only Cypher strategy validates COMPATIBLE_WITH relationships"</p>
+<p><strong>Actual Implementation</strong>: ALL search strategies validate compatibility, but at different architectural layers.</p>
+<h3 id="compatibility-validation-comparison-table">Compatibility Validation Comparison Table<a class="headerlink" href="#compatibility-validation-comparison-table" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Validates Compatibility?</th>
+<th>Validation Layer</th>
+<th>Implementation</th>
+<th>File Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cypher</strong></td>
+<td>✅ YES</td>
+<td>Query construction</td>
+<td><code>Neo4jQueryBuilder.add_compatibility_filters()</code> adds MATCH clauses for COMPATIBLE_WITH relationships</td>
+<td><code>query_builder.py:98-301</code></td>
+</tr>
+<tr>
+<td><strong>Lucene</strong></td>
+<td>✅ YES</td>
+<td>Query construction</td>
+<td>Same <code>Neo4jQueryBuilder.add_compatibility_filters()</code> method (shared centralized logic)</td>
+<td><code>component_service.py:270-276</code></td>
+</tr>
+<tr>
+<td><strong>Vector</strong></td>
+<td>✅ YES</td>
+<td>Post-processing</td>
+<td>Returns semantic matches, then validates via <code>validate_compatibility()</code> delegation</td>
+<td><code>vector_strategy.py:207-232</code></td>
+</tr>
+<tr>
+<td><strong>LLM</strong></td>
+<td>✅ YES</td>
+<td>Inherited from retrieval</td>
+<td>Retrieves from Lucene/Vector (already validated), then re-ranks</td>
+<td><code>llm_strategy.py:224-244</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="validation-implementation-details">Validation Implementation Details<a class="headerlink" href="#validation-implementation-details" title="Permanent link">&para;</a></h3>
+<h4 id="1-cypher-strategy-query-level-validation">1. Cypher Strategy - Query-Level Validation<a class="headerlink" href="#1-cypher-strategy-query-level-validation" title="Permanent link">&para;</a></h4>
+<p><strong>Compatibility Check</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># File: query_builder.py, Lines 98-301</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_compatibility_filters</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">component_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">selected_components</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">node_alias</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;target&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add COMPATIBLE_WITH relationship filters for dependent components.</span>
+
+<span class="sd">    Example: For feeder search with selected power_source:</span>
+<span class="sd">    Adds: MATCH (ps:PowerSource {gin: $ps_gin})</span>
+<span class="sd">          MATCH (target)-[:COMPATIBLE_WITH]-&gt;(ps)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Resulting Cypher Query</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">target</span><span class="p">:</span><span class="n">Feeder</span><span class="p">)</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">ps_dep</span><span class="p">:</span><span class="n">PowerSource</span><span class="w"> </span><span class="p">{</span><span class="n">gin</span><span class="p">:</span><span class="w"> </span><span class="err">$</span><span class="n">power_source_gin</span><span class="p">})</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="o">-[</span><span class="n">r1</span><span class="p">:</span><span class="n">COMPATIBLE_WITH</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">ps_dep</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">target</span><span class="p">.</span><span class="n">category</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="err">$</span><span class="n">category</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">target</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">target</span><span class="p">.</span><span class="n">priority</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>How It Works</strong>:
+- Neo4j graph database enforces compatibility at query execution time
+- Only products with COMPATIBLE_WITH edges to selected components are returned
+- Fastest method because filtering happens in database</p>
+<h4 id="2-lucene-strategy-query-level-validation-same-as-cypher">2. Lucene Strategy - Query-Level Validation (Same as Cypher)<a class="headerlink" href="#2-lucene-strategy-query-level-validation-same-as-cypher" title="Permanent link">&para;</a></h4>
+<p><strong>Compatibility Check</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># File: component_service.py, Lines 270-276</span>
+<span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;requires_compatibility&quot;</span><span class="p">):</span>
+    <span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">add_compatibility_filters</span><span class="p">(</span>
+        <span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">component_type</span><span class="p">,</span> <span class="n">selected_components</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Resulting Cypher Query with Lucene</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">index</span><span class="p">.</span><span class="n">fulltext</span><span class="p">.</span><span class="n">queryNodes</span><span class="p">(</span><span class="s">&#39;productIndex&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">$</span><span class="n">search_text</span><span class="p">)</span>
+<span class="k">YIELD</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">score</span>
+<span class="k">WITH</span><span class="w"> </span><span class="p">*</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">:</span><span class="n">Feeder</span><span class="w"> </span><span class="n">AND</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">category</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="err">$</span><span class="n">category</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">ps_dep</span><span class="p">:</span><span class="n">PowerSource</span><span class="w"> </span><span class="p">{</span><span class="n">gin</span><span class="p">:</span><span class="w"> </span><span class="err">$</span><span class="n">power_source_gin</span><span class="p">})</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">-[</span><span class="n">r1</span><span class="p">:</span><span class="n">COMPATIBLE_WITH</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">ps_dep</span><span class="p">)</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">score</span><span class="w"> </span><span class="k">DESC</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>How It Works</strong>:
+- Lucene fulltext search finds textually relevant products
+- <strong>Same <code>add_compatibility_filters()</code> method</strong> adds COMPATIBLE_WITH relationships
+- Neo4j filters Lucene results to only compatible products
+- Returns products ranked by Lucene relevance + compatibility</p>
+<p><strong>Key Difference from Cypher</strong>: Lucene starts with text relevance, then filters by compatibility. Cypher starts with compatibility graph traversal.</p>
+<h4 id="3-vector-strategy-post-processing-validation">3. Vector Strategy - Post-Processing Validation<a class="headerlink" href="#3-vector-strategy-post-processing-validation" title="Permanent link">&para;</a></h4>
+<p><strong>Why Different</strong>: Vector index queries can't include relationship traversal in the same Cypher structure.</p>
+<p><strong>Search Query</strong> (No compatibility in query):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="err">#</span><span class="w"> </span><span class="n">File</span><span class="p">:</span><span class="w"> </span><span class="n">vector_strategy</span><span class="p">.</span><span class="n">py</span><span class="p">,</span><span class="w"> </span><span class="n">Lines</span><span class="w"> </span><span class="m">116</span><span class="err">-</span><span class="m">129</span>
+<span class="k">CALL</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">index</span><span class="p">.</span><span class="n">vector</span><span class="p">.</span><span class="n">queryNodes</span><span class="p">(</span><span class="s">&#39;embeddingIndex&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">$</span><span class="k">limit</span><span class="p">,</span><span class="w"> </span><span class="err">$</span><span class="n">vector</span><span class="p">)</span>
+<span class="k">YIELD</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">score</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">:</span><span class="n">Product</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">HAS_EMBEDDING</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">category</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="err">$</span><span class="n">category</span><span class="w"> </span><span class="n">AND</span><span class="w"> </span><span class="n">score</span><span class="w"> </span><span class="p">&gt;=</span><span class="w"> </span><span class="err">$</span><span class="n">min_score</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">score</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">score</span><span class="w"> </span><span class="k">DESC</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Compatibility Validation</strong> (Post-query):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># File: vector_strategy.py, Lines 207-232</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">validate_compatibility</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">product_gin</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">selected_components</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">component_type</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate product compatibility using Neo4j graph relationships.</span>
+
+<span class="sd">    Delegates to the Neo4j product search service for compatibility validation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">neo4j_search</span><span class="o">.</span><span class="n">validate_compatibility</span><span class="p">(</span>
+        <span class="n">product_gin</span><span class="o">=</span><span class="n">product_gin</span><span class="p">,</span>
+        <span class="n">selected_components</span><span class="o">=</span><span class="n">selected_components</span><span class="p">,</span>
+        <span class="n">component_type</span><span class="o">=</span><span class="n">component_type</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>How It Works</strong>:
+1. Vector search finds semantically similar products (all matches above similarity threshold)
+2. <strong>Compatibility validation happens externally</strong> via <code>validate_compatibility()</code> method
+3. Consolidation layer can filter results by compatibility before returning to user</p>
+<h4 id="4-llm-strategy-inherited-validation-from-retrieval-strategies">4. LLM Strategy - Inherited Validation from Retrieval Strategies<a class="headerlink" href="#4-llm-strategy-inherited-validation-from-retrieval-strategies" title="Permanent link">&para;</a></h4>
+<p><strong>Retrieval from Validated Sources</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># File: llm_strategy.py, Lines 112-159</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieval_method</span> <span class="o">==</span> <span class="s2">&quot;lucene&quot;</span><span class="p">:</span>
+    <span class="c1"># Lucene results are ALREADY compatibility-filtered</span>
+    <span class="n">lucene_result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">lucene_strategy</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+        <span class="n">component_type</span><span class="o">=</span><span class="n">component_type</span><span class="p">,</span>
+        <span class="n">selected_components</span><span class="o">=</span><span class="n">selected_components</span><span class="p">,</span>  <span class="c1"># ← Compatibility enforced here</span>
+        <span class="o">...</span>
+    <span class="p">)</span>
+    <span class="n">all_candidates</span> <span class="o">=</span> <span class="n">lucene_result</span><span class="o">.</span><span class="n">products</span>
+
+<span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">retrieval_method</span> <span class="o">==</span> <span class="s2">&quot;vector&quot;</span><span class="p">:</span>
+    <span class="c1"># Vector results include all semantic matches (unfiltered)</span>
+    <span class="n">vector_result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">vector_strategy</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+        <span class="n">component_type</span><span class="o">=</span><span class="n">component_type</span><span class="p">,</span>
+        <span class="n">selected_components</span><span class="o">=</span><span class="n">selected_components</span><span class="p">,</span>  <span class="c1"># ← Passed through</span>
+        <span class="o">...</span>
+    <span class="p">)</span>
+    <span class="n">all_candidates</span> <span class="o">=</span> <span class="n">vector_result</span><span class="o">.</span><span class="n">products</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Validation Delegation</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># File: llm_strategy.py, Lines 224-244</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">validate_compatibility</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">product_gin</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">selected_components</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">component_type</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Delegates to Lucene strategy for compatibility validation.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">lucene_strategy</span><span class="o">.</span><span class="n">validate_compatibility</span><span class="p">(</span>
+        <span class="n">product_gin</span><span class="p">,</span> <span class="n">selected_components</span><span class="p">,</span> <span class="n">component_type</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>How It Works</strong>:
+1. LLM retrieves candidates from Lucene (pre-filtered) and/or Vector (unfiltered)
+2. LLM re-ranks combined set by semantic relevance
+3. Compatibility validation available via delegation for any additional filtering</p>
+<h3 id="configuration-driven-compatibility">Configuration-Driven Compatibility<a class="headerlink" href="#configuration-driven-compatibility" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>component_types.json</code></p>
+<p>All strategies check <code>requires_compatibility</code> flag:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;power_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;requires_compatibility&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">  </span><span class="c1">// First component, no dependencies</span>
+<span class="w">    </span><span class="nt">&quot;dependencies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;requires_compatibility&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">   </span><span class="c1">// Depends on PowerSource</span>
+<span class="w">    </span><span class="nt">&quot;dependencies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;power_source&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;cooler&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;requires_compatibility&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">   </span><span class="c1">// Depends on PowerSource</span>
+<span class="w">    </span><span class="nt">&quot;dependencies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;power_source&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;interconnector&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;requires_compatibility&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">   </span><span class="c1">// Depends on PowerSource, Feeder, Cooler</span>
+<span class="w">    </span><span class="nt">&quot;dependencies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;power_source&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;feeder&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;cooler&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Implementation</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># query_builder.py, Lines 148-156</span>
+<span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">component_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">component_type</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">config</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;requires_compatibility&quot;</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⏭️  SKIPPING compatibility filters (requires_compatibility=False)&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="kc">None</span>
+
+<span class="n">dependencies</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dependencies&quot;</span><span class="p">,</span> <span class="p">[])</span>
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="technical-deep-dive">Technical Deep-Dive<a class="headerlink" href="#technical-deep-dive" title="Permanent link">&para;</a></h2>
+<h3 id="mode-detection-algorithm">Mode Detection Algorithm<a class="headerlink" href="#mode-detection-algorithm" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>src/backend/app/services/search/orchestrator.py</code>
+<strong>Lines</strong>: 111-146</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Line 112: Detect mode based on user message</span>
+<span class="n">command_keywords</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;skip&quot;</span><span class="p">,</span> <span class="s2">&quot;done&quot;</span><span class="p">,</span> <span class="s2">&quot;next&quot;</span><span class="p">,</span> <span class="s2">&quot;finalize&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">]</span>
+<span class="n">is_proactive_display</span> <span class="o">=</span> <span class="n">user_message</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">in</span> <span class="n">command_keywords</span>
+
+<span class="k">if</span> <span class="n">is_proactive_display</span><span class="p">:</span>
+    <span class="c1"># Proactive display: Use only fast compatibility strategies</span>
+    <span class="n">context_strategies</span> <span class="o">=</span> <span class="n">context_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;proactive_display&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="s2">&quot;enabled_strategies&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;cypher&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;🔍 Proactive display mode - using strategies: </span><span class="si">{</span><span class="n">context_strategies</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># User intent: Use all semantic matching strategies</span>
+    <span class="n">context_strategies</span> <span class="o">=</span> <span class="n">context_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;user_intent&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="s2">&quot;enabled_strategies&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;cypher&quot;</span><span class="p">,</span> <span class="s2">&quot;lucene&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;🎯 User intent mode - using strategies: </span><span class="si">{</span><span class="n">context_strategies</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Detection Logic</strong>:
+- <strong>Proactive Mode Triggers</strong>: Empty message, "skip", "done", "next", "finalize", "yes", "no"
+- <strong>User Intent Mode Triggers</strong>: Any other message (search queries, product names, specifications)</p>
+<h3 id="strategy-selection-flow">Strategy Selection Flow<a class="headerlink" href="#strategy-selection-flow" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span></pre></div></td><td class="code"><div><pre><span></span><code>User Message Input
+    ↓
+Context Detection (orchestrator.py:112)
+    ↓
+    ├─→ Command Keyword? → PROACTIVE MODE
+    │        ↓
+    │   Load proactive_display config
+    │        ↓
+    │   Use [&quot;cypher&quot;] only
+    │        ↓
+    │   Fast compatibility search (50-200ms)
+    │        ↓
+    │   ✅ Compatibility validated in query
+    │
+    └─→ Search Query? → USER INTENT MODE
+             ↓
+        Load user_intent config
+             ↓
+        Use [&quot;cypher&quot;, &quot;lucene&quot;, &quot;vector&quot;, &quot;llm&quot;]
+             ↓
+        Comprehensive semantic search (200-800ms)
+             ↓
+        ✅ All strategies validate compatibility
+</code></pre></div></td></tr></table></div>
+<h3 id="strategy-filtering-implementation">Strategy Filtering Implementation<a class="headerlink" href="#strategy-filtering-implementation" title="Permanent link">&para;</a></h3>
+<p><strong>File</strong>: <code>src/backend/app/services/search/orchestrator.py</code>
+<strong>Lines</strong>: 135-138</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Filter strategies by:</span>
+<span class="c1"># 1. Strategy is enabled (strategy.is_enabled() = True)</span>
+<span class="c1"># 2. Strategy name is in context-based enabled list</span>
+<span class="n">enabled_strategies</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategies</span>
+    <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">is_enabled</span><span class="p">()</span> <span class="ow">and</span> <span class="n">s</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span> <span class="ow">in</span> <span class="n">context_strategies</span>
+<span class="p">]</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Double-Gating Mechanism</strong>:
+- <strong>Gate 1</strong>: Strategy-level <code>is_enabled()</code> flag (individual strategy config)
+- <strong>Gate 2</strong>: Context-based <code>enabled_strategies</code> list (context config)
+- <strong>Both must be true</strong> for strategy to execute</p>
+<hr />
+<h2 id="performance-impact-analysis">Performance Impact Analysis<a class="headerlink" href="#performance-impact-analysis" title="Permanent link">&para;</a></h2>
+<h3 id="proactive-display-mode">Proactive Display Mode<a class="headerlink" href="#proactive-display-mode" title="Permanent link">&para;</a></h3>
+<p><strong>Enabled Strategies</strong>: Cypher only
+<strong>Typical Response Time</strong>: 50-200ms
+<strong>Use Cases</strong>: State transitions, navigation commands, skip/done actions</p>
+<p><strong>Performance Breakdown</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>Context Detection:      5ms
+Config Loading:        10ms
+Cypher Query:         50-150ms  ← Includes compatibility validation
+Result Formatting:     10-30ms
+─────────────────────────────
+Total:                75-195ms
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Strengths</strong>:
+- ✅ Fast enough for real-time UI updates
+- ✅ Minimal server load
+- ✅ Predictable latency
+- ✅ Suitable for mobile networks
+- ✅ Still validates compatibility (via graph traversal)</p>
+<p><strong>Limitations</strong>:
+- ❌ No relevance ranking (priority-based only)
+- ❌ No semantic understanding
+- ❌ Misses products with alternative terminology</p>
+<h3 id="user-intent-mode">User Intent Mode<a class="headerlink" href="#user-intent-mode" title="Permanent link">&para;</a></h3>
+<p><strong>Enabled Strategies</strong>: Cypher + Lucene + Vector + LLM
+<strong>Typical Response Time</strong>: 200-800ms
+<strong>Use Cases</strong>: Search queries, product requests, specification-based searches</p>
+<p><strong>Performance Breakdown</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code>Context Detection:       5ms
+Config Loading:         10ms
+Parallel Strategy Execution:
+  ├─ Cypher:           50-100ms  ← Validates compatibility in query
+  ├─ Lucene:          100-200ms  ← Validates compatibility in query
+  ├─ Vector:          200-400ms  ← Post-validation available
+  └─ LLM:             300-600ms  ← Inherits from Lucene/Vector
+Result Consolidation:   50-100ms
+Score Normalization:    10-20ms
+Threshold Filtering:    10-20ms
+─────────────────────────────
+Total:                 200-800ms
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Strengths</strong>:
+- ✅ High relevance matching
+- ✅ Semantic understanding
+- ✅ Handles synonyms and concepts
+- ✅ Intelligent re-ranking
+- ✅ All strategies ensure compatibility</p>
+<p><strong>Limitations</strong>:
+- ⚠️ Higher latency (2-4x slower)
+- ⚠️ More resource-intensive
+- ⚠️ LLM costs per query
+- ⚠️ Potential timeout on slow networks</p>
+<hr />
+<h2 id="scoring-and-quality-impact">Scoring and Quality Impact<a class="headerlink" href="#scoring-and-quality-impact" title="Permanent link">&para;</a></h2>
+<h3 id="proactive-display-scoring">Proactive Display Scoring<a class="headerlink" href="#proactive-display-scoring" title="Permanent link">&para;</a></h3>
+<p><strong>Source</strong>: Cypher relationship priorities only (still includes compatibility)</p>
+<p><strong>Score Calculation</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Priority comes from Neo4j COMPATIBLE_WITH relationship weight</span>
+<span class="c1"># Lower priority number = higher rank</span>
+<span class="n">products</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">priority</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Score Range</strong>: 1-100 (priority values)
+<strong>Score Meaning</strong>: Lower = better match</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>Product A: Priority 1 → Top recommendation (compatible)
+Product B: Priority 5 → Secondary option (compatible)
+Product C: Priority 10 → Tertiary option (compatible)
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Quality Characteristics</strong>:
+- ✅ Consistent ordering across sessions
+- ✅ Deterministic results
+- ✅ Guarantees compatibility
+- ❌ No relevance to user query specifics
+- ❌ Ignores product name/description matching</p>
+<h3 id="user-intent-scoring">User Intent Scoring<a class="headerlink" href="#user-intent-scoring" title="Permanent link">&para;</a></h3>
+<p><strong>Source</strong>: Weighted consolidation of 4 strategies (all validate compatibility)</p>
+<p><strong>Score Calculation</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Each strategy contributes weighted score</span>
+<span class="n">cypher_score</span> <span class="o">=</span> <span class="n">cypher_result</span><span class="o">.</span><span class="n">priority_score</span> <span class="o">*</span> <span class="mf">0.25</span>
+<span class="n">lucene_score</span> <span class="o">=</span> <span class="n">lucene_result</span><span class="o">.</span><span class="n">relevance_score</span> <span class="o">*</span> <span class="mf">0.35</span>
+<span class="n">vector_score</span> <span class="o">=</span> <span class="n">vector_result</span><span class="o">.</span><span class="n">similarity_score</span> <span class="o">*</span> <span class="mf">0.25</span>
+<span class="n">llm_score</span> <span class="o">=</span> <span class="n">llm_result</span><span class="o">.</span><span class="n">ranking_score</span> <span class="o">*</span> <span class="mf">0.15</span>
+
+<span class="c1"># Consolidated score</span>
+<span class="n">final_score</span> <span class="o">=</span> <span class="n">cypher_score</span> <span class="o">+</span> <span class="n">lucene_score</span> <span class="o">+</span> <span class="n">vector_score</span> <span class="o">+</span> <span class="n">llm_score</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Score Range</strong>: 0.0-20.0 (normalized consolidated scores)
+<strong>Score Meaning</strong>: Higher = better match</p>
+<p><strong>Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>Product A: Score 15.3 → Excellent match (keyword + semantic + LLM + compatible)
+Product B: Score 8.7 → Good match (keyword match, weaker semantic, compatible)
+Product C: Score 3.2 → Weak match (compatibility only, low relevance)
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Quality Characteristics</strong>:
+- ✅ Query-specific relevance
+- ✅ Balances multiple ranking signals
+- ✅ Handles complex requirements
+- ✅ Ensures compatibility across all strategies
+- ⚠️ Non-deterministic (LLM scores may vary)
+- ⚠️ Requires calibration of weights</p>
+<hr />
+<h2 id="configuration-trade-offs">Configuration Trade-offs<a class="headerlink" href="#configuration-trade-offs" title="Permanent link">&para;</a></h2>
+<h3 id="option-1-current-configuration-recommended">Option 1: Current Configuration (Recommended)<a class="headerlink" href="#option-1-current-configuration-recommended" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;proactive_display&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;enabled_strategies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;cypher&quot;</span><span class="p">]},</span>
+<span class="w">  </span><span class="nt">&quot;user_intent&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;enabled_strategies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;cypher&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;lucene&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;vector&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;llm&quot;</span><span class="p">]}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Pros</strong>:
+- ✅ Best balance of speed and quality
+- ✅ Fast navigation (50-200ms)
+- ✅ High-quality search results (200-800ms)
+- ✅ Good user experience
+- ✅ All results guaranteed compatible</p>
+<p><strong>Cons</strong>:
+- ⚠️ LLM costs for every search query
+- ⚠️ 800ms max latency may feel slow on mobile</p>
+<p><strong>Best For</strong>: Production deployments with budget for LLM calls</p>
+<h3 id="option-2-performance-optimized">Option 2: Performance-Optimized<a class="headerlink" href="#option-2-performance-optimized" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;proactive_display&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;enabled_strategies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;cypher&quot;</span><span class="p">]},</span>
+<span class="w">  </span><span class="nt">&quot;user_intent&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;enabled_strategies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;cypher&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;lucene&quot;</span><span class="p">]}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Pros</strong>:
+- ✅ Faster search responses (100-300ms)
+- ✅ No LLM costs
+- ✅ Still good keyword matching
+- ✅ Suitable for mobile networks
+- ✅ Compatibility validation in all queries</p>
+<p><strong>Cons</strong>:
+- ❌ No semantic understanding
+- ❌ Weaker handling of complex queries
+- ❌ Misses synonym matching</p>
+<p><strong>Best For</strong>: Cost-sensitive deployments, mobile-first apps</p>
+<h3 id="option-3-quality-optimized">Option 3: Quality-Optimized<a class="headerlink" href="#option-3-quality-optimized" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;proactive_display&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;enabled_strategies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;cypher&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;lucene&quot;</span><span class="p">]},</span>
+<span class="w">  </span><span class="nt">&quot;user_intent&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;enabled_strategies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;cypher&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;lucene&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;vector&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;llm&quot;</span><span class="p">]}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Pros</strong>:
+- ✅ Better proactive display relevance
+- ✅ Best possible search quality
+- ✅ Consistent multi-strategy approach
+- ✅ Maximum compatibility assurance</p>
+<p><strong>Cons</strong>:
+- ❌ Slower navigation (150-400ms)
+- ❌ Higher server load
+- ❌ May feel laggy during state transitions</p>
+<p><strong>Best For</strong>: Desktop applications, research/analysis tools</p>
+<hr />
+<h2 id="practical-examples">Practical Examples<a class="headerlink" href="#practical-examples" title="Permanent link">&para;</a></h2>
+<h3 id="example-1-state-transition-proactive-display">Example 1: State Transition (Proactive Display)<a class="headerlink" href="#example-1-state-transition-proactive-display" title="Permanent link">&para;</a></h3>
+<p><strong>User Action</strong>: User selects PowerSource "Aristo 500ix", system advances to Feeder state</p>
+<p><strong>Message</strong>: <code>""</code> (empty string when entering new state)</p>
+<p><strong>Detection</strong>: <code>is_proactive_display = True</code> (empty string in command_keywords)</p>
+<p><strong>Strategies Used</strong>: Cypher only</p>
+<p><strong>Query with Compatibility Validation</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">ps</span><span class="p">:</span><span class="n">PowerSource</span><span class="w"> </span><span class="p">{</span><span class="n">gin</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;0446200880&#39;</span><span class="p">})</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">feeder</span><span class="p">:</span><span class="n">Feeder</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">COMPATIBLE_WITH</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">feeder</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">feeder</span><span class="p">.</span><span class="n">priority</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Response Time</strong>: ~80ms</p>
+<p><strong>Results</strong> (all compatible):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>1. RobustFeed U6 (Priority: 1)
+2. RobustFeed U74M (Priority: 5)
+3. RobustFeed U8 (Priority: 8)
+</code></pre></div></td></tr></table></div></p>
+<p><strong>User Experience</strong>: Instant display of compatible feeders, no perceived delay</p>
+<hr />
+<h3 id="example-2-product-search-user-intent">Example 2: Product Search (User Intent)<a class="headerlink" href="#example-2-product-search-user-intent" title="Permanent link">&para;</a></h3>
+<p><strong>User Message</strong>: <code>"water-cooled feeder for 500A aluminum welding"</code></p>
+<p><strong>Detection</strong>: <code>is_proactive_display = False</code> (not a command keyword)</p>
+<p><strong>Strategies Used</strong>: Cypher + Lucene + Vector + LLM (all validate compatibility)</p>
+<p><strong>Parallel Execution</strong>:</p>
+<p><strong>Cypher Query</strong> (50ms):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">ps</span><span class="p">:</span><span class="n">PowerSource</span><span class="w"> </span><span class="p">{</span><span class="n">gin</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;0446200880&#39;</span><span class="p">})</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">feeder</span><span class="p">:</span><span class="n">Feeder</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">COMPATIBLE_WITH</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span><span class="w">  </span><span class="err">←</span><span class="w"> </span><span class="n">Compatibility</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">feeder</span><span class="p">.</span><span class="n">current</span><span class="w"> </span><span class="p">&gt;=</span><span class="w"> </span><span class="m">500</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">feeder</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Lucene Query</strong> (120ms):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">index</span><span class="p">.</span><span class="n">fulltext</span><span class="p">.</span><span class="n">queryNodes</span><span class="p">(</span><span class="s">&#39;feederFulltextIndex&#39;</span><span class="p">,</span><span class="w"> </span><span class="s">&#39;water-cooled 500A aluminum&#39;</span><span class="p">)</span>
+<span class="k">YIELD</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">score</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">COMPATIBLE_WITH</span><span class="o">]-&gt;</span><span class="p">(:</span><span class="n">PowerSource</span><span class="w"> </span><span class="p">{</span><span class="n">gin</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;0446200880&#39;</span><span class="p">})</span><span class="w">  </span><span class="err">←</span><span class="w"> </span><span class="n">Compatibility</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">score</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Vector Query</strong> (250ms):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Returns semantic matches (compatibility validated post-query)</span>
+<span class="n">query_embedding</span> <span class="o">=</span> <span class="n">openai</span><span class="o">.</span><span class="n">embeddings</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">,</span>
+    <span class="nb">input</span><span class="o">=</span><span class="s2">&quot;water-cooled feeder for 500A aluminum welding&quot;</span>
+<span class="p">)</span>
+<span class="c1"># Neo4j vector search + external compatibility validation</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>LLM Query</strong> (450ms):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Retrieves from Lucene (already compatible) and Vector</span>
+<span class="c1"># Re-ranks by suitability</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Response Time</strong>: ~530ms total</p>
+<p><strong>Results</strong> (all compatible):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>1. RobustFeed U74M WC (Score: 16.8) - Excellent match, compatible
+2. RobustFeed U8 WC (Score: 14.7) - Good match, compatible
+3. RobustFeed U6 (Score: 8.2) - Compatible but air-cooled
+</code></pre></div></td></tr></table></div></p>
+<p><strong>User Experience</strong>: Highly relevant AND compatible results ranked by suitability</p>
+<hr />
+<h2 id="monitoring-and-debugging">Monitoring and Debugging<a class="headerlink" href="#monitoring-and-debugging" title="Permanent link">&para;</a></h2>
+<h3 id="log-markers">Log Markers<a class="headerlink" href="#log-markers" title="Permanent link">&para;</a></h3>
+<p><strong>Context Detection Logs</strong> (<code>orchestrator.py:116-132</code>):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>🔍 Proactive display mode - using strategies: [&#39;cypher&#39;]
+🎯 User intent mode - using strategies: [&#39;cypher&#39;, &#39;lucene&#39;, &#39;vector&#39;, &#39;llm&#39;]
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Compatibility Validation Logs</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>✅ Compatibility filters added: PowerSource → Feeder
+✅ Compatibility filters added: PowerSource, Feeder → Interconnector
+⏭️  SKIPPING compatibility filters (requires_compatibility=False)
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Strategy Execution Logs</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code>⚡ Cypher strategy executing... (50ms) [compatibility in query]
+📚 Lucene strategy executing... (120ms) [compatibility in query]
+🔮 Vector strategy executing... (250ms) [post-validation available]
+🤖 LLM strategy executing... (450ms) [inherits from retrieval]
+</code></pre></div></td></tr></table></div></p>
+<h3 id="performance-monitoring">Performance Monitoring<a class="headerlink" href="#performance-monitoring" title="Permanent link">&para;</a></h3>
+<p><strong>Key Metrics to Track</strong>:
+- <code>search.context_detection.duration_ms</code> - Context detection time
+- <code>search.strategy.{name}.duration_ms</code> - Individual strategy execution time
+- <code>search.compatibility_validation.duration_ms</code> - Compatibility check time
+- <code>search.consolidation.duration_ms</code> - Score consolidation time
+- <code>search.total.duration_ms</code> - End-to-end search time
+- <code>search.mode.proactive.count</code> - Number of proactive searches
+- <code>search.mode.user_intent.count</code> - Number of user intent searches</p>
+<p><strong>Alert Thresholds</strong>:
+- Proactive display &gt; 300ms → Investigate database performance
+- User intent &gt; 1000ms → Check LLM API latency or network issues
+- Compatibility validation &gt; 100ms → Review graph query optimization
+- Consolidation &gt; 200ms → Review threshold filtering complexity</p>
+<hr />
+<h2 id="summary">Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<p><strong>Context-Based Strategies</strong> provide intelligent search optimization by:</p>
+<ol>
+<li><strong>Detecting Context</strong>: Command keywords vs search queries</li>
+<li><strong>Selecting Strategies</strong>: Fast compatibility (Cypher) vs comprehensive semantic search (all strategies)</li>
+<li><strong>Ensuring Compatibility</strong>: ALL strategies validate COMPATIBLE_WITH relationships at appropriate layers</li>
+<li><strong>Balancing Trade-offs</strong>: 60-75% faster navigation without sacrificing search quality or compatibility</li>
+<li><strong>Maintaining Flexibility</strong>: Easy configuration changes via JSON</li>
+</ol>
+<p><strong>Key Takeaways</strong>:
+- ✅ Proactive mode (50-200ms) for state transitions - validates compatibility in query
+- ✅ User intent mode (200-800ms) for searches - all strategies validate compatibility
+- ✅ Configurable strategy combinations for different deployment needs
+- ✅ Weighted score consolidation for high-quality ranking
+- ✅ Centralized compatibility logic via <code>Neo4jQueryBuilder.add_compatibility_filters()</code></p>
+<p><strong>Recommended Configuration</strong>: Keep default (cypher-only proactive, all-strategies user intent) for best balance of speed, quality, and guaranteed compatibility.</p>
+<hr />
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../CORRECTED_STATE_FLOW_ARCHITECTURE/">Corrected State Flow Architecture</a> - S1→SN state machine</li>
+<li><a href="../THRESHOLD_FILTERING_ANALYSIS/">Threshold Filtering Analysis</a> - Score filtering and boosting</li>
+<li><a href="../CODE_ARCHITECTURE_OVERVIEW/">Code Architecture Overview</a> - Complete system architecture</li>
+<li><a href="PRODUCT_SEARCH_SERVICE.md">Product Search Service</a> - Neo4j search implementation</li>
+</ul>
+<p><strong>Configuration Files</strong>:
+- <code>src/backend/app/config/search_config.json</code> - Context-based strategy configuration
+- <code>src/backend/app/config/component_types.json</code> - Compatibility requirements per component</p>
+<p><strong>Implementation Files</strong>:
+- <code>src/backend/app/services/search/orchestrator.py</code> - Context detection and strategy selection
+- <code>src/backend/app/services/search/query_builder.py</code> - Centralized compatibility validation logic
+- <code>src/backend/app/services/search/consolidator.py</code> - Score consolidation and threshold filtering
+- <code>src/backend/app/services/search/strategies/</code> - Individual strategy implementations</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 ESAB
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/esab/configurator" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/esab-configurator/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../javascripts/extra.js"></script>
+      
+    
+  </body>
+</html>

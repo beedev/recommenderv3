@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Response Debugger</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .panel {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .test-controls {
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .output {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+        .info { color: #17a2b8; }
+        pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .field-present {
+            background: #d4edda;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .field-missing {
+            background: #f8d7da;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .field-empty {
+            background: #fff3cd;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 API Response Debugger</h1>
+    <p>This tool helps diagnose what data the API is actually returning in response_json.</p>
+
+    <div class="test-controls">
+        <input type="text" id="messageInput" placeholder="Enter message (e.g., 'Aristo 500ix')" style="width: 400px;">
+        <button onclick="sendMessage()">Send Message</button>
+        <button onclick="selectProduct()">Select Product (GIN from list)</button>
+        <button onclick="sendDone()">Send "done"</button>
+        <button onclick="clearDebug()">Clear</button>
+    </div>
+
+    <div class="container">
+        <div class="panel">
+            <h2>📨 Latest API Response</h2>
+            <div id="fullResponse" class="output"></div>
+
+            <h3>🎯 response_json Field</h3>
+            <div id="responseJsonField" class="output"></div>
+        </div>
+
+        <div class="panel">
+            <h2>📊 Field Analysis</h2>
+            <div id="fieldAnalysis" class="output"></div>
+
+            <h3>🛒 Cart Rendering Test</h3>
+            <div id="cartTest" class="output"></div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="common.js"></script>
+    <script>
+        let sessionId = null;
+        let userId = ESAB.UserManager.getUserId();
+        let lastProducts = [];
+        let lastResponseJson = null;
+
+        async function sendMessage() {
+            const message = document.getElementById('messageInput').value || 'Aristo 500ix';
+            console.log('🔍 Sending message:', message);
+
+            try {
+                const response = await fetch(`${ESAB.Config.apiEndpoint('/api/v1/configurator/message')}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        user_id: userId,
+                        message: message,
+                        language: 'en'
+                    })
+                });
+
+                const data = await response.json();
+                analyzeResponse(data);
+
+            } catch (error) {
+                showError('API Error: ' + error.message);
+            }
+        }
+
+        async function selectProduct() {
+            if (!lastProducts || lastProducts.length === 0) {
+                showError('No products available. Send a message first.');
+                return;
+            }
+
+            const product = lastProducts[0]; // Select first product
+            console.log('🔍 Selecting product:', product);
+
+            try {
+                const response = await fetch(`${ESAB.Config.apiEndpoint('/api/v1/configurator/select')}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        user_id: userId,
+                        gin: product.gin,
+                        product: product
+                    })
+                });
+
+                const data = await response.json();
+                analyzeResponse(data);
+
+            } catch (error) {
+                showError('Select Error: ' + error.message);
+            }
+        }
+
+        async function sendDone() {
+            await sendCustomMessage('done');
+        }
+
+        async function sendCustomMessage(msg) {
+            try {
+                const response = await fetch(`${ESAB.Config.apiEndpoint('/api/v1/configurator/message')}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        user_id: userId,
+                        message: msg,
+                        language: 'en'
+                    })
+                });
+
+                const data = await response.json();
+                analyzeResponse(data);
+
+            } catch (error) {
+                showError('API Error: ' + error.message);
+            }
+        }
+
+        function analyzeResponse(data) {
+            sessionId = data.session_id;
+            lastProducts = data.products || [];
+            lastResponseJson = data.response_json || {};
+
+            // Display full response
+            document.getElementById('fullResponse').innerHTML = `
+                <div class="info">Session ID: ${sessionId}</div>
+                <div class="info">Current State: ${data.current_state}</div>
+                <div class="info">Products Returned: ${lastProducts.length}</div>
+                <pre>${JSON.stringify(data, null, 2)}</pre>
+            `;
+
+            // Display response_json specifically
+            document.getElementById('responseJsonField').innerHTML = `
+                <div class="warning">Type: ${typeof lastResponseJson}</div>
+                <div class="warning">Is Object: ${typeof lastResponseJson === 'object' && lastResponseJson !== null}</div>
+                <div class="warning">Keys: ${Object.keys(lastResponseJson || {}).length}</div>
+                <pre>${JSON.stringify(lastResponseJson, null, 2)}</pre>
+            `;
+
+            // Analyze fields
+            analyzeFields(lastResponseJson);
+
+            // Test cart rendering
+            testCartRendering(lastResponseJson);
+        }
+
+        function analyzeFields(responseJson) {
+            const coreComponents = ['PowerSource', 'Feeder', 'Cooler', 'Interconnector', 'Torch'];
+            const accessoryCategories = [
+                'PowerSourceAccessories',
+                'FeederAccessories',
+                'FeederConditionalAccessories',
+                'InterconnectorAccessories',
+                'Remotes',
+                'RemoteAccessories',
+                'RemoteConditionalAccessories',
+                'Connectivity',
+                'FeederWears',
+                'Accessories'
+            ];
+
+            let html = '<h4>Core Components:</h4>';
+            for (const key of coreComponents) {
+                const value = responseJson[key];
+                if (value && typeof value === 'object' && value.name) {
+                    html += `<div class="field-present">✅ ${key}: ${value.name} (${value.gin})</div>`;
+                } else {
+                    html += `<div class="field-missing">❌ ${key}: ${JSON.stringify(value)}</div>`;
+                }
+            }
+
+            html += '<h4>Accessory Categories:</h4>';
+            for (const key of accessoryCategories) {
+                const value = responseJson[key];
+
+                if (key in responseJson) {
+                    // Field exists in response
+                    if (Array.isArray(value)) {
+                        if (value.length > 0) {
+                            html += `<div class="field-present">✅ ${key}: [${value.length} items]</div>`;
+                        } else {
+                            html += `<div class="field-empty">⚠️ ${key}: [] (empty array)</div>`;
+                        }
+                    } else if (value === "skipped") {
+                        html += `<div class="field-empty">⚠️ ${key}: "skipped"</div>`;
+                    } else {
+                        html += `<div class="field-missing">❌ ${key}: ${JSON.stringify(value)}</div>`;
+                    }
+                } else {
+                    // Field not present in response
+                    html += `<div class="field-missing">❌ ${key}: FIELD NOT IN RESPONSE</div>`;
+                }
+            }
+
+            // Check applicability
+            html += '<h4>Applicability:</h4>';
+            if (responseJson.applicability) {
+                html += `<div class="field-present">✅ applicability: ${JSON.stringify(responseJson.applicability, null, 2)}</div>`;
+            } else {
+                html += `<div class="field-missing">❌ applicability: NOT PRESENT</div>`;
+            }
+
+            document.getElementById('fieldAnalysis').innerHTML = html;
+        }
+
+        function testCartRendering(responseJson) {
+            try {
+                const cartHTML = ESAB.CartManager.generateCartHTML(responseJson);
+                document.getElementById('cartTest').innerHTML = `
+                    <div class="success">✅ CartManager.generateCartHTML() executed successfully</div>
+                    <div class="info">Generated ${cartHTML.length} characters of HTML</div>
+                    <hr>
+                    ${cartHTML}
+                `;
+            } catch (error) {
+                document.getElementById('cartTest').innerHTML = `
+                    <div class="error">❌ CartManager error: ${error.message}</div>
+                `;
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('fullResponse').innerHTML = `<div class="error">${msg}</div>`;
+        }
+
+        function clearDebug() {
+            document.getElementById('fullResponse').innerHTML = '';
+            document.getElementById('responseJsonField').innerHTML = '';
+            document.getElementById('fieldAnalysis').innerHTML = '';
+            document.getElementById('cartTest').innerHTML = '';
+        }
+
+        // Auto-send initial message on load
+        window.addEventListener('load', () => {
+            console.log('🔍 API Response Debugger loaded');
+            document.getElementById('messageInput').value = 'Aristo 500ix';
+        });
+    </script>
+</body>
+</html>

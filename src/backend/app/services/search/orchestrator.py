@@ -277,7 +277,61 @@ class SearchOrchestrator:
         limit: int,
         offset: int
     ) -> List[Optional[StrategySearchResult]]:
-        """Execute strategies in parallel"""
+        """
+        Execute multiple search strategies concurrently using asyncio.gather().
+
+        Runs all strategies in parallel for maximum performance, with timeout protection
+        and graceful error handling. Failed strategies return None if fallback is enabled,
+        or raise exception otherwise.
+
+        Args:
+            strategies: List of SearchStrategy instances to execute
+            component_type: Component type to search (e.g., "PowerSource", "Feeder")
+            user_message: User's natural language query
+            master_parameters: Extracted parameters from LLM
+            selected_components: Already selected components for compatibility
+            limit: Maximum results per strategy
+            offset: Pagination offset
+
+        Returns:
+            List[Optional[StrategySearchResult]]: Results from all strategies.
+                - Successful strategies return StrategySearchResult with products and scores
+                - Failed strategies return None (if fallback_on_error=True)
+                - Maintains order matching input strategies list
+
+        Execution Flow:
+            1. Create async tasks for each strategy with timeout wrapper
+            2. Execute all tasks in parallel using asyncio.gather(return_exceptions=True)
+            3. Process results:
+                - Exception results → None (if fallback enabled) or raise
+                - Successful results → StrategySearchResult
+            4. Return list of results (same order as input strategies)
+
+        Examples:
+            Success with 2 strategies:
+            >>> strategies = [cypher_strategy, lucene_strategy]
+            >>> results = await orchestrator._execute_parallel(
+            ...     strategies, "PowerSource", "500A MIG", master_params, {}, 10, 0
+            ... )
+            >>> len(results)
+            2
+            >>> results[0]  # Cypher result
+            StrategySearchResult(strategy_name="cypher", products=[...], scores=[...])
+            >>> results[1]  # Lucene result
+            StrategySearchResult(strategy_name="lucene", products=[...], scores=[...])
+
+            Partial failure with fallback:
+            >>> results = await orchestrator._execute_parallel(...)
+            >>> results
+            [StrategySearchResult(...), None, StrategySearchResult(...)]
+            # Middle strategy failed but returned None due to fallback
+
+        Note:
+            - Timeout per strategy: config.get("timeout_seconds", 30)
+            - All strategies execute simultaneously (max parallelism)
+            - Errors are logged but don't stop other strategies (if fallback enabled)
+            - Use for maximum performance when order doesn't matter
+        """
         try:
             tasks = [
                 asyncio.wait_for(
@@ -329,7 +383,66 @@ class SearchOrchestrator:
         limit: int,
         offset: int
     ) -> List[Optional[StrategySearchResult]]:
-        """Execute strategies sequentially"""
+        """
+        Execute search strategies one at a time in sequence.
+
+        Runs strategies in order, with timeout protection and graceful error handling.
+        Failed strategies return None if fallback is enabled, allowing remaining strategies
+        to execute. Useful for ordered execution or when strategies depend on each other.
+
+        Args:
+            strategies: List of SearchStrategy instances to execute in order
+            component_type: Component type to search (e.g., "PowerSource", "Feeder")
+            user_message: User's natural language query
+            master_parameters: Extracted parameters from LLM
+            selected_components: Already selected components for compatibility
+            limit: Maximum results per strategy
+            offset: Pagination offset
+
+        Returns:
+            List[Optional[StrategySearchResult]]: Results from all strategies in order.
+                - Successful strategies return StrategySearchResult with products and scores
+                - Failed strategies return None (if fallback_on_error=True)
+                - Maintains order matching input strategies list
+
+        Execution Flow:
+            1. Loop through strategies in order
+            2. For each strategy:
+                a. Execute with timeout wrapper
+                b. On success: Append result to list
+                c. On failure: Log error, append None (if fallback) or raise
+            3. Continue to next strategy regardless of previous failures (if fallback enabled)
+            4. Return list of results (same order as input strategies)
+
+        Examples:
+            Success with 3 strategies:
+            >>> strategies = [cypher_strategy, lucene_strategy, vector_strategy]
+            >>> results = await orchestrator._execute_sequential(
+            ...     strategies, "PowerSource", "500A MIG", master_params, {}, 10, 0
+            ... )
+            >>> len(results)
+            3
+            >>> results[0]  # Cypher result (executed first)
+            StrategySearchResult(strategy_name="cypher", products=[...], scores=[...])
+            >>> results[2]  # Vector result (executed last)
+            StrategySearchResult(strategy_name="vector", products=[...], scores=[...])
+
+            Partial failure with fallback:
+            >>> results = await orchestrator._execute_sequential(...)
+            >>> results
+            [StrategySearchResult(...), None, StrategySearchResult(...)]
+            # Second strategy failed but returned None, third strategy still executed
+
+        Note:
+            - Timeout per strategy: config.get("timeout_seconds", 30)
+            - Strategies execute one at a time (no parallelism)
+            - Errors are logged but don't stop subsequent strategies (if fallback enabled)
+            - Use when:
+                * Strategies need ordered execution
+                * System resources are limited
+                * Debugging strategy behavior
+            - Slower than parallel execution but uses fewer resources
+        """
         results = []
 
         for strategy in strategies:

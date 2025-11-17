@@ -844,20 +844,41 @@ async def select_product(
             products=result.get("products", [])
         )
 
+        # 🔍 DEBUG: Log response_json state BEFORE save
+        logger.debug(f"   🔍 DEBUG API: Before save_conversation")
+        logger.debug(f"   🔍 DEBUG API: PowerSourceAccessories length: {len(conversation_state.response_json.PowerSourceAccessories) if conversation_state.response_json.PowerSourceAccessories else 0}")
+        if conversation_state.response_json.PowerSourceAccessories:
+            logger.debug(f"   🔍 DEBUG API: PowerSourceAccessories GINs: {[p.gin for p in conversation_state.response_json.PowerSourceAccessories]}")
+
         # Save updated state
         await save_conversation(resolved_session_id, conversation_state)
+
+        # 🔍 DEBUG: Verify state after save
+        logger.debug(f"   🔍 DEBUG API: After save_conversation - verifying state was saved")
 
         # 🎯 DEBUG: Log products from orchestrator result
         products_from_result = result.get("products", [])
         logger.info(f"🎯 NUGGET DEBUG: Select endpoint received {len(products_from_result)} products from orchestrator")
 
+        # 🔍 DEBUG: Log response_json state BEFORE serialization
+        logger.debug(f"   🔍 DEBUG API: Before _serialize_response_json")
+        logger.debug(f"   🔍 DEBUG API: PowerSourceAccessories length: {len(conversation_state.response_json.PowerSourceAccessories) if conversation_state.response_json.PowerSourceAccessories else 0}")
+
         # Build response
+        serialized_response_json = orchestrator._serialize_response_json(conversation_state)
+
+        # 🔍 DEBUG: Log serialized response_json
+        logger.debug(f"   🔍 DEBUG API: After _serialize_response_json")
+        logger.debug(f"   🔍 DEBUG API: Serialized PowerSourceAccessories: {serialized_response_json.get('PowerSourceAccessories', 'MISSING')}")
+        if 'PowerSourceAccessories' in serialized_response_json:
+            logger.debug(f"   🔍 DEBUG API: Serialized PowerSourceAccessories length: {len(serialized_response_json['PowerSourceAccessories'])}")
+
         response = MessageResponse(
             session_id=conversation_state.session_id,
             message=result.get("message", ""),
             current_state=result.get("current_state", conversation_state.current_state.value),
             master_parameters=conversation_state.master_parameters.dict(),
-            response_json=orchestrator._serialize_response_json(conversation_state),
+            response_json=serialized_response_json,
             products=products_from_result,  # ✅ FIX: Use products from orchestrator result
             awaiting_selection=result.get("awaiting_selection", False),  # ✅ FIX: Also get awaiting_selection from result
             can_finalize=conversation_state.can_finalize(),

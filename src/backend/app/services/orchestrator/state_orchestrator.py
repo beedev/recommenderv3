@@ -250,6 +250,18 @@ class StateByStateOrchestrator:
         logger.info(f"✅ Product selected: {product_gin} in state {conversation_state.current_state}")
 
         try:
+            # Guard: Reject selections in FINALIZE state
+            if str(conversation_state.current_state) == "finalize" or conversation_state.current_state == ConfiguratorState.FINALIZE:
+                logger.warning(f"❌ Cannot select products in FINALIZE state")
+                return {
+                    "response": "Configuration is complete. Cannot add more products. You can review your selections or start a new configuration.",
+                    "current_state": conversation_state.current_state,
+                    "products": [],
+                    "master_parameters": conversation_state.master_parameters.model_dump(),
+                    "response_json": conversation_state.response_json.model_dump(),
+                    "can_finalize": True
+                }
+
             # Get processor for current state
             processor = self.registry.get_processor(conversation_state.current_state)
             if not processor:
@@ -274,11 +286,27 @@ class StateByStateOrchestrator:
 
             if processor.is_multi_select():
                 # Multi-select: Add to list
+                logger.debug(f"   🔍 DEBUG: Before getattr - field_name='{field_name}'")
                 current_list = getattr(conversation_state.response_json, field_name, [])
+                logger.debug(f"   🔍 DEBUG: After getattr - current_list type: {type(current_list)}, len: {len(current_list) if isinstance(current_list, list) else 'N/A'}")
+                logger.debug(f"   🔍 DEBUG: current_list contents: {[p.gin for p in current_list] if isinstance(current_list, list) else current_list}")
+
                 if not isinstance(current_list, list):
+                    logger.warning(f"   ⚠️  current_list was not a list (type: {type(current_list)}), initializing to []")
                     current_list = []
+
+                logger.debug(f"   🔍 DEBUG: Before append - about to add {selected_product.gin} ({selected_product.name})")
                 current_list.append(selected_product)
+                logger.debug(f"   🔍 DEBUG: After append - current_list len: {len(current_list)}, GINs: {[p.gin for p in current_list]}")
+
+                logger.debug(f"   🔍 DEBUG: Before setattr - setting {field_name} to list with {len(current_list)} items")
                 setattr(conversation_state.response_json, field_name, current_list)
+
+                # Verify the value was actually set
+                verification = getattr(conversation_state.response_json, field_name, None)
+                logger.debug(f"   🔍 DEBUG: After setattr - verification: type={type(verification)}, len={len(verification) if isinstance(verification, list) else 'N/A'}")
+                logger.debug(f"   🔍 DEBUG: After setattr - verification GINs: {[p.gin for p in verification] if isinstance(verification, list) else verification}")
+
                 logger.info(f"   Added to multi-select: {field_name} (count: {len(current_list)})")
             else:
                 # Single-select: Replace
@@ -388,14 +416,23 @@ class StateByStateOrchestrator:
                                 )
 
                     # Generate response for next state
-                    response_message = await self.message_generator.generate_response(
-                        message_type="selection",
-                        state=next_state,
-                        products=next_products,
-                        selected_product=selected_product,
-                        language=language,
-                        custom_message=selection_message,
-                    )
+                    # Use "finalize" message type when auto-advancing to FINALIZE state
+                    if next_state == ConfiguratorState.FINALIZE:
+                        response_message = await self.message_generator.generate_response(
+                            message_type="finalize",
+                            state=ConfiguratorState.FINALIZE,
+                            language=language,
+                            response_json=conversation_state.response_json,
+                        )
+                    else:
+                        response_message = await self.message_generator.generate_response(
+                            message_type="selection",
+                            state=next_state,
+                            products=next_products,
+                            selected_product=selected_product,
+                            language=language,
+                            custom_message=selection_message,
+                        )
 
                     return {
                         "session_id": conversation_state.session_id,
@@ -609,7 +646,32 @@ class StateByStateOrchestrator:
         }
 
     def _is_special_command(self, user_message: str) -> bool:
-        """Check if message is a special command (skip, done, finalize)."""
+        """
+        Check if user message is a special navigation command.
+
+        Detects commands that trigger special state transitions instead of
+        normal product search. Case-insensitive matching with whitespace trimming.
+
+        Supported Commands:
+        - skip: Skip current optional component
+        - done: Complete multi-select state and advance
+        - next: Advance to next state
+        - finalize/finish/complete: Jump to FINALIZE state
+
+        Args:
+            user_message: User's input text to check
+
+        Returns:
+            True if message is a special command, False otherwise
+
+        Examples:
+            >>> orchestrator._is_special_command("skip")
+            True
+            >>> orchestrator._is_special_command("  DONE  ")
+            True
+            >>> orchestrator._is_special_command("Show me feeders")
+            False
+        """
         normalized = user_message.strip().lower()
         special_commands = ["skip", "done", "finalize", "finish", "complete", "next"]
         return normalized in special_commands
@@ -977,7 +1039,26 @@ class StateByStateOrchestrator:
         }
 
     def _state_to_component_key(self, state: str) -> str:
-        """Convert state name to component key."""
+        """
+        Convert configurator state name to component key for parameter lookup.
+
+        Maps state enum values to component keys used in MasterParameterJSON.
+        Falls back to stripping "_selection" suffix if state not in mapping.
+
+        Args:
+            state: ConfiguratorState enum value (e.g., "power_source_selection")
+
+        Returns:
+            Component key string (e.g., "power_source")
+
+        Examples:
+            >>> orchestrator._state_to_component_key(ConfiguratorState.POWER_SOURCE_SELECTION)
+            "power_source"
+            >>> orchestrator._state_to_component_key(ConfiguratorState.FEEDER_SELECTION)
+            "feeder"
+            >>> orchestrator._state_to_component_key("custom_selection")
+            "custom"
+        """
         mapping = {
             ConfiguratorState.POWER_SOURCE_SELECTION: "power_source",
             ConfiguratorState.FEEDER_SELECTION: "feeder",
@@ -1175,7 +1256,30 @@ class StateByStateOrchestrator:
         }
 
     def _can_finalize(self, conversation_state: ConversationState) -> bool:
-        """Check if configuration can be finalized (PowerSource selected)."""
+        """
+        Check if welding configuration can be finalized.
+
+        Minimum requirement: PowerSource must be selected before finalization.
+        All other components (Feeder, Cooler, etc.) are optional.
+
+        Args:
+            conversation_state: Current conversation state with response_json
+
+        Returns:
+            True if PowerSource is selected, False otherwise
+
+        Examples:
+            >>> state.response_json.PowerSource = SelectedProduct(...)
+            >>> orchestrator._can_finalize(state)
+            True
+            >>> state.response_json.PowerSource = None
+            >>> orchestrator._can_finalize(state)
+            False
+
+        Note:
+            This check is performed before allowing transitions to FINALIZE state
+            and before displaying "finalize" command in UI.
+        """
         return "PowerSource" in conversation_state.response_json
 
     def _serialize_response_json(self, conversation_state: ConversationState) -> Dict[str, Any]:
@@ -1205,45 +1309,45 @@ class StateByStateOrchestrator:
             response_dict["Torch"] = conversation_state.response_json.Torch.dict()
 
         # Accessory categories (multi-select)
-        if conversation_state.response_json.PowerSourceAccessories:
+        if conversation_state.response_json.PowerSourceAccessories is not None:
             response_dict["PowerSourceAccessories"] = [
                 a.dict() for a in conversation_state.response_json.PowerSourceAccessories
             ]
-        if conversation_state.response_json.FeederAccessories:
+        if conversation_state.response_json.FeederAccessories is not None:
             response_dict["FeederAccessories"] = [
                 a.dict() for a in conversation_state.response_json.FeederAccessories
             ]
-        if conversation_state.response_json.FeederConditionalAccessories:
+        if conversation_state.response_json.FeederConditionalAccessories is not None:
             response_dict["FeederConditionalAccessories"] = [
                 a.dict() for a in conversation_state.response_json.FeederConditionalAccessories
             ]
-        if conversation_state.response_json.InterconnectorAccessories:
+        if conversation_state.response_json.InterconnectorAccessories is not None:
             response_dict["InterconnectorAccessories"] = [
                 a.dict() for a in conversation_state.response_json.InterconnectorAccessories
             ]
-        if conversation_state.response_json.Remotes:
+        if conversation_state.response_json.Remotes is not None:
             response_dict["Remotes"] = [
                 a.dict() for a in conversation_state.response_json.Remotes
             ]
-        if conversation_state.response_json.RemoteAccessories:
+        if conversation_state.response_json.RemoteAccessories is not None:
             response_dict["RemoteAccessories"] = [
                 a.dict() for a in conversation_state.response_json.RemoteAccessories
             ]
-        if conversation_state.response_json.RemoteConditionalAccessories:
+        if conversation_state.response_json.RemoteConditionalAccessories is not None:
             response_dict["RemoteConditionalAccessories"] = [
                 a.dict() for a in conversation_state.response_json.RemoteConditionalAccessories
             ]
-        if conversation_state.response_json.Connectivity:
+        if conversation_state.response_json.Connectivity is not None:
             response_dict["Connectivity"] = [
                 a.dict() for a in conversation_state.response_json.Connectivity
             ]
-        if conversation_state.response_json.FeederWears:
+        if conversation_state.response_json.FeederWears is not None:
             response_dict["FeederWears"] = [
                 a.dict() for a in conversation_state.response_json.FeederWears
             ]
 
         # Legacy accessories field (multi-select)
-        if conversation_state.response_json.Accessories:
+        if conversation_state.response_json.Accessories is not None:
             response_dict["Accessories"] = [
                 a.dict() for a in conversation_state.response_json.Accessories
             ]
@@ -1253,7 +1357,42 @@ class StateByStateOrchestrator:
     def _generate_error_response(
         self, error_message: str, conversation_state: ConversationState, language: str
     ) -> Dict[str, Any]:
-        """Generate error response dict."""
+        """
+        Generate standardized error response dictionary.
+
+        Creates a consistent error response structure that includes the error message,
+        preserves current state, and ensures UI can gracefully handle the error.
+
+        Args:
+            error_message: Human-readable error description
+            conversation_state: Current conversation state
+            language: ISO 639-1 language code (currently not used for translation)
+
+        Returns:
+            Dict with error response structure:
+            {
+                "session_id": str,
+                "message": str (error message prefixed with "An error occurred:"),
+                "current_state": ConfiguratorState,
+                "master_parameters": Dict,
+                "response_json": ResponseJSON,
+                "products": [] (always empty),
+                "awaiting_selection": False (always false),
+                "can_finalize": bool,
+                "error": str (original error message)
+            }
+
+        Examples:
+            >>> orchestrator._generate_error_response(
+            ...     "Database connection failed",
+            ...     conversation_state,
+            ...     "en"
+            ... )
+            {"message": "An error occurred: Database connection failed", ...}
+
+        Note:
+            Future enhancement: Translate error messages based on language parameter.
+        """
         return {
             "session_id": conversation_state.session_id,
             "message": f"An error occurred: {error_message}",

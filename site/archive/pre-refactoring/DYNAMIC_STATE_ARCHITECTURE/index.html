@@ -1,0 +1,2011 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="AI-powered welding equipment configurator - Technical documentation">
+      
+      
+        <meta name="author" content="ESAB Development Team">
+      
+      
+        <link rel="canonical" href="https://esab-configurator.readthedocs.io/archive/pre-refactoring/DYNAMIC_STATE_ARCHITECTURE/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Dynamic State Machine Architecture - ESAB Configurator Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dynamic-state-machine-architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="ESAB Configurator Documentation" class="md-header__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ESAB Configurator Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Dynamic State Machine Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../CODE_ARCHITECTURE_OVERVIEW/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../deployment/README.md" class="md-tabs__link">
+          
+  
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ESAB Configurator Documentation" class="md-nav__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ESAB Configurator Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CODE_ARCHITECTURE_OVERVIEW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CORRECTED_STATE_FLOW_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ORCHESTRATOR_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestrator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONTEXT_BASED_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Search Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MASTER_PARAMETER_JSON_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Parameter JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MULTILINGUAL_FLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multilingual Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    System Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CONFIGURATION_SYSTEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OBSERVABILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../deployment/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../testing-guide.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../operations/runbook.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="dynamic-state-machine-architecture">Dynamic State Machine Architecture<a class="headerlink" href="#dynamic-state-machine-architecture" title="Permanent link">&para;</a></h1>
+<p><strong>Complete Technical Overview - S1→SN Configuration-Driven Flow</strong></p>
+<hr />
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The ESAB Welding Equipment Configurator uses a fully dynamic, configuration-driven state machine that allows adding new states (S8, S9, ..., SN) <strong>without modifying Python code</strong>.</p>
+<h3 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Permanent link">&para;</a></h3>
+<p>✅ <strong>Zero-Code State Addition</strong> - Add states via JSON configuration only
+✅ <strong>Dynamic Enum Generation</strong> - ConfiguratorState enum created at runtime
+✅ <strong>Processor Registry Pattern</strong> - Automatic processor assignment
+✅ <strong>Config-Driven Prompts</strong> - All user messages from JSON
+✅ <strong>Runtime Validation</strong> - Health checks and schema validation
+✅ <strong>Backwards Compatible</strong> - Existing code continues to work</p>
+<hr />
+<h2 id="architecture-diagram">Architecture Diagram<a class="headerlink" href="#architecture-diagram" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code>┌─────────────────────────────────────────────────────────────┐
+│                    Configuration Files                       │
+│                                                              │
+│  ┌──────────────────────┐  ┌─────────────────────┐         │
+│  │ component_types.json │  │ state_prompts.json  │         │
+│  │                      │  │                     │         │
+│  │ • Component defs     │  │ • User prompts      │         │
+│  │ • State sequence     │  │ • UI text           │         │
+│  │ • Selection types    │  │ • Template vars     │         │
+│  └──────────────────────┘  └─────────────────────┘         │
+│                                                              │
+│  ┌─────────────────────────────────────────────────┐        │
+│  │ component_applicability.json                    │        │
+│  │                                                  │        │
+│  │ • Y/N rules per power source                    │        │
+│  └─────────────────────────────────────────────────┘        │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│                     Startup Sequence                         │
+│                                                              │
+│  1. Validate Configurations  (config_validator.py)          │
+│  2. Generate Enum           (state_factory.py)              │
+│  3. Initialize Registry     (state_processors.py)           │
+│  4. Enable Dynamic Routing  (state_orchestrator.py)         │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│                    Runtime Components                        │
+│                                                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
+│  │ StateFactory │  │  Processor   │  │    Config    │     │
+│  │              │  │   Registry   │  │   Monitor    │     │
+│  │ • Enum       │  │              │  │              │     │
+│  │ • Metadata   │  │ • Single     │  │ • Health     │     │
+│  │ • Sequence   │  │ • Multi      │  │ • Validation │     │
+│  │              │  │ • Power      │  │ • Cache      │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
+│                                                              │
+│  ┌────────────────────────────────────────────────┐         │
+│  │        StateByStateOrchestrator                │         │
+│  │                                                 │         │
+│  │  • Dynamic processor routing                   │         │
+│  │  • State transitions                           │         │
+│  │  • Component selection                         │         │
+│  │  • Applicability logic                         │         │
+│  └────────────────────────────────────────────────┘         │
+└─────────────────────────────────────────────────────────────┘
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="core-components">Core Components<a class="headerlink" href="#core-components" title="Permanent link">&para;</a></h2>
+<h3 id="1-statefactory-appmodelsstate_factorypy">1. StateFactory (<code>app/models/state_factory.py</code>)<a class="headerlink" href="#1-statefactory-appmodelsstate_factorypy" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Dynamically generates ConfiguratorState enum from configuration</p>
+<p><strong>Key Methods:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">StateFactory</span><span class="o">.</span><span class="n">create_configurator_state_enum</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="c1"># Creates: ConfiguratorState enum with S1→SN states</span>
+
+<span class="n">StateFactory</span><span class="o">.</span><span class="n">get_state_sequence</span><span class="p">()</span>
+<span class="c1"># Returns: [&quot;power_source_selection&quot;, &quot;feeder_selection&quot;, ...]</span>
+
+<span class="n">StateFactory</span><span class="o">.</span><span class="n">get_state_metadata</span><span class="p">(</span><span class="n">state_name</span><span class="p">)</span>
+<span class="c1"># Returns: {api_key, selection_type, display_name, ...}</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Example Output:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">ConfiguratorState</span><span class="o">.</span><span class="n">POWER_SOURCE_SELECTION</span>  <span class="c1"># = &quot;power_source_selection&quot;</span>
+<span class="n">ConfiguratorState</span><span class="o">.</span><span class="n">FEEDER_SELECTION</span>        <span class="c1"># = &quot;feeder_selection&quot;</span>
+<span class="n">ConfiguratorState</span><span class="o">.</span><span class="n">CABLE_SELECTION</span>         <span class="c1"># = &quot;cable_selection&quot;  (S8)</span>
+<span class="n">ConfiguratorState</span><span class="o">.</span><span class="n">FINALIZE</span>                <span class="c1"># = &quot;finalize&quot;</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="2-stateprocessorregistry-appservicesorchestratorstate_processorspy">2. StateProcessorRegistry (<code>app/services/orchestrator/state_processors.py</code>)<a class="headerlink" href="#2-stateprocessorregistry-appservicesorchestratorstate_processorspy" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Maps states to processor instances based on selection_type</p>
+<p><strong>Architecture:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>StateProcessorRegistry
+├── power_source_selection → PowerSourceProcessor
+├── feeder_selection → SingleSelectionProcessor
+├── cooler_selection → SingleSelectionProcessor
+├── interconnector_selection → SingleSelectionProcessor
+├── torch_selection → SingleSelectionProcessor
+└── accessories_selection → MultiSelectionProcessor
+</code></pre></div></td></tr></table></div>
+<p><strong>Processor Types:</strong></p>
+<ol>
+<li><strong>SingleSelectionProcessor</strong></li>
+<li>For: Feeder, Cooler, Interconnector, Torch</li>
+<li>
+<p>Handles: Single product selection, explicit index, skip</p>
+</li>
+<li>
+<p><strong>MultiSelectionProcessor</strong></p>
+</li>
+<li>For: Accessories</li>
+<li>
+<p>Handles: Multiple selections, "done" command, list building</p>
+</li>
+<li>
+<p><strong>PowerSourceProcessor</strong></p>
+</li>
+<li>For: Power source (S1)</li>
+<li>
+<p>Handles: Applicability loading, mandatory selection</p>
+</li>
+<li>
+<p><strong>Custom Processors</strong></p>
+</li>
+<li>For: Complex logic</li>
+<li>Requires: Custom class implementing BaseStateProcessor</li>
+</ol>
+<p><strong>ProcessorResult:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProcessorResult</span><span class="p">:</span>
+    <span class="n">success</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">products</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">awaiting_selection</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">transition_to_next</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="3-configvalidator-appservicesconfigconfig_validatorpy">3. ConfigValidator (<code>app/services/config/config_validator.py</code>)<a class="headerlink" href="#3-configvalidator-appservicesconfigconfig_validatorpy" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Validates configuration files against JSON schemas</p>
+<p><strong>Validations:</strong></p>
+<ol>
+<li><strong>Schema Validation</strong></li>
+<li>component_types.json → component_types.schema.json</li>
+<li>state_prompts.json → state_prompts.schema.json</li>
+<li>
+<p>component_applicability.json → component_applicability.schema.json</p>
+</li>
+<li>
+<p><strong>Consistency Checks</strong></p>
+</li>
+<li>State sequence matches state prompts</li>
+<li>State orders are sequential</li>
+<li>No duplicate state names</li>
+<li>
+<p>All required fields present</p>
+</li>
+<li>
+<p><strong>Component Mappings</strong></p>
+</li>
+<li>API keys match across configs</li>
+<li>Applicability references valid components</li>
+</ol>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">app.services.config.config_validator</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_configs_on_startup</span>
+
+<span class="n">is_valid</span><span class="p">,</span> <span class="n">report</span> <span class="o">=</span> <span class="n">validate_configs_on_startup</span><span class="p">()</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Errors:&quot;</span><span class="p">,</span> <span class="n">report</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">])</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="4-configmonitor-appservicesconfigconfig_monitorpy">4. ConfigMonitor (<code>app/services/config/config_monitor.py</code>)<a class="headerlink" href="#4-configmonitor-appservicesconfigconfig_monitorpy" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Runtime configuration monitoring and health checks</p>
+<p><strong>Features:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">monitor</span> <span class="o">=</span> <span class="n">get_config_monitor</span><span class="p">()</span>
+
+<span class="c1"># Validate single config</span>
+<span class="n">health</span> <span class="o">=</span> <span class="n">monitor</span><span class="o">.</span><span class="n">validate_config</span><span class="p">(</span><span class="s2">&quot;component_types&quot;</span><span class="p">)</span>
+<span class="c1"># Returns: ConfigHealth(status, errors, warnings, ...)</span>
+
+<span class="c1"># Validate all configs</span>
+<span class="n">system_health</span> <span class="o">=</span> <span class="n">monitor</span><span class="o">.</span><span class="n">validate_all_configs</span><span class="p">()</span>
+<span class="c1"># Returns: SystemHealth(status, configs, summary, ...)</span>
+
+<span class="c1"># Check consistency</span>
+<span class="n">consistency</span> <span class="o">=</span> <span class="n">monitor</span><span class="o">.</span><span class="n">validate_state_consistency</span><span class="p">()</span>
+
+<span class="c1"># Comprehensive check</span>
+<span class="n">full_health</span> <span class="o">=</span> <span class="n">monitor</span><span class="o">.</span><span class="n">get_comprehensive_health</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Health Status:</strong></p>
+<ul>
+<li><code>healthy</code> - All validations passed</li>
+<li><code>warning</code> - Non-critical issues found</li>
+<li><code>error</code> - Critical issues, may cause failures</li>
+</ul>
+<h3 id="5-messagegenerator-appservicesresponsemessage_generatorpy">5. MessageGenerator (<code>app/services/response/message_generator.py</code>)<a class="headerlink" href="#5-messagegenerator-appservicesresponsemessage_generatorpy" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Generate user-facing messages from configuration</p>
+<p><strong>Key Changes:</strong></p>
+<p>✅ All hardcoded prompts removed
+✅ Fully config-driven (state_prompts.json)
+✅ Template variable support
+✅ Multilingual via translator</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">message</span> <span class="o">=</span> <span class="k">await</span> <span class="n">message_generator</span><span class="o">.</span><span class="n">generate_state_prompt</span><span class="p">(</span>
+    <span class="n">current_state</span><span class="o">=</span><span class="s2">&quot;feeder_selection&quot;</span><span class="p">,</span>
+    <span class="n">master_parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+    <span class="n">response_json</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+    <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span>
+<span class="p">)</span>
+<span class="c1"># Returns prompt from state_prompts.json with variables filled</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="6-statebystateorchestrator-appservicesorchestratorstate_orchestratorpy">6. StateByStateOrchestrator (<code>app/services/orchestrator/state_orchestrator.py</code>)<a class="headerlink" href="#6-statebystateorchestrator-appservicesorchestratorstate_orchestratorpy" title="Permanent link">&para;</a></h3>
+<p><strong>Purpose:</strong> Coordinates all agents and manages state flow</p>
+<p><strong>Dynamic Routing:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">orchestrator</span> <span class="o">=</span> <span class="n">StateByStateOrchestrator</span><span class="p">(</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">use_dynamic_routing</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Enable dynamic processors</span>
+<span class="p">)</span>
+
+<span class="c1"># Process message</span>
+<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">orchestrator</span><span class="o">.</span><span class="n">process_message</span><span class="p">(</span>
+    <span class="n">conversation_state</span><span class="p">,</span>
+    <span class="n">user_message</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Routing Logic:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">if</span> <span class="n">use_dynamic_routing</span><span class="p">:</span>
+    <span class="n">processor</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">get_processor</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">processor</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Legacy if-elif chain (backwards compatibility)</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link">&para;</a></h2>
+<h3 id="user-message-flow">User Message Flow<a class="headerlink" href="#user-message-flow" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span></pre></div></td><td class="code"><div><pre><span></span><code>User Message
+    ↓
+API Endpoint (/api/v1/configurator/message)
+    ↓
+Session Retrieval (Redis)
+    ↓
+StateByStateOrchestrator.process_message()
+    ↓
+┌─────────────────────────────────────────┐
+│ Dynamic Routing                         │
+│                                         │
+│ 1. Get processor from registry          │
+│    processor = registry.get_processor(  │
+│        conversation_state.current_state │
+│    )                                    │
+│                                         │
+│ 2. Process state logic                  │
+│    result = await processor.process(    │
+│        conversation_state,              │
+│        user_message,                    │
+│        orchestrator                     │
+│    )                                    │
+│                                         │
+│ 3. Handle transition                    │
+│    if result.transition_to_next:        │
+│        next_state = get_next_state()    │
+│        current_state = next_state       │
+└─────────────────────────────────────────┘
+    ↓
+Response + Updated State
+    ↓
+Session Storage (Redis)
+    ↓
+Response to Client
+</code></pre></div></td></tr></table></div>
+<h3 id="state-transition-flow">State Transition Flow<a class="headerlink" href="#state-transition-flow" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span></pre></div></td><td class="code"><div><pre><span></span><code>Current State: feeder_selection
+    ↓
+User selects product
+    ↓
+Processor returns: transition_to_next = True
+    ↓
+ConversationState.get_next_state()
+    ↓
+┌─────────────────────────────────────────┐
+│ State Transition Logic                  │
+│                                         │
+│ 1. Get state sequence from config       │
+│    states = [&quot;power_source&quot;, &quot;feeder&quot;,  │
+│              &quot;cooler&quot;, ...]             │
+│                                         │
+│ 2. Find current index                   │
+│    current_idx = states.index(current)  │
+│                                         │
+│ 3. Check applicability                  │
+│    for next_state in states[idx+1:]:    │
+│        metadata = get_metadata(next)    │
+│        api_key = metadata[&quot;api_key&quot;]    │
+│        if applicability[api_key] == &quot;Y&quot;:│
+│            return next_state            │
+│        # else: auto-skip                │
+└─────────────────────────────────────────┘
+    ↓
+Next State: cooler_selection (or skipped if N)
+    ↓
+Update conversation_state.current_state
+    ↓
+Continue flow
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="configuration-schema">Configuration Schema<a class="headerlink" href="#configuration-schema" title="Permanent link">&para;</a></h2>
+<h3 id="component_typesjson">component_types.json<a class="headerlink" href="#component_typesjson" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;component_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;&lt;component_key&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;class_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Neo4jNodeLabel&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;display_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;User-Friendly Name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;api_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ResponseJSONKey&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;db_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DatabaseKey&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;state_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;state_identifier&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;state_order&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;is_mandatory&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;can_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;default_skip_behavior&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;optional&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;selection_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;single|multi|custom&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;supports_search&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;requires_compatibility_check&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;compatible_with&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;component1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;component2&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;state_sequence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;state1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;state2&quot;</span><span class="p">,</span><span class="w"> </span><span class="err">...</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;finalize_state&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;finalize&quot;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="state_promptsjson">state_prompts.json<a class="headerlink" href="#state_promptsjson" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;states&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;&lt;state_name&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;icon&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;🔌&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;step_number&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;State Title&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;is_required&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;can_skip&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;prompt_simple&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Basic prompt text&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;prompt_with_details&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Contextual prompt with {variables}&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;guidance_bullets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Bullet 1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Bullet 2&quot;</span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="component_applicabilityjson">component_applicability.json<a class="headerlink" href="#component_applicabilityjson" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;power_sources&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;&lt;power_source_gin&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Power Source Name&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;applicability&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;ComponentApiKey&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Y&quot;</span><span class="w"> </span><span class="err">or</span><span class="w"> </span><span class="s2">&quot;N&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="api-endpoints">API Endpoints<a class="headerlink" href="#api-endpoints" title="Permanent link">&para;</a></h2>
+<h3 id="configurator-endpoints">Configurator Endpoints<a class="headerlink" href="#configurator-endpoints" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code>POST /api/v1/configurator/message
+  - Process user message in state flow
+
+POST /api/v1/configurator/select
+  - Explicit product selection
+
+GET  /api/v1/configurator/state/{session_id}
+  - Retrieve current session state
+
+DELETE /api/v1/configurator/session/{session_id}
+  - Delete active session
+</code></pre></div></td></tr></table></div>
+<h3 id="health-check-endpoints-new">Health Check Endpoints (NEW)<a class="headerlink" href="#health-check-endpoints-new" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code>GET  /api/v1/health/config
+  - Overall configuration health
+
+GET  /api/v1/health/config/{config_name}
+  - Specific config validation
+
+GET  /api/v1/health/config/validation/full
+  - Comprehensive health check
+
+GET  /api/v1/health/config/consistency
+  - Cross-config consistency check
+
+GET  /api/v1/health/config/applicability
+  - Applicability logic validation
+
+POST /api/v1/health/config/cache/clear
+  - Clear health check cache
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
+<h3 id="test-suite-organization">Test Suite Organization<a class="headerlink" href="#test-suite-organization" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code>src/backend/tests/
+├── test_config_validation.py       # Config validator tests
+├── test_dynamic_enum.py            # Enum generation tests (if created)
+├── test_state_processors.py        # Processor registry tests (if created)
+├── test_message_generator_cleanup.py  # Message generator tests
+├── test_health_endpoints.py        # Health API tests
+└── test_integration_phase6.py      # Full integration tests
+</code></pre></div></td></tr></table></div>
+<h3 id="running-tests">Running Tests<a class="headerlink" href="#running-tests" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>src/backend/tests
+
+<span class="c1"># Run individual test suites</span>
+python<span class="w"> </span>test_config_validation.py
+python<span class="w"> </span>test_health_endpoints.py
+python<span class="w"> </span>test_integration_phase6.py
+
+<span class="c1"># Run all tests (if pytest configured)</span>
+pytest
+</code></pre></div></td></tr></table></div>
+<h3 id="integration-test-coverage">Integration Test Coverage<a class="headerlink" href="#integration-test-coverage" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code>✓ Configuration validation
+✓ Dynamic enum generation
+✓ StateFactory metadata
+✓ Processor registry initialization
+✓ State transitions
+✓ Processor invocation
+✓ Backwards compatibility
+✓ Health endpoints
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="startup-sequence">Startup Sequence<a class="headerlink" href="#startup-sequence" title="Permanent link">&para;</a></h2>
+<h3 id="application-startup-mainpy">Application Startup (main.py)<a class="headerlink" href="#application-startup-mainpy" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@asynccontextmanager</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">lifespan</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">FastAPI</span><span class="p">):</span>
+    <span class="c1"># 1. Database initialization</span>
+    <span class="k">await</span> <span class="n">init_redis</span><span class="p">()</span>
+    <span class="n">init_postgresql</span><span class="p">()</span>
+
+    <span class="c1"># 2. Configuration validation</span>
+    <span class="n">is_valid</span><span class="p">,</span> <span class="n">report</span> <span class="o">=</span> <span class="n">validate_configs_on_startup</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">is_valid</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;✓ Configuration validation passed&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 3. Initialize config monitor</span>
+    <span class="n">init_config_monitor</span><span class="p">()</span>
+
+    <span class="c1"># 4. Initialize dynamic state machine</span>
+    <span class="n">init_configurator_state</span><span class="p">()</span>  <span class="c1"># Generate enum</span>
+    <span class="n">init_processor_registry</span><span class="p">()</span>  <span class="c1"># Create processors</span>
+
+    <span class="c1"># 5. Initialize services</span>
+    <span class="n">parameter_extractor</span> <span class="o">=</span> <span class="n">ParameterExtractor</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">neo4j_search</span> <span class="o">=</span> <span class="n">Neo4jProductSearch</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">message_generator</span> <span class="o">=</span> <span class="n">MessageGenerator</span><span class="p">()</span>
+
+    <span class="c1"># 6. Create orchestrator with dynamic routing</span>
+    <span class="n">orchestrator</span> <span class="o">=</span> <span class="n">StateByStateOrchestrator</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">use_dynamic_routing</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Enable dynamic</span>
+    <span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;✓ All services initialized&quot;</span><span class="p">)</span>
+
+    <span class="k">yield</span>
+
+    <span class="c1"># Shutdown</span>
+    <span class="k">await</span> <span class="n">close_redis</span><span class="p">()</span>
+    <span class="k">await</span> <span class="n">close_postgresql</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Log Output:</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span></pre></div></td><td class="code"><div><pre><span></span><code>Starting Recommender_v2 application...
+✓ Redis initialized
+✓ PostgreSQL initialized
+✓ Database tables created/verified
+Loaded component applicability configuration
+Validating configurations...
+✓ Configuration validation passed
+✓ Configuration monitor initialized
+Initializing dynamic state machine...
+✓ ConfiguratorState enum initialized
+✓ Processor registry initialized
+✓ Orchestrator initialized with dynamic routing
+All services initialized successfully
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="extension-points">Extension Points<a class="headerlink" href="#extension-points" title="Permanent link">&para;</a></h2>
+<h3 id="adding-new-selection-types">Adding New Selection Types<a class="headerlink" href="#adding-new-selection-types" title="Permanent link">&para;</a></h3>
+<p>Create new processor class:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># app/services/orchestrator/custom_processors.py</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.state_processors</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseStateProcessor</span><span class="p">,</span> <span class="n">ProcessorResult</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomTypeProcessor</span><span class="p">(</span><span class="n">BaseStateProcessor</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conversation_state</span><span class="p">,</span> <span class="n">user_message</span><span class="p">,</span> <span class="n">orchestrator</span><span class="p">):</span>
+        <span class="c1"># Your custom logic</span>
+        <span class="k">return</span> <span class="n">ProcessorResult</span><span class="o">.</span><span class="n">success_result</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>Register in state_processors.py:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">elif</span> <span class="n">selection_type</span> <span class="o">==</span> <span class="s2">&quot;custom_type&quot;</span><span class="p">:</span>
+    <span class="n">processor</span> <span class="o">=</span> <span class="n">CustomTypeProcessor</span><span class="p">(</span><span class="n">state_name</span><span class="p">,</span> <span class="n">comp_key</span><span class="p">,</span> <span class="n">api_key</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="adding-custom-validation">Adding Custom Validation<a class="headerlink" href="#adding-custom-validation" title="Permanent link">&para;</a></h3>
+<p>Extend ConfigValidator:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># app/services/config/config_validator.py</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfigValidator</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_custom_rules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ValidationResult</span><span class="p">:</span>
+        <span class="c1"># Your validation logic</span>
+        <span class="k">return</span> <span class="n">ValidationResult</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p>Register in validate_all():</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="n">custom_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validate_custom_rules</span><span class="p">()</span>
+<span class="n">results</span><span class="p">[</span><span class="s2">&quot;custom_rules&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">custom_result</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="adding-new-template-variables">Adding New Template Variables<a class="headerlink" href="#adding-new-template-variables" title="Permanent link">&para;</a></h3>
+<p>Update MessageGenerator:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># app/services/response/message_generator.py</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_prompt_context</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;custom_var&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_custom_value</span><span class="p">(),</span>
+        <span class="c1"># ... existing vars</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">context</span>
+</code></pre></div></td></tr></table></div>
+<p>Use in state_prompts.json:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;prompt_simple&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Value: {custom_var}&quot;</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="caching-strategy">Caching Strategy<a class="headerlink" href="#caching-strategy" title="Permanent link">&para;</a></h3>
+<p><strong>StateFactory:</strong>
+- Enum cached after first creation
+- Metadata cached per state
+- Clear cache: <code>StateFactory.clear_cache()</code></p>
+<p><strong>ConfigMonitor:</strong>
+- Health results cached
+- Clear cache: <code>monitor.clear_cache()</code>
+- API endpoint: <code>POST /api/v1/health/config/cache/clear</code></p>
+<p><strong>ConfigurationService:</strong>
+- LRU cache for config loading
+- TTL-based invalidation
+- Automatic reload on file change (optional)</p>
+<h3 id="optimization-tips">Optimization Tips<a class="headerlink" href="#optimization-tips" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Minimize config reloads:</strong> Cache aggressively</li>
+<li><strong>Use health check cache:</strong> Don't validate on every request</li>
+<li><strong>Lazy processor loading:</strong> Only load when needed</li>
+<li><strong>State sequence caching:</strong> Load once at startup</li>
+</ol>
+<hr />
+<h2 id="migration-guide">Migration Guide<a class="headerlink" href="#migration-guide" title="Permanent link">&para;</a></h2>
+<h3 id="from-hardcoded-old-to-dynamic-new">From Hardcoded (Old) to Dynamic (New)<a class="headerlink" href="#from-hardcoded-old-to-dynamic-new" title="Permanent link">&para;</a></h3>
+<p><strong>Before (Hardcoded):</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ConfiguratorState</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
+    <span class="n">POWER_SOURCE</span> <span class="o">=</span> <span class="s2">&quot;power_source_selection&quot;</span>
+    <span class="n">FEEDER</span> <span class="o">=</span> <span class="s2">&quot;feeder_selection&quot;</span>
+    <span class="c1"># ... hardcoded</span>
+
+<span class="k">if</span> <span class="n">current_state</span> <span class="o">==</span> <span class="n">ConfiguratorState</span><span class="o">.</span><span class="n">FEEDER</span><span class="p">:</span>
+    <span class="c1"># Hardcoded logic</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>After (Dynamic):</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Enum generated at runtime</span>
+<span class="n">ConfiguratorState</span> <span class="o">=</span> <span class="n">init_configurator_state</span><span class="p">()</span>
+
+<span class="c1"># Processor handles logic</span>
+<span class="n">processor</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">get_processor</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">processor</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Migration Steps:</strong></p>
+<ol>
+<li>✅ Add component to component_types.json</li>
+<li>✅ Add prompts to state_prompts.json</li>
+<li>✅ Update applicability.json</li>
+<li>✅ Remove hardcoded enum entry (if applicable)</li>
+<li>✅ Remove hardcoded if-elif logic (if applicable)</li>
+<li>✅ Test with use_dynamic_routing=True</li>
+</ol>
+<hr />
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="common-issues">Common Issues<a class="headerlink" href="#common-issues" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Issue</th>
+<th>Symptom</th>
+<th>Solution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enum not created</td>
+<td>Server fails to start</td>
+<td>Validate component_types.json syntax</td>
+</tr>
+<tr>
+<td>No processor found</td>
+<td>Warning in logs</td>
+<td>Check selection_type field</td>
+</tr>
+<tr>
+<td>State auto-skipped</td>
+<td>State never appears</td>
+<td>Check applicability config</td>
+</tr>
+<tr>
+<td>Prompt not showing</td>
+<td>Default prompt used</td>
+<td>Verify state_name matches</td>
+</tr>
+<tr>
+<td>Products not found</td>
+<td>"No results" message</td>
+<td>Check Neo4j class_name and data</td>
+</tr>
+</tbody>
+</table>
+<h3 id="debug-commands">Debug Commands<a class="headerlink" href="#debug-commands" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Validate configs</span>
+curl<span class="w"> </span>http://localhost:8000/api/v1/health/config/validation/full
+
+<span class="c1"># Check enum</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">from app.models.conversation import get_configurator_state</span>
+<span class="s2">states = get_configurator_state()</span>
+<span class="s2">print([s.value for s in states])</span>
+<span class="s2">&quot;</span>
+
+<span class="c1"># Check processors</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">from app.services.orchestrator.state_processors import get_processor_registry</span>
+<span class="s2">registry = get_processor_registry()</span>
+<span class="s2">print(registry.get_all_states())</span>
+<span class="s2">&quot;</span>
+
+<span class="c1"># Check state sequence</span>
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span>
+<span class="s2">from app.models.state_factory import StateFactory</span>
+<span class="s2">print(StateFactory.get_state_sequence())</span>
+<span class="s2">&quot;</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="version-history">Version History<a class="headerlink" href="#version-history" title="Permanent link">&para;</a></h2>
+<p><strong>v2.0 - Dynamic State Machine</strong>
+- Configuration-driven state machine
+- Dynamic enum generation
+- Processor registry pattern
+- Runtime validation
+- Health check endpoints
+- Zero-code state addition</p>
+<p><strong>v1.0 - Hardcoded S1→S7</strong>
+- Fixed 7-state flow
+- Hardcoded enum
+- Hardcoded if-elif logic
+- Manual prompt generation</p>
+<hr />
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../ADDING_NEW_STATES/">ADDING_NEW_STATES.md</a> - Step-by-step guide</li>
+<li><a href="../CLAUDE.md">CLAUDE.md</a> - General project overview</li>
+<li><a href="CORRECTED_STATE_FLOW_ARCHITECTURE.md">CORRECTED_STATE_FLOW_ARCHITECTURE.md</a> - Original architecture</li>
+<li><a href="MASTER_PARAMETER_JSON_ARCHITECTURE.md">MASTER_PARAMETER_JSON_ARCHITECTURE.md</a> - Data structures</li>
+</ul>
+<hr />
+<h2 id="support">Support<a class="headerlink" href="#support" title="Permanent link">&para;</a></h2>
+<p><strong>For configuration issues:</strong>
+- Check: <code>GET /api/v1/health/config</code>
+- Logs: Look for validation errors
+- Tests: Run <code>test_integration_phase6.py</code></p>
+<p><strong>For new state questions:</strong>
+- See: <a href="../ADDING_NEW_STATES/">ADDING_NEW_STATES.md</a>
+- Examples: Review component_types.json</p>
+<p><strong>For processor issues:</strong>
+- Check: Processor registry logs
+- Debug: <code>get_processor_registry().get_all_states()</code>
+- Fallback: Set <code>use_dynamic_routing=False</code></p>
+<hr />
+<p><strong>System Status:</strong> ✅ Production Ready (v2.0)
+<strong>Dynamic Routing:</strong> ✅ Enabled
+<strong>Configuration:</strong> ✅ Validated
+<strong>Tests:</strong> ✅ All Passing</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 ESAB
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/esab/configurator" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/esab-configurator/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../../javascripts/extra.js"></script>
+      
+    
+  </body>
+</html>

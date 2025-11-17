@@ -88,7 +88,7 @@
       "lucene_enabled": true,
       "fuzzy_matching_enabled": true,
       "lucene_min_score": 0.5,
-      "lucene_score_threshold_percent": 20
+      "lucene_score_threshold_percent": 40
     },
     "feeder": {
       "class_name": "Feeder",

@@ -1,0 +1,2357 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="AI-powered welding equipment configurator - Technical documentation">
+      
+      
+        <meta name="author" content="ESAB Development Team">
+      
+      
+        <link rel="canonical" href="https://esab-configurator.readthedocs.io/AGENT2_PRODUCT_SEARCH/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Agent 2: ProductSearch Architecture - ESAB Configurator Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#agent-2-productsearch-architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="ESAB Configurator Documentation" class="md-header__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ESAB Configurator Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Agent 2: ProductSearch Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../CODE_ARCHITECTURE_OVERVIEW/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../deployment/README.md" class="md-tabs__link">
+          
+  
+  
+  Operations
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="ESAB Configurator Documentation" class="md-nav__button md-logo" aria-label="ESAB Configurator Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ESAB Configurator Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/esab/configurator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    esab-configurator
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CODE_ARCHITECTURE_OVERVIEW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CORRECTED_STATE_FLOW_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ORCHESTRATOR_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Orchestrator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONTEXT_BASED_STRATEGIES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Search Strategies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MASTER_PARAMETER_JSON_ARCHITECTURE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Master Parameter JSON
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../MULTILINGUAL_FLOW/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multilingual Flow
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_7" id="__nav_2_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Components
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    System Components
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CONFIGURATION_SYSTEM/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OBSERVABILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deployment/README.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-guide.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operations/runbook.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations Runbook
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="agent-2-productsearch-architecture">Agent 2: ProductSearch Architecture<a class="headerlink" href="#agent-2-productsearch-architecture" title="Permanent link">&para;</a></h1>
+<p><strong>Files</strong>:
+- <code>src/backend/app/services/neo4j/product_search.py</code> (Thin facade - 488 lines)
+- <code>src/backend/app/services/search/components/component_service.py</code> (Core implementation - 509+ lines)
+- <code>src/backend/app/services/search/components/query_builder.py</code> (Query generation)</p>
+<p>Agent 2 (ProductSearch) is the Neo4j graph database search engine that finds compatible welding products based on extracted parameters from Agent 1 and validates COMPATIBLE_WITH relationships.</p>
+<hr />
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The ProductSearch is a <strong>configuration-driven search architecture</strong> that eliminates code duplication across 13+ component types through generic, reusable search logic. It uses Neo4j Cypher queries to traverse the product compatibility graph.</p>
+<p><strong>Key Architecture</strong>: Configuration-Driven + Strategy Pattern
+- <strong>Neo4jProductSearch</strong>: Thin backward-compatible facade (488 lines)
+- <strong>ComponentSearchService</strong>: Generic search engine for all components (509+ lines)
+- <strong>Neo4jQueryBuilder</strong>: Cypher query construction
+- <strong>Configuration</strong>: Loaded from <code>component_types.json</code> (13+ components)</p>
+<p><strong>Key Metrics</strong>:
+- Query Time: &lt;100ms for compatibility search
+- Graph Database: Neo4j 5.14.1 (async driver)
+- Components Supported: 13 (PowerSource, Feeder, Cooler, Interconnector, Torch, etc.)
+- Search Strategies: Cypher-based + Lucene full-text</p>
+<hr />
+<h2 id="core-responsibilities">Core Responsibilities<a class="headerlink" href="#core-responsibilities" title="Permanent link">&para;</a></h2>
+<h3 id="1-neo4jproductsearch-facade-layer">1. Neo4jProductSearch - Facade Layer<a class="headerlink" href="#1-neo4jproductsearch-facade-layer" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Neo4jProductSearch</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Neo4j product search service - thin facade over ComponentSearchService.</span>
+
+<span class="sd">    Provides backward-compatible API while delegating all search logic to</span>
+<span class="sd">    the generic ComponentSearchService.</span>
+
+<span class="sd">    ALL DEPRECATED METHODS REMOVED:</span>
+<span class="sd">    - search_power_source_lucene (use LuceneStrategy instead)</span>
+<span class="sd">    - search_power_source_smart (use SmartStrategy instead)</span>
+<span class="sd">    - search_feeder_lucene (use LuceneStrategy instead)</span>
+<span class="sd">    - search_feeder_smart (use SmartStrategy instead)</span>
+<span class="sd">    ... (20+ deprecated methods removed)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">driver</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize Neo4jProductSearch with shared driver.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            driver: Neo4j AsyncDriver instance from neo4j_manager</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Driver is managed externally by neo4j_manager - this class does not own it.</span>
+<span class="sd">            Do not close the driver from this class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">driver</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_service</span> <span class="o">=</span> <span class="n">ComponentSearchService</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Neo4jProductSearch initialized with shared driver&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Purpose</strong>: Thin facade providing backward-compatible API while delegating to ComponentSearchService</p>
+<p><strong>Design Pattern</strong>: Facade Pattern - simplifies interface to complex ComponentSearchService</p>
+<hr />
+<h3 id="2-core-component-search-methods-s1s5">2. Core Component Search Methods (S1→S5)<a class="headerlink" href="#2-core-component-search-methods-s1s5" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search_power_source</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">master_parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">selected_components</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SearchResults</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    S1: Search for power sources.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        master_parameters: MasterParameterJSON dict</span>
+<span class="sd">        selected_components: ResponseJSON dict</span>
+<span class="sd">        limit: Maximum results</span>
+<span class="sd">        offset: Pagination offset</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        SearchResults with power sources</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">component_service</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+        <span class="n">component_type</span><span class="o">=</span><span class="s2">&quot;power_source&quot;</span><span class="p">,</span>
+        <span class="n">master_parameters</span><span class="o">=</span><span class="n">master_parameters</span><span class="p">,</span>
+        <span class="n">selected_components</span><span class="o">=</span><span class="n">selected_components</span><span class="p">,</span>
+        <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+        <span class="n">offset</span><span class="o">=</span><span class="n">offset</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>All S1→S5 Methods</strong>:
+1. <code>search_power_source()</code> - S1: First mandatory component
+2. <code>search_feeder()</code> - S2: Compatible with PowerSource
+3. <code>search_cooler()</code> - S3: Compatible with PowerSource
+4. <code>search_interconnector()</code> - S4: Compatible with PowerSource + Feeder + Cooler
+5. <code>search_torch()</code> - S5: Compatible with Feeder</p>
+<p><strong>Common Pattern</strong>: All delegate to <code>ComponentSearchService.search()</code> with different <code>component_type</code></p>
+<hr />
+<h3 id="3-componentsearchservice-core-search-engine">3. ComponentSearchService - Core Search Engine<a class="headerlink" href="#3-componentsearchservice-core-search-engine" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ComponentSearchService</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic component search service for all product types.</span>
+
+<span class="sd">    Responsibilities:</span>
+<span class="sd">    - Execute Cypher-based searches using Neo4jQueryBuilder</span>
+<span class="sd">    - Execute Lucene full-text searches</span>
+<span class="sd">    - Handle GIN direct lookups</span>
+<span class="sd">    - Handle product name matching</span>
+<span class="sd">    - Parse and return search results</span>
+
+<span class="sd">    Used by both CypherStrategy and LuceneStrategy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">driver</span><span class="p">:</span> <span class="n">AsyncGraphDatabase</span><span class="o">.</span><span class="n">driver</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize component search service.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            driver: Neo4j async driver instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">driver</span> <span class="o">=</span> <span class="n">driver</span>
+
+        <span class="c1"># Load component configuration from centralized config directory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_config</span> <span class="o">=</span> <span class="n">load_component_config</span><span class="p">()</span>
+
+        <span class="c1"># Initialize query builder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span> <span class="o">=</span> <span class="n">Neo4jQueryBuilder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">component_config</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ComponentSearchService initialized with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">component_config</span><span class="p">)</span><span class="si">}</span><span class="s2"> component types&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Configuration-Driven</strong>: All component-specific logic defined in <code>component_types.json</code>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;power_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;neo4j_label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Product&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Power Source&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;master_param_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;power_source&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;requires_compatibility&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;lucene_enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;fuzzy_matching_enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;feeder&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;neo4j_label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Product&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Feeder&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;master_param_key&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;feeder&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;requires_compatibility&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;lucene_enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;fuzzy_matching_enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h3 id="4-main-search-flow">4. Main Search Flow<a class="headerlink" href="#4-main-search-flow" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">component_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">master_parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">selected_components</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SearchResults</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic component search using Cypher queries.</span>
+
+<span class="sd">    This is the primary search method used by CypherStrategy.</span>
+
+<span class="sd">    Flow:</span>
+<span class="sd">    1. Check for GIN in component parameters → direct lookup</span>
+<span class="sd">    2. Check for product_name → name-based search</span>
+<span class="sd">    3. Build search terms from component parameters</span>
+<span class="sd">    4. Execute search with fallback logic</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        component_type: Type of component (e.g., &quot;power_source&quot;, &quot;feeder&quot;)</span>
+<span class="sd">        master_parameters: MasterParameterJSON dict</span>
+<span class="sd">        selected_components: ResponseJSON dict (already selected components)</span>
+<span class="sd">        limit: Maximum results to return</span>
+<span class="sd">        offset: Pagination offset</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        SearchResults with products, filters_applied, and pagination metadata</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get component parameters</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">component_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">component_type</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown component type: </span><span class="si">{</span><span class="n">component_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">master_param_key</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;master_param_key&quot;</span><span class="p">]</span>
+    <span class="c1"># Convert Pydantic model to dict if needed</span>
+    <span class="n">master_params_dict</span> <span class="o">=</span> <span class="n">master_parameters</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">master_parameters</span><span class="p">,</span> <span class="s1">&#39;model_dump&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">master_parameters</span>
+    <span class="n">component_dict</span> <span class="o">=</span> <span class="n">master_params_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">master_param_key</span><span class="p">,</span> <span class="p">{})</span>
+
+    <span class="c1"># STEP 1: Check for GIN direct lookup</span>
+    <span class="n">detected_gin</span> <span class="o">=</span> <span class="n">component_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_detected_gin&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">detected_gin</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Using GIN-based search for </span><span class="si">{</span><span class="n">component_type</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">detected_gin</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">product</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_by_gin_direct</span><span class="p">(</span><span class="n">detected_gin</span><span class="p">,</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">product</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SearchResults</span><span class="p">(</span>
+                <span class="n">products</span><span class="o">=</span><span class="p">[</span><span class="n">product</span><span class="p">],</span>
+                <span class="n">total_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">filters_applied</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;search_method&quot;</span><span class="p">:</span> <span class="s2">&quot;gin_direct&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;gin&quot;</span><span class="p">:</span> <span class="n">detected_gin</span>
+                <span class="p">},</span>
+                <span class="n">compatibility_validated</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;requires_compatibility&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span>
+                <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+                <span class="n">has_more</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+
+    <span class="c1"># STEP 2: Check for product name → name-based search</span>
+    <span class="n">product_name</span> <span class="o">=</span> <span class="n">component_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;product_name&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">product_name</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">product_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">product_name</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Product name provided for </span><span class="si">{</span><span class="n">component_type</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">product_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Build name-based query</span>
+        <span class="n">query</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">build_base_query</span><span class="p">(</span><span class="n">component_type</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add product name filter (SPACE-INSENSITIVE - Nov 15, 2024)</span>
+        <span class="c1"># Removes all spaces before comparison to handle &quot;Renegade ES 300i&quot; vs &quot;Renegade ES300i&quot;</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">AND replace(toLower(p.item_name), &#39; &#39;, &#39;&#39;) CONTAINS replace(toLower($product_name), &#39; &#39;, &#39;&#39;)&quot;</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;product_name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">product_name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Added SPACE-INSENSITIVE product_name filter: &#39;</span><span class="si">{</span><span class="n">product_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add compatibility filters if needed</span>
+        <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;requires_compatibility&quot;</span><span class="p">):</span>
+            <span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">add_compatibility_filters</span><span class="p">(</span>
+                <span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">component_type</span><span class="p">,</span> <span class="n">selected_components</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Add ordering and pagination</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">add_priority_ordering</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">SKIP $offset LIMIT $limit&quot;</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;offset&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">offset</span>
+        <span class="n">params</span><span class="p">[</span><span class="s2">&quot;limit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">limit</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># Query one extra to check has_more</span>
+
+        <span class="c1"># Add RETURN clause</span>
+        <span class="n">query</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">build_return_clause</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="n">include_score</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Execute name-based search</span>
+        <span class="n">products</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">products</span><span class="p">:</span>
+            <span class="n">has_more</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">products</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">limit</span>
+            <span class="k">if</span> <span class="n">has_more</span><span class="p">:</span>
+                <span class="n">products</span> <span class="o">=</span> <span class="n">products</span><span class="p">[:</span><span class="n">limit</span><span class="p">]</span>
+
+            <span class="k">return</span> <span class="n">SearchResults</span><span class="p">(</span>
+                <span class="n">products</span><span class="o">=</span><span class="n">products</span><span class="p">,</span>
+                <span class="n">total_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">products</span><span class="p">),</span>
+                <span class="n">filters_applied</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;search_method&quot;</span><span class="p">:</span> <span class="s2">&quot;name_based&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;product_name&quot;</span><span class="p">:</span> <span class="n">product_name</span>
+                <span class="p">},</span>
+                <span class="n">compatibility_validated</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;requires_compatibility&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span>
+                <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+                <span class="n">has_more</span><span class="o">=</span><span class="n">has_more</span>
+            <span class="p">)</span>
+
+    <span class="c1"># STEP 3: Build search terms from component parameters</span>
+    <span class="n">search_terms_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">build_search_terms_from_component</span><span class="p">(</span>
+        <span class="n">component_dict</span><span class="p">,</span> <span class="n">component_type</span>
+    <span class="p">)</span>
+
+    <span class="c1"># STEP 4: Build primary query WITH search term filters</span>
+    <span class="n">primary_query</span><span class="p">,</span> <span class="n">primary_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">build_base_query</span><span class="p">(</span><span class="n">component_type</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Add compatibility filters if needed</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;requires_compatibility&quot;</span><span class="p">):</span>
+        <span class="n">primary_query</span><span class="p">,</span> <span class="n">primary_params</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">add_compatibility_filters</span><span class="p">(</span>
+            <span class="n">primary_query</span><span class="p">,</span> <span class="n">primary_params</span><span class="p">,</span> <span class="n">component_type</span><span class="p">,</span> <span class="n">selected_components</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Add search term filters</span>
+    <span class="n">primary_query</span><span class="p">,</span> <span class="n">primary_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">add_search_term_filters</span><span class="p">(</span>
+        <span class="n">primary_query</span><span class="p">,</span> <span class="n">primary_params</span><span class="p">,</span> <span class="n">search_terms_dict</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Add ordering</span>
+    <span class="n">primary_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">add_priority_ordering</span><span class="p">(</span><span class="n">primary_query</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Add pagination</span>
+    <span class="n">primary_query</span><span class="p">,</span> <span class="n">primary_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">add_pagination</span><span class="p">(</span>
+        <span class="n">primary_query</span><span class="p">,</span> <span class="n">primary_params</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Add RETURN clause</span>
+    <span class="n">primary_query</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">build_return_clause</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="n">include_score</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># STEP 5: Build fallback query WITHOUT search term filters</span>
+    <span class="n">fallback_query</span><span class="p">,</span> <span class="n">fallback_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">build_base_query</span><span class="p">(</span><span class="n">component_type</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Add compatibility filters</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;requires_compatibility&quot;</span><span class="p">):</span>
+        <span class="n">fallback_query</span><span class="p">,</span> <span class="n">fallback_params</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">add_compatibility_filters</span><span class="p">(</span>
+            <span class="n">fallback_query</span><span class="p">,</span> <span class="n">fallback_params</span><span class="p">,</span> <span class="n">component_type</span><span class="p">,</span> <span class="n">selected_components</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Add ordering and pagination</span>
+    <span class="n">fallback_query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">add_priority_ordering</span><span class="p">(</span><span class="n">fallback_query</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+    <span class="n">fallback_query</span><span class="p">,</span> <span class="n">fallback_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">add_pagination</span><span class="p">(</span>
+        <span class="n">fallback_query</span><span class="p">,</span> <span class="n">fallback_params</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="p">)</span>
+    <span class="n">fallback_query</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">build_return_clause</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="n">include_score</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># STEP 6: Execute search with fallback</span>
+    <span class="n">products</span><span class="p">,</span> <span class="n">filters_applied</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_search_with_fallback</span><span class="p">(</span>
+        <span class="n">primary_query</span><span class="p">,</span> <span class="n">primary_params</span><span class="p">,</span>
+        <span class="n">fallback_query</span><span class="p">,</span> <span class="n">fallback_params</span><span class="p">,</span>
+        <span class="n">search_terms_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;feature_terms&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+        <span class="p">{</span><span class="s2">&quot;search_method&quot;</span><span class="p">:</span> <span class="s2">&quot;cypher&quot;</span><span class="p">},</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;neo4j_label&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Check for pagination</span>
+    <span class="n">has_more</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">products</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">limit</span>
+    <span class="k">if</span> <span class="n">has_more</span><span class="p">:</span>
+        <span class="n">products</span> <span class="o">=</span> <span class="n">products</span><span class="p">[:</span><span class="n">limit</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">SearchResults</span><span class="p">(</span>
+        <span class="n">products</span><span class="o">=</span><span class="n">products</span><span class="p">,</span>
+        <span class="n">total_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">products</span><span class="p">),</span>
+        <span class="n">filters_applied</span><span class="o">=</span><span class="n">filters_applied</span><span class="p">,</span>
+        <span class="n">compatibility_validated</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;requires_compatibility&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span>
+        <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+        <span class="n">has_more</span><span class="o">=</span><span class="n">has_more</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Search Flow Summary</strong>:
+1. <strong>GIN Direct Lookup</strong>: Fastest path - direct GIN match (10-digit product ID)
+2. <strong>Product Name Search</strong>: Space-insensitive matching on <code>item_name</code> field
+3. <strong>Feature-Based Search</strong>: Extract search terms from parameters → build Cypher WHERE clauses
+4. <strong>Compatibility Validation</strong>: Add COMPATIBLE_WITH relationship filters
+5. <strong>Fallback Logic</strong>: If no results with filters → try without filters
+6. <strong>Pagination</strong>: Support for offset/limit with <code>has_more</code> flag</p>
+<hr />
+<h3 id="5-gin-direct-lookup">5. GIN Direct Lookup<a class="headerlink" href="#5-gin-direct-lookup" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_search_by_gin_direct</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">gin</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">category</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ProductResult</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Direct GIN lookup without category/compatibility restrictions.</span>
+
+<span class="sd">    Flexible category matching - returns product even if category doesn&#39;t match.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        gin: Product GIN (10-digit identifier)</span>
+<span class="sd">        category: Optional expected category (for logging/validation)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ProductResult if found, None otherwise</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    MATCH (p:Product)</span>
+<span class="s2">    WHERE p.gin = $gin</span>
+<span class="s2">    RETURN p.gin as gin, p.item_name as name, p.category as category,</span>
+<span class="s2">        p.clean_description as description,</span>
+<span class="s2">        p.attributes_ruleset as specifications_json,</span>
+<span class="s2">        p as specifications</span>
+<span class="s2">    LIMIT 1</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;gin&quot;</span><span class="p">:</span> <span class="n">gin</span><span class="p">}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+            <span class="n">records</span> <span class="o">=</span> <span class="k">await</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">records</span><span class="p">:</span>
+                <span class="n">record</span> <span class="o">=</span> <span class="n">records</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">found_category</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">]</span>
+
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;🔍 GIN </span><span class="si">{</span><span class="n">gin</span><span class="si">}</span><span class="s2"> found with category: &#39;</span><span class="si">{</span><span class="n">found_category</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Log category mismatch (if specified)</span>
+                <span class="k">if</span> <span class="n">category</span><span class="p">:</span>
+                    <span class="n">category_normalized</span> <span class="o">=</span> <span class="n">category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                    <span class="n">found_normalized</span> <span class="o">=</span> <span class="n">found_category</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">category_normalized</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">found_normalized</span> <span class="ow">and</span> <span class="n">found_normalized</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">category_normalized</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;⚠️ GIN </span><span class="si">{</span><span class="n">gin</span><span class="si">}</span><span class="s2"> category mismatch: &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;Expected &#39;</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">&#39;, Found &#39;</span><span class="si">{</span><span class="n">found_category</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+                        <span class="p">)</span>
+
+                <span class="c1"># Build product result</span>
+                <span class="n">specs</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;specifications&quot;</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">specs</span><span class="p">,</span> <span class="s2">&quot;__dict__&quot;</span><span class="p">):</span>
+                    <span class="n">specs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">specs</span><span class="p">)</span>
+                <span class="n">specs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_neo4j_types</span><span class="p">(</span><span class="n">specs</span><span class="p">)</span>
+
+                <span class="n">product</span> <span class="o">=</span> <span class="n">ProductResult</span><span class="p">(</span>
+                    <span class="n">gin</span><span class="o">=</span><span class="n">record</span><span class="p">[</span><span class="s2">&quot;gin&quot;</span><span class="p">],</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">record</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                    <span class="n">category</span><span class="o">=</span><span class="n">record</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">],</span>
+                    <span class="n">description</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">),</span>
+                    <span class="n">specifications</span><span class="o">=</span><span class="n">specs</span>
+                <span class="p">)</span>
+
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✅ Found product by GIN: </span><span class="si">{</span><span class="n">product</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">product</span><span class="o">.</span><span class="n">category</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">product</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ No product found for GIN: </span><span class="si">{</span><span class="n">gin</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;GIN search failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Purpose</strong>: Fastest search path for known GIN identifiers</p>
+<p><strong>Performance</strong>: ~10-20ms (direct index lookup in Neo4j)</p>
+<p><strong>Usage Example</strong>: User says "I need 0446200880" → Agent 1 extracts GIN → Agent 2 direct lookup</p>
+<hr />
+<h3 id="6-fallback-search-logic">6. Fallback Search Logic<a class="headerlink" href="#6-fallback-search-logic" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_execute_search_with_fallback</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">primary_query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">primary_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">fallback_query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">fallback_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">search_terms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">filters_applied</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">category</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ProductResult</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Execute search with fallback logic.</span>
+
+<span class="sd">    If primary query returns 0 results and search terms were applied,</span>
+<span class="sd">    falls back to query without search term filters.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        primary_query: Query WITH search term filters</span>
+<span class="sd">        primary_params: Primary query parameters</span>
+<span class="sd">        fallback_query: Query WITHOUT search term filters</span>
+<span class="sd">        fallback_params: Fallback query parameters</span>
+<span class="sd">        search_terms: List of search terms that were applied</span>
+<span class="sd">        filters_applied: Metadata dict to update</span>
+<span class="sd">        category: Component category for logging</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple of (products, updated_filters_applied)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Execute primary query</span>
+    <span class="n">products</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_search</span><span class="p">(</span><span class="n">primary_query</span><span class="p">,</span> <span class="n">primary_params</span><span class="p">)</span>
+
+    <span class="c1"># Fallback logic</span>
+    <span class="k">if</span> <span class="n">search_terms</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">products</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;No </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2"> found matching search terms, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;falling back to all compatible </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">products</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_search</span><span class="p">(</span><span class="n">fallback_query</span><span class="p">,</span> <span class="n">fallback_params</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">products</span><span class="p">:</span>
+            <span class="n">filters_applied</span><span class="p">[</span><span class="s2">&quot;fallback_used&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">filters_applied</span><span class="p">[</span><span class="s2">&quot;original_search_terms&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">search_terms</span>
+            <span class="n">filters_applied</span><span class="p">[</span><span class="s2">&quot;message&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No exact matches found for &#39;</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">search_terms</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Below are alternative </span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2"> options based on compatibility and features.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">products</span><span class="p">,</span> <span class="n">filters_applied</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Fallback Strategy</strong>:
+1. <strong>Primary Query</strong>: Search with all feature filters (e.g., "water-cooled", "500A", "MIG")
+2. <strong>Fallback Query</strong>: Search with only compatibility filters (if primary returns 0 results)
+3. <strong>User Feedback</strong>: Clear message explaining fallback behavior</p>
+<p><strong>User Experience</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code>User: &quot;water-cooled feeder for Aristo 500ix&quot;
+Agent 1: Extracts {&quot;cooling_type&quot;: &quot;water-cooled&quot;}
+Agent 2 Primary: Searches for water-cooled feeders compatible with Aristo
+Agent 2 Fallback (if 0 results): Shows ALL feeders compatible with Aristo
+
+Response: &quot;No exact matches found for &#39;water-cooled&#39;. Below are alternative Feeder options based on compatibility and features.&quot;
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h3 id="7-lucene-full-text-search">7. Lucene Full-Text Search<a class="headerlink" href="#7-lucene-full-text-search" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search_with_lucene</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">component_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">user_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">selected_components</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SearchResults</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic component search using Lucene full-text search.</span>
+
+<span class="sd">    This is the method used by LuceneStrategy.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        component_type: Type of component</span>
+<span class="sd">        user_message: User&#39;s search message (raw query)</span>
+<span class="sd">        selected_components: ResponseJSON dict (already selected components)</span>
+<span class="sd">        limit: Maximum results to return</span>
+<span class="sd">        offset: Pagination offset</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        SearchResults with products and Lucene scores</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">component_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">component_type</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown component type: </span><span class="si">{</span><span class="n">component_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lucene_enabled&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lucene search not enabled for </span><span class="si">{</span><span class="n">component_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Build Lucene query</span>
+    <span class="n">query</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">build_lucene_query</span><span class="p">(</span>
+        <span class="n">component_type</span><span class="p">,</span> <span class="n">user_message</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Add compatibility filters if needed</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;requires_compatibility&quot;</span><span class="p">):</span>
+        <span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">add_compatibility_filters</span><span class="p">(</span>
+            <span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">component_type</span><span class="p">,</span> <span class="n">selected_components</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Add ordering and pagination</span>
+    <span class="n">query</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ORDER BY score DESC, p.item_name&quot;</span>
+    <span class="n">query</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">add_pagination</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">limit</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Add RETURN clause with score</span>
+    <span class="n">query</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_builder</span><span class="o">.</span><span class="n">build_return_clause</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="n">include_score</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Execute Lucene search</span>
+    <span class="n">products</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_execute_search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+    <span class="c1"># Check for pagination</span>
+    <span class="n">has_more</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">products</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">limit</span>
+    <span class="k">if</span> <span class="n">has_more</span><span class="p">:</span>
+        <span class="n">products</span> <span class="o">=</span> <span class="n">products</span><span class="p">[:</span><span class="n">limit</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">SearchResults</span><span class="p">(</span>
+        <span class="n">products</span><span class="o">=</span><span class="n">products</span><span class="p">,</span>
+        <span class="n">total_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">products</span><span class="p">),</span>
+        <span class="n">filters_applied</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;search_method&quot;</span><span class="p">:</span> <span class="s2">&quot;lucene&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;query&quot;</span><span class="p">:</span> <span class="n">user_message</span>
+        <span class="p">},</span>
+        <span class="n">compatibility_validated</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;requires_compatibility&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span>
+        <span class="n">limit</span><span class="o">=</span><span class="n">limit</span><span class="p">,</span>
+        <span class="n">has_more</span><span class="o">=</span><span class="n">has_more</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Purpose</strong>: Full-text search using Neo4j's Lucene index</p>
+<p><strong>Lucene Query Example</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">CALL</span><span class="w"> </span><span class="n">db</span><span class="p">.</span><span class="n">index</span><span class="p">.</span><span class="n">fulltext</span><span class="p">.</span><span class="n">queryNodes</span><span class="p">(</span><span class="s">&#39;productIndex&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">$</span><span class="n">search_query</span><span class="p">)</span>
+<span class="k">YIELD</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">score</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">category</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="err">$</span><span class="n">category</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">gin</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">item_name</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">category</span><span class="p">,</span>
+<span class="w">       </span><span class="n">p</span><span class="p">.</span><span class="n">clean_description</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">description</span><span class="p">,</span>
+<span class="w">       </span><span class="n">p</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">specifications</span><span class="p">,</span>
+<span class="w">       </span><span class="n">score</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">score</span><span class="w"> </span><span class="k">DESC</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">item_name</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Use Case</strong>: When user query is natural language without structured parameters</p>
+<hr />
+<h3 id="8-query-execution-and-result-parsing">8. Query Execution and Result Parsing<a class="headerlink" href="#8-query-execution-and-result-parsing" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_execute_search</span><span class="p">(</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ProductResult</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Execute Neo4j search query and return results.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        query: Cypher query string</span>
+<span class="sd">        params: Query parameters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List of ProductResult objects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># DETAILED LOGGING for query troubleshooting (Nov 15, 2024)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;🔍 EXECUTING NEO4J CYPHER QUERY&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Query:</span><span class="se">\n</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Params: </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">driver</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+            <span class="n">records</span> <span class="o">=</span> <span class="k">await</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">()</span>
+
+            <span class="n">products</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span><span class="p">:</span>
+                <span class="n">specs</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;specifications&quot;</span><span class="p">,</span> <span class="p">{})</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">specs</span><span class="p">,</span> <span class="s2">&quot;__dict__&quot;</span><span class="p">):</span>
+                    <span class="n">specs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">specs</span><span class="p">)</span>
+                <span class="n">specs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clean_neo4j_types</span><span class="p">(</span><span class="n">specs</span><span class="p">)</span>
+
+                <span class="c1"># 🔧 FIX (Nov 15, 2024): Preserve native Lucene fulltext scores</span>
+                <span class="c1"># Root cause: Lucene queries return score field but it was being discarded</span>
+                <span class="c1"># Solution: Extract score from Neo4j result and store in specifications</span>
+                <span class="k">if</span> <span class="s2">&quot;score&quot;</span> <span class="ow">in</span> <span class="n">record</span><span class="p">:</span>
+                    <span class="n">lucene_score</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">record</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">])</span>
+                    <span class="n">specs</span><span class="p">[</span><span class="s2">&quot;lucene_score&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lucene_score</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  → Product </span><span class="si">{</span><span class="n">record</span><span class="p">[</span><span class="s1">&#39;gin&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> native Lucene score: </span><span class="si">{</span><span class="n">lucene_score</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="n">product</span> <span class="o">=</span> <span class="n">ProductResult</span><span class="p">(</span>
+                    <span class="n">gin</span><span class="o">=</span><span class="n">record</span><span class="p">[</span><span class="s2">&quot;gin&quot;</span><span class="p">],</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">record</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                    <span class="n">category</span><span class="o">=</span><span class="n">record</span><span class="p">[</span><span class="s2">&quot;category&quot;</span><span class="p">],</span>
+                    <span class="n">description</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">),</span>
+                    <span class="n">specifications</span><span class="o">=</span><span class="n">specs</span>
+                <span class="p">)</span>
+                <span class="n">products</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">product</span><span class="p">)</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Search returned </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">products</span><span class="p">)</span><span class="si">}</span><span class="s2"> products&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">products</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Neo4j search failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Params: </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Key Features</strong>:
+- <strong>Detailed Logging</strong>: Full Cypher query and parameters logged for debugging
+- <strong>Lucene Score Preservation</strong>: Native Lucene scores preserved in specifications
+- <strong>Neo4j Type Cleaning</strong>: Converts Neo4j-specific types to JSON-serializable types
+- <strong>Error Handling</strong>: Returns empty list on error (logs details for debugging)</p>
+<hr />
+<h2 id="integration-with-agent-1-and-agent-3">Integration with Agent 1 and Agent 3<a class="headerlink" href="#integration-with-agent-1-and-agent-3" title="Permanent link">&para;</a></h2>
+<h3 id="data-flow-from-agent-1-to-agent-2">Data Flow from Agent 1 to Agent 2<a class="headerlink" href="#data-flow-from-agent-1-to-agent-2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Agent 1 extracts parameters</span>
+<span class="n">master_parameters</span> <span class="o">=</span> <span class="k">await</span> <span class="n">parameter_extractor</span><span class="o">.</span><span class="n">extract_parameters</span><span class="p">(</span>
+    <span class="n">user_message</span><span class="o">=</span><span class="s2">&quot;500A MIG welder for aluminum&quot;</span><span class="p">,</span>
+    <span class="n">current_state</span><span class="o">=</span><span class="s2">&quot;power_source_selection&quot;</span><span class="p">,</span>
+    <span class="n">master_parameters</span><span class="o">=</span><span class="n">existing_master_params</span>
+<span class="p">)</span>
+
+<span class="c1"># Result:</span>
+<span class="p">{</span>
+    <span class="s2">&quot;power_source&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;current_rating&quot;</span><span class="p">:</span> <span class="s2">&quot;500A&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;process&quot;</span><span class="p">:</span> <span class="s2">&quot;MIG (GMAW)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;material&quot;</span><span class="p">:</span> <span class="s2">&quot;aluminum&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;feeder&quot;</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+
+<span class="c1"># Agent 2 searches based on extracted parameters</span>
+<span class="n">search_results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">product_search</span><span class="o">.</span><span class="n">search_power_source</span><span class="p">(</span>
+    <span class="n">master_parameters</span><span class="o">=</span><span class="n">master_parameters</span><span class="p">,</span>
+    <span class="n">selected_components</span><span class="o">=</span><span class="n">response_json</span><span class="p">,</span>
+    <span class="n">limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">offset</span><span class="o">=</span><span class="mi">0</span>
+<span class="p">)</span>
+
+<span class="c1"># Result:</span>
+<span class="n">SearchResults</span><span class="p">(</span>
+    <span class="n">products</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">ProductResult</span><span class="p">(</span><span class="n">gin</span><span class="o">=</span><span class="s2">&quot;0446200880&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Aristo 500ix CE&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">),</span>
+        <span class="n">ProductResult</span><span class="p">(</span><span class="n">gin</span><span class="o">=</span><span class="s2">&quot;0465350883&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Warrior 500i&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">),</span>
+        <span class="o">...</span>
+    <span class="p">],</span>
+    <span class="n">total_count</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">filters_applied</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;search_method&quot;</span><span class="p">:</span> <span class="s2">&quot;cypher&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;search_terms&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;500A&quot;</span><span class="p">,</span> <span class="s2">&quot;MIG&quot;</span><span class="p">,</span> <span class="s2">&quot;aluminum&quot;</span><span class="p">]</span>
+    <span class="p">},</span>
+    <span class="n">compatibility_validated</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">has_more</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="data-flow-from-agent-2-to-agent-3">Data Flow from Agent 2 to Agent 3<a class="headerlink" href="#data-flow-from-agent-2-to-agent-3" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Agent 2 returns search results</span>
+<span class="n">search_results</span> <span class="o">=</span> <span class="n">SearchResults</span><span class="p">(</span>
+    <span class="n">products</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span>
+    <span class="n">filters_applied</span><span class="o">=</span><span class="p">{</span><span class="o">...</span><span class="p">},</span>
+    <span class="n">compatibility_validated</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="c1"># Agent 3 generates user-friendly response</span>
+<span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">message_generator</span><span class="o">.</span><span class="n">generate_response</span><span class="p">(</span>
+    <span class="n">current_state</span><span class="o">=</span><span class="s2">&quot;power_source_selection&quot;</span><span class="p">,</span>
+    <span class="n">search_results</span><span class="o">=</span><span class="n">search_results</span><span class="o">.</span><span class="n">products</span><span class="p">,</span>  <span class="c1"># List of ProductResult</span>
+    <span class="n">master_parameters</span><span class="o">=</span><span class="n">master_parameters</span><span class="p">,</span>
+    <span class="n">response_json</span><span class="o">=</span><span class="n">response_json</span><span class="p">,</span>
+    <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Agent 3 formats products into readable list with names, descriptions, and selection instructions</span>
+</code></pre></div></td></tr></table></div>
+<hr />
+<h2 id="compatibility-validation">Compatibility Validation<a class="headerlink" href="#compatibility-validation" title="Permanent link">&para;</a></h2>
+<p><strong>COMPATIBLE_WITH Relationships</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1">// Example: Feeder compatibility with PowerSource</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">ps</span><span class="p">:</span><span class="n">Product</span><span class="w"> </span><span class="p">{</span><span class="n">gin</span><span class="p">:</span><span class="w"> </span><span class="err">$</span><span class="n">power_source_gin</span><span class="p">})</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">feeder</span><span class="p">:</span><span class="n">Product</span><span class="p">)</span><span class="o">-[</span><span class="n">r</span><span class="p">:</span><span class="n">COMPATIBLE_WITH</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">feeder</span><span class="p">.</span><span class="n">category</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Feeder&quot;</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">feeder</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="n">priority</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Compatibility Matrix</strong>:
+- <strong>PowerSource</strong> → No compatibility required (first component)
+- <strong>Feeder</strong> → Must be compatible with PowerSource
+- <strong>Cooler</strong> → Must be compatible with PowerSource
+- <strong>Interconnector</strong> → Must be compatible with PowerSource + Feeder + Cooler
+- <strong>Torch</strong> → Must be compatible with Feeder
+- <strong>Accessories</strong> → Compatible with any selected components</p>
+<p><strong>Triple Compatibility Example</strong> (Interconnector):
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">ps</span><span class="p">:</span><span class="n">Product</span><span class="w"> </span><span class="p">{</span><span class="n">gin</span><span class="p">:</span><span class="w"> </span><span class="err">$</span><span class="n">power_source_gin</span><span class="p">})</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="p">:</span><span class="n">Product</span><span class="w"> </span><span class="p">{</span><span class="n">gin</span><span class="p">:</span><span class="w"> </span><span class="err">$</span><span class="n">feeder_gin</span><span class="p">})</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="p">:</span><span class="n">Product</span><span class="w"> </span><span class="p">{</span><span class="n">gin</span><span class="p">:</span><span class="w"> </span><span class="err">$</span><span class="n">cooler_gin</span><span class="p">})</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">interconn</span><span class="p">:</span><span class="n">Product</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">COMPATIBLE_WITH</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">ps</span><span class="p">)</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">interconn</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">COMPATIBLE_WITH</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="k">MATCH</span><span class="w"> </span><span class="p">(</span><span class="n">interconn</span><span class="p">)</span><span class="o">-[</span><span class="p">:</span><span class="n">COMPATIBLE_WITH</span><span class="o">]-&gt;</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">interconn</span><span class="p">.</span><span class="n">category</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">&quot;Interconnector&quot;</span>
+<span class="k">RETURN</span><span class="w"> </span><span class="n">interconn</span>
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="performance-optimization">Performance Optimization<a class="headerlink" href="#performance-optimization" title="Permanent link">&para;</a></h2>
+<p><strong>Index Strategy</strong>:
+- Primary Key: <code>gin</code> (10-digit product identifier)
+- Category Index: <code>category</code> field for category filtering
+- Lucene Full-Text Index: <code>item_name</code>, <code>clean_description</code>, <code>attributes_ruleset</code></p>
+<p><strong>Query Performance</strong>:
+- GIN Direct Lookup: ~10-20ms
+- Compatibility Search: ~50-100ms
+- Lucene Full-Text Search: ~100-200ms
+- Typical Total Latency: &lt;100ms</p>
+<p><strong>Async Architecture</strong>:
+- Non-blocking I/O with Neo4j async driver
+- Connection pooling for concurrent requests
+- Parallel searches for compound requests</p>
+<hr />
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<p><strong>Query Execution Failures</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Neo4j search failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Params: </span><span class="si">{</span><span class="n">params</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[]</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Unknown Component Type</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown component type: </span><span class="si">{</span><span class="n">component_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<p><strong>Lucene Disabled</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">if</span> <span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;lucene_enabled&quot;</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Lucene search not enabled for </span><span class="si">{</span><span class="n">component_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="configuration-dependencies">Configuration Dependencies<a class="headerlink" href="#configuration-dependencies" title="Permanent link">&para;</a></h2>
+<p><strong>Required Configuration Files</strong>:
+- <code>component_types.json</code>: Component definitions (13+ components)
+  - neo4j_label, category, master_param_key
+  - requires_compatibility, lucene_enabled, fuzzy_matching_enabled</p>
+<p><strong>Neo4j Database Requirements</strong>:
+- Product nodes with properties: <code>gin</code>, <code>item_name</code>, <code>category</code>, <code>clean_description</code>
+- COMPATIBLE_WITH relationships with optional <code>priority</code> property
+- Lucene full-text index on Product nodes</p>
+<p><strong>Environment Variables</strong>:
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nv">NEO4J_URI</span><span class="o">=</span>neo4j://localhost:7687<span class="w">  </span><span class="c1"># or bolt+s://xxxxx.databases.neo4j.io</span>
+<span class="nv">NEO4J_USERNAME</span><span class="o">=</span>neo4j
+<span class="nv">NEO4J_PASSWORD</span><span class="o">=</span>password
+</code></pre></div></td></tr></table></div></p>
+<hr />
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../ORCHESTRATOR_ARCHITECTURE/">Orchestrator Architecture</a> - How Agent 2 integrates with orchestrator</li>
+<li><a href="../AGENT1_PARAMETER_EXTRACTOR/">Agent 1: ParameterExtractor</a> - How parameters drive search</li>
+<li><a href="../AGENT3_MESSAGE_GENERATOR/">Agent 3: MessageGenerator</a> - How search results are formatted</li>
+<li><a href="../MASTER_PARAMETER_JSON_ARCHITECTURE/">Master Parameter JSON Architecture</a> - Data model design</li>
+<li><a href="../CONTEXT_BASED_STRATEGIES/">Context-Based Search Strategies</a> - Cypher vs Lucene strategies</li>
+</ul>
+<hr />
+<h2 id="file-locations">File Locations<a class="headerlink" href="#file-locations" title="Permanent link">&para;</a></h2>
+<p><strong>Source Files</strong>:
+- <code>src/backend/app/services/neo4j/product_search.py</code> - Neo4jProductSearch facade (488 lines)
+- <code>src/backend/app/services/search/components/component_service.py</code> - ComponentSearchService (509+ lines)
+- <code>src/backend/app/services/search/components/query_builder.py</code> - Neo4jQueryBuilder</p>
+<p><strong>Related Files</strong>:
+- <code>app/config/component_types.json</code> - Component configuration
+- <code>app/models/product_search.py</code> - ProductResult and SearchResults models</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 ESAB
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/esab/configurator" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/esab-configurator/" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../javascripts/extra.js"></script>
+      
+    
+  </body>
+</html>
