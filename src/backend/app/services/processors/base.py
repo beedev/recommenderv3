@@ -93,7 +93,6 @@ class StateProcessor(ABC):
         """
         pass
 
-    @abstractmethod
     def get_next_state(
         self,
         conversation_state,
@@ -102,14 +101,54 @@ class StateProcessor(ABC):
         """
         Determine the next state after this state.
 
+        **DEFAULT IMPLEMENTATION**: Delegates to conversation_state.get_next_state() which uses
+        the centralized StateManager. This ensures consistency with the configured state sequence
+        and eliminates duplicate state transition logic.
+
+        Subclasses CAN override this method if they need custom state transition logic,
+        but in most cases the default delegation is sufficient and recommended.
+
         Args:
-            conversation_state: Current ConversationState
+            conversation_state: Current ConversationState (with get_next_state() method)
             selection_made: True if user just made a selection, False if skipping
 
         Returns:
             Next ConfiguratorState enum value (as string)
+
+        Example:
+            >>> # Default behavior (delegation to StateManager)
+            >>> next_state = processor.get_next_state(conversation_state, selection_made=True)
+            >>> # StateManager automatically skips non-applicable states based on applicability flags
         """
-        pass
+        # Default implementation: Delegate to ConversationState which uses StateManager
+        # This ensures consistency with the centralized state transition logic
+        try:
+            next_state_enum = conversation_state.get_next_state()
+
+            if next_state_enum is None:
+                logger.warning(
+                    f"{self.__class__.__name__}.get_next_state(): "
+                    f"conversation_state.get_next_state() returned None, defaulting to 'finalize'"
+                )
+                return "finalize"
+
+            # Extract string value from enum
+            next_state_value = next_state_enum.value if hasattr(next_state_enum, 'value') else str(next_state_enum)
+
+            logger.info(
+                f"{self.__class__.__name__}.get_next_state(): "
+                f"Delegated to StateManager → {next_state_value}"
+            )
+
+            return next_state_value
+
+        except Exception as e:
+            logger.error(
+                f"{self.__class__.__name__}.get_next_state() delegation error: {e}",
+                exc_info=True
+            )
+            # Fallback to finalize on error
+            return "finalize"
 
     def validate_selection(
         self,
@@ -283,11 +322,13 @@ class StateProcessor(ABC):
 
         Args:
             total_count: Number of products found
-            execution_time_ms: Execution time in milliseconds
+            execution_time_ms: Execution time in milliseconds (can be None)
         """
+        # Handle None execution_time_ms gracefully
+        time_str = f"{execution_time_ms:.2f}ms" if execution_time_ms is not None else "N/A"
         logger.info(
             f"{self.__class__.__name__} search completed: "
-            f"{total_count} products in {execution_time_ms:.2f}ms"
+            f"{total_count} products in {time_str}"
         )
 
     def is_conditional_accessory(self) -> bool:

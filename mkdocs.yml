@@ -70,9 +70,8 @@ nav:
   #     - Orchestration: api/orchestrator.md
   #     - Data Models: api/models.md
   - Operations:
-      - Deployment: deployment/README.md
-      - Testing: testing-guide.md
-      - Operations Runbook: operations/runbook.md
+      - Deployment & Sizing: operations/deployment-sizing-guide.md
+      - Operational Scripts: operations/scripts/README.md
   # Analysis section disabled - files archived/moved
   # - Analysis:
   #     - Threshold Filtering: THRESHOLD_FILTERING_ANALYSIS.md

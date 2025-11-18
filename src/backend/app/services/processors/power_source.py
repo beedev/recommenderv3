@@ -93,64 +93,8 @@ class PowerSourceStateProcessor(StateProcessor):
                 "metadata": {"error": str(e)}
             }
 
-    def get_next_state(
-        self,
-        conversation_state,
-        selection_made: bool = False
-    ) -> str:
-        """
-        Determine next state after power source selection.
-
-        Logic:
-        - If selection made: Check applicability for Feeder
-          - If Feeder applicable (Y): → feeder_selection
-          - If Feeder not applicable (N): Skip to Cooler (or next applicable component)
-        - If no selection (error case): Stay in power_source_selection
-
-        Args:
-            conversation_state: Current ConversationState
-            selection_made: True if power source was selected
-
-        Returns:
-            Next state name
-        """
-        if not selection_made:
-            # Error case: No selection made (shouldn't happen - power source is mandatory)
-            logger.warning("PowerSourceStateProcessor: No selection made (mandatory state)")
-            return "power_source_selection"
-
-        # Get applicability from response_json
-        response_json = conversation_state.response_json
-        # Convert Pydantic model to dict for .get() access
-        applicability = response_json.applicability.model_dump() if response_json.applicability else {}
-
-        # Check if Feeder is applicable (mandatory or optional)
-        feeder_status = applicability.get("Feeder")
-        if feeder_status in ["mandatory", "optional", "Y"]:
-            logger.info(f"Next state: feeder_selection (Feeder status: {feeder_status})")
-            return "feeder_selection"
-
-        # Feeder not applicable, check Cooler
-        cooler_status = applicability.get("Cooler")
-        if cooler_status in ["mandatory", "optional", "Y"]:
-            logger.info(f"Next state: cooler_selection (Feeder skipped, Cooler status: {cooler_status})")
-            return "cooler_selection"
-
-        # Cooler not applicable, check Interconnector
-        interconnector_status = applicability.get("Interconnector")
-        if interconnector_status in ["mandatory", "optional", "Y"]:
-            logger.info(f"Next state: interconnector_selection (Feeder, Cooler skipped, Interconnector status: {interconnector_status})")
-            return "interconnector_selection"
-
-        # Interconnector not applicable, check Torch
-        torch_status = applicability.get("Torch")
-        if torch_status in ["mandatory", "optional", "Y"]:
-            logger.info(f"Next state: torch_selection (primary components skipped, Torch status: {torch_status})")
-            return "torch_selection"
-
-        # No primary components applicable, go to accessories
-        logger.info("Next state: powersource_accessories_selection (all primary skipped)")
-        return "powersource_accessories_selection"
+    # get_next_state() now inherited from base class (delegates to StateManager)
+    # This ensures consistency with the centralized state transition logic
 
     def validate_selection(
         self,

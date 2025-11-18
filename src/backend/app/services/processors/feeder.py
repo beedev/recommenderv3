@@ -103,50 +103,5 @@ class FeederStateProcessor(StateProcessor):
                 "metadata": {"error": str(e)}
             }
 
-    def get_next_state(
-        self,
-        conversation_state,
-        selection_made: bool = False
-    ) -> str:
-        """
-        Determine next state after feeder selection/skip.
-
-        Logic:
-        - If selection made or skipped: Check applicability for Cooler
-        - If no selection and not skipped: Stay in feeder_selection
-
-        Args:
-            conversation_state: Current ConversationState
-            selection_made: True if feeder was selected or skipped
-
-        Returns:
-            Next state name
-        """
-        if not selection_made:
-            return "feeder_selection"
-
-        response_json = conversation_state.response_json
-        # Convert Pydantic model to dict for .get() access
-        applicability = response_json.applicability.model_dump() if response_json.applicability else {}
-
-        # Check if Cooler is applicable (mandatory or optional)
-        cooler_status = applicability.get("Cooler")
-        if cooler_status in ["mandatory", "optional", "Y"]:
-            logger.info(f"Next state: cooler_selection (Cooler status: {cooler_status})")
-            return "cooler_selection"
-
-        # Cooler not applicable, check Interconnector
-        interconnector_status = applicability.get("Interconnector")
-        if interconnector_status in ["mandatory", "optional", "Y"]:
-            logger.info(f"Next state: interconnector_selection (Cooler skipped, Interconnector status: {interconnector_status})")
-            return "interconnector_selection"
-
-        # Interconnector not applicable, check Torch
-        torch_status = applicability.get("Torch")
-        if torch_status in ["mandatory", "optional", "Y"]:
-            logger.info(f"Next state: torch_selection (Torch status: {torch_status})")
-            return "torch_selection"
-
-        # No more primary components, go to accessories
-        logger.info("Next state: powersource_accessories_selection")
-        return "powersource_accessories_selection"
+    # get_next_state() now inherited from base class (delegates to StateManager)
+    # This ensures consistency with the centralized state transition logic

@@ -48,6 +48,5 @@ class TorchStateProcessor(StateProcessor):
                     "has_more": False, "zero_results_message": f"Error searching for torches: {str(e)}",
                     "metadata": {"error": str(e)}}
 
-    def get_next_state(self, conversation_state, selection_made: bool = False) -> str:
-        """After torch, always go to accessories"""
-        return "powersource_accessories_selection"
+    # get_next_state() now inherited from base class (delegates to StateManager)
+    # This ensures consistency with the centralized state transition logic

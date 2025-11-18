@@ -637,7 +637,8 @@ class ConversationState(BaseModel):
     def get_next_state(self) -> Optional[ConfiguratorState]:
         """
         Determine next state based on applicability and current state
-        
+        NOW DELEGATES TO CENTRALIZED StateManager
+
         Rules:
         - Mandatory components cannot be skipped
         - Conditional components can be skipped based on user choice
@@ -647,77 +648,50 @@ class ConversationState(BaseModel):
         Returns:
             Next state enum or None
         """
-        state_enum = get_configurator_state()
-        finalize_state = None
-
         try:
-            from .state_factory import StateFactory
+            from app.services.state import get_state_manager
 
-            # Load state sequence dynamically from config
-            state_sequence = StateFactory.get_state_sequence()
+            state_manager = get_state_manager()
+            state_enum = get_configurator_state()
 
-            # Get current state index
+            # Get current state value
             current_state_value = self.current_state.value if isinstance(self.current_state, Enum) else str(self.current_state)
 
-            try:
-                current_idx = state_sequence.index(current_state_value)
-            except ValueError:
-                # Invalid current state, return first state
-                return state_enum(state_sequence[0]) if state_sequence else None
+            # Build applicability dict for StateManager
+            # StateManager expects Dict[str, str] with "Y" for applicable, "N" for not applicable
+            applicability_dict = {}
+            if self.response_json.applicability:
+                applicability_obj = self.response_json.applicability
 
-            # Get finalize state
-            finalize_state = StateFactory.get_finalize_state()
+                # Map applicability values:
+                # - "mandatory", "conditional", "optional" → "Y" (show state)
+                # - "not_applicable", "integrated_cooler" → "N" (skip state)
+                for field_name in applicability_obj.__fields__.keys():
+                    field_value = getattr(applicability_obj, field_name, "mandatory")
 
-            # Find next applicable state
-            applicability = self.response_json.applicability
+                    if field_value in ["not_applicable", "integrated_cooler"]:
+                        applicability_dict[field_name] = "N"
+                    else:
+                        # mandatory, conditional, optional → all show the state
+                        applicability_dict[field_name] = "Y"
 
-            for next_idx in range(current_idx + 1, len(state_sequence)):
-                next_state = state_sequence[next_idx]
+            # Delegate to StateManager
+            next_state_value = state_manager.get_next_state(
+                current_state=current_state_value,
+                applicability=applicability_dict,
+                selected_components=self.response_json.dict() if self.response_json else None
+            )
 
-                # Finalize is always applicable
-                if next_state == finalize_state:
-                    return state_enum(next_state)
-
-                # Check if component is applicable
-                if applicability:
-                    # Build component map dynamically from config
-                    try:
-                        state_metadata = StateFactory.get_state_metadata(next_state)
-                        api_key = state_metadata.get("api_key")
-
-                        if api_key:
-                            # Get applicability value
-                            applicability_value = getattr(applicability, api_key, "mandatory")
-                            
-                            # Check applicability rules
-                            if applicability_value == "not_applicable":
-                                # Auto-skip not applicable components
-                                logger.info(f"Auto-skipping state {next_state} (not_applicable)")
-                                continue
-                            elif applicability_value in ["mandatory", "conditional", "optional"]:
-                                # Component is applicable - proceed to this state
-                                return state_enum(next_state)
-                            else:
-                                # Unknown applicability value - assume applicable
-                                logger.warning(f"Unknown applicability value '{applicability_value}' for {api_key}, assuming applicable")
-                                return state_enum(next_state)
-                    except KeyError:
-                        # State metadata not found, assume applicable
-                        logger.warning(f"No metadata found for state: {next_state}, assuming applicable")
-                        return state_enum(next_state)
-                else:
-                    # No applicability set yet (before S1 completion)
-                    return state_enum(next_state)
-
-            # Reached end of states
-            return state_enum(finalize_state)
+            # Convert back to enum
+            return state_enum(next_state_value)
 
         except Exception as e:
-            logger.error(f"Error in get_next_state: {e}")
+            import traceback
+            logger.error(f"Error in get_next_state (StateManager delegation): {e}")
+            logger.error(f"Traceback: {traceback.format_exc()}")
             # Fallback to finalize
+            state_enum = get_configurator_state()
             try:
-                if finalize_state:
-                    return state_enum(finalize_state)
                 return state_enum("finalize")
             except Exception:
                 try:

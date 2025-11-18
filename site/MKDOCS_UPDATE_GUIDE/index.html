@@ -12,7 +12,7 @@
         <meta name="author" content="ESAB Development Team">
       
       
-        <link rel="canonical" href="https://esab-configurator.readthedocs.io/CONFIG_CONSOLIDATION_STATUS/">
+        <link rel="canonical" href="https://esab-configurator.readthedocs.io/MKDOCS_UPDATE_GUIDE/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Configuration Consolidation Status - ESAB Configurator Documentation</title>
+        <title>MkDocs Documentation Update Guide - ESAB Configurator Documentation</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#configuration-consolidation-status" class="md-skip">
+        <a href="#mkdocs-documentation-update-guide" class="md-skip">
           Skip to content
         </a>
       
@@ -118,7 +118,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Configuration Consolidation Status
+              MkDocs Documentation Update Guide
             
           </span>
         </div>
@@ -842,184 +842,10 @@
   
 
 
-<h1 id="configuration-consolidation-status">Configuration Consolidation Status<a class="headerlink" href="#configuration-consolidation-status" title="Permanent link">&para;</a></h1>
-<p><strong>Date</strong>: November 15, 2024
-<strong>Status</strong>: In Progress - Phase 1 Complete</p>
-<h2 id="whats-been-done">What's Been Done<a class="headerlink" href="#whats-been-done" title="Permanent link">&para;</a></h2>
-<h3 id="phase-1-file-merge-complete">✅ Phase 1: File Merge Complete<a class="headerlink" href="#phase-1-file-merge-complete" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Merged component_config.json INTO component_types.json</strong></li>
-<li>
-<p>Added 5 new fields to each component:</p>
-<ul>
-<li><code>category</code> (Powersource, Feeder, etc.)</li>
-<li><code>dependencies</code> (array of component keys)</li>
-<li><code>master_param_key</code> (MasterParameterJSON key)</li>
-<li><code>lucene_enabled</code> (boolean)</li>
-<li><code>fuzzy_matching_enabled</code> (boolean)</li>
-</ul>
-</li>
-<li>
-<p>Fixed <code>neo4j_label</code> to use correct values from component_config</p>
-<ul>
-<li>PowersourceAccessory (not "Accessory")</li>
-<li>FeederAccessory (not "Accessory")</li>
-<li>etc.</li>
-</ul>
-</li>
-<li>
-<p><strong>Created 4 New Schema Files</strong> (for validation expansion)</p>
-</li>
-<li>component_config.schema.json</li>
-<li>state_config.schema.json</li>
-<li>search_config.schema.json</li>
-<li>
-<p>master_parameter_schema.schema.json</p>
-</li>
-<li>
-<p><strong>Updated ConfigValidator</strong> to validate 7 configs instead of 3</p>
-</li>
-<li>Original: component_types, state_prompts, component_applicability</li>
-<li>Added: component_config, state_config, search_config, master_parameter_schema</li>
-</ol>
-<h2 id="what-remains-todo">What Remains (TODO)<a class="headerlink" href="#what-remains-todo" title="Permanent link">&para;</a></h2>
-<h3 id="phase-2-code-migration">Phase 2: Code Migration<a class="headerlink" href="#phase-2-code-migration" title="Permanent link">&para;</a></h3>
-<p><strong>6 Files to Update:</strong></p>
-<ol>
-<li>
-<p><strong>app/config/schema_loader.py</strong>
-   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Change load_component_config() to:</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">load_component_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load component configuration (now from component_types)&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;component_types&quot;</span><span class="p">)[</span><span class="s2">&quot;component_types&quot;</span><span class="p">]</span>
-</code></pre></div></td></tr></table></div></p>
-</li>
-<li>
-<p><strong>app/services/search/components/component_service.py</strong>
-   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Line ~50: Change config loading</span>
-<span class="c1"># FROM: config = load_component_config()</span>
-<span class="c1"># TO:   config = schema_loader.load_config(&quot;component_types&quot;)[&quot;component_types&quot;]</span>
-</code></pre></div></td></tr></table></div></p>
-</li>
-<li>
-<p><strong>app/services/search/strategies/cypher_strategy.py</strong>
-   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Update component config loading to use component_types</span>
-</code></pre></div></td></tr></table></div></p>
-</li>
-<li>
-<p><strong>app/services/search/strategies/lucene_strategy.py</strong>
-   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Update component config loading to use component_types</span>
-</code></pre></div></td></tr></table></div></p>
-</li>
-<li>
-<p><strong>app/services/search/components/query_builder.py</strong>
-   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Update component config loading to use component_types</span>
-</code></pre></div></td></tr></table></div></p>
-</li>
-<li>
-<p><strong>app/services/config/config_validator.py</strong>
-   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Line 367: REMOVE this line:</span>
-<span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validate_config_schema</span><span class="p">(</span><span class="s2">&quot;component_config&quot;</span><span class="p">))</span>
-</code></pre></div></td></tr></table></div></p>
-</li>
-</ol>
-<h3 id="phase-3-cleanup">Phase 3: Cleanup<a class="headerlink" href="#phase-3-cleanup" title="Permanent link">&para;</a></h3>
-<ol>
-<li>
-<p><strong>Archive Old Files</strong>
-   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>mkdir<span class="w"> </span>-p<span class="w"> </span>/archived/config_refactoring/
-mv<span class="w"> </span>app/config/component_config.json<span class="w"> </span>/archived/config_refactoring/
-</code></pre></div></td></tr></table></div></p>
-</li>
-<li>
-<p><strong>Delete Obsolete Files</strong>
-   <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>rm<span class="w"> </span>app/config/component_config.schema.json
-rm<span class="w"> </span>app/config/component_types_merged.json<span class="w">  </span><span class="c1"># temp file</span>
-</code></pre></div></td></tr></table></div></p>
-</li>
-<li>
-<p><strong>Update component_types Schema</strong></p>
-</li>
-<li>Add new required fields to component_types.schema.json:<ul>
-<li>category, dependencies, master_param_key, lucene_enabled, fuzzy_matching_enabled</li>
-</ul>
-</li>
-</ol>
-<h3 id="phase-4-testing">Phase 4: Testing<a class="headerlink" href="#phase-4-testing" title="Permanent link">&para;</a></h3>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 1. Validate configs</span>
-<span class="nb">cd</span><span class="w"> </span>src/backend
-python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;from app.services.config.config_validator import validate_configs_on_startup; print(validate_configs_on_startup())&quot;</span>
-
-<span class="c1"># 2. Test server startup</span>
-uvicorn<span class="w"> </span>app.main:app<span class="w"> </span>--reload
-
-<span class="c1"># 3. Test component search</span>
-curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/api/v1/configurator/message<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;message&quot;: &quot;I need a 500A MIG welder&quot;, &quot;language&quot;: &quot;en&quot;}&#39;</span>
-</code></pre></div></td></tr></table></div>
-<h2 id="duplication-analysis-results">Duplication Analysis Results<a class="headerlink" href="#duplication-analysis-results" title="Permanent link">&para;</a></h2>
-<h3 id="critical-findings">Critical Findings<a class="headerlink" href="#critical-findings" title="Permanent link">&para;</a></h3>
-<p><strong>3X Duplication - neo4j_label:</strong>
-- component_config.json ✓ (correct values)
-- component_types.json ✓ (was wrong for accessories, now fixed)
-- search_config.json (in lucene.components)</p>
-<p><strong>2X Duplication - lucene_enabled:</strong>
-- component_config.json
-- search_config.json (as lucene.components.{comp}.enabled)</p>
-<p><strong>2X Duplication - category:</strong>
-- component_config.json (as "category": "Powersource")
-- search_config.json (as "neo4j_category": "Powersource")</p>
-<p><strong>2X Duplication - requires_compatibility:</strong>
-- component_config.json (as requires_compatibility)
-- component_types.json (as requires_compatibility_check)</p>
-<h3 id="resolution-strategy">Resolution Strategy<a class="headerlink" href="#resolution-strategy" title="Permanent link">&para;</a></h3>
-<p><strong>Single Source of Truth:</strong> component_types.json</p>
-<p>All component metadata now lives in one place. Other files reference it.</p>
-<h2 id="optional-phase-5-search_configjson-rationalization">Optional: Phase 5 - search_config.json Rationalization<a class="headerlink" href="#optional-phase-5-search_configjson-rationalization" title="Permanent link">&para;</a></h2>
-<p><strong>Problem:</strong> search_config.json still duplicates 3 fields per component</p>
-<p><strong>Current:</strong>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">&quot;lucene_search&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;power_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;enabled&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">                    </span><span class="c1">// ← Get from component_types.lucene_enabled</span>
-<span class="w">      </span><span class="nt">&quot;neo4j_label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Powersource&quot;</span><span class="p">,</span><span class="w">       </span><span class="c1">// ← Get from component_types.neo4j_label</span>
-<span class="w">      </span><span class="nt">&quot;neo4j_category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Powersource&quot;</span><span class="p">,</span><span class="w">    </span><span class="c1">// ← Get from component_types.category</span>
-<span class="w">      </span><span class="nt">&quot;min_score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w">                   </span><span class="c1">// ← KEEP (Lucene-specific)</span>
-<span class="w">      </span><span class="nt">&quot;score_threshold_percent&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="w">       </span><span class="c1">// ← KEEP (Lucene-specific)</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></td></tr></table></div></p>
-<p><strong>Proposed:</strong>
+<h1 id="mkdocs-documentation-update-guide">MkDocs Documentation Update Guide<a class="headerlink" href="#mkdocs-documentation-update-guide" title="Permanent link">&para;</a></h1>
+<p>This guide explains how to update the MkDocs documentation that's served at <code>http://localhost:8000/mkdocs/</code>.</p>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<p>When you add new documentation files to the <code>docs/</code> directory or update existing ones:</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span>
@@ -1027,55 +853,188 @@ curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </spa
 <span class="normal">5</span>
 <span class="normal">6</span>
 <span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">&quot;lucene_search&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;components&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;power_source&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;min_score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;score_threshold_percent&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 1. Update mkdocs.yml navigation (if adding new pages)</span>
+<span class="c1"># Edit: mkdocs.yml</span>
+
+<span class="c1"># 2. Build the static site</span>
+<span class="nb">cd</span><span class="w"> </span>/Users/bharath/Desktop/Ayna_ESAB_Nov7
+mkdocs<span class="w"> </span>build
+
+<span class="c1"># 3. The backend will automatically serve the updated docs at:</span>
+<span class="c1">#    http://localhost:8000/mkdocs/</span>
+</code></pre></div></td></tr></table></div>
+<p>That's it! No need to restart the backend server.</p>
+<h2 id="directory-structure">Directory Structure<a class="headerlink" href="#directory-structure" title="Permanent link">&para;</a></h2>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code>Ayna_ESAB_Nov7/
+├── docs/                    # Documentation source files (Markdown)
+│   ├── operations/
+│   │   ├── deployment-sizing-guide.md
+│   │   ├── runbook.md
+│   │   └── scripts/
+│   │       └── README.md
+│   └── ... other docs
+├── mkdocs.yml               # MkDocs configuration
+├── site/                    # Generated static site (gitignored)
+│   └── ... HTML files
+└── src/backend/app/main.py  # FastAPI mounts site/ at /mkdocs (lines 440-443)
+</code></pre></div></td></tr></table></div>
+<h2 id="backend-configuration">Backend Configuration<a class="headerlink" href="#backend-configuration" title="Permanent link">&para;</a></h2>
+<p>The FastAPI backend is configured to automatically serve MkDocs at <code>/mkdocs</code>:</p>
+<p><strong>File:</strong> <code>src/backend/app/main.py</code> (lines 440-443)
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Mount MkDocs documentation</span>
+<span class="n">docs_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;site&quot;</span>
+<span class="k">if</span> <span class="n">docs_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">&quot;/mkdocs&quot;</span><span class="p">,</span> <span class="n">StaticFiles</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">docs_dir</span><span class="p">),</span> <span class="n">html</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mkdocs&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;✓ MkDocs documentation mounted at /mkdocs from: </span><span class="si">{</span><span class="n">docs_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div></p>
-<p><strong>Requires:</strong>
-- Update LuceneStrategy to load component_types and merge settings
-- 10-15 minutes additional work</p>
-<h2 id="benefits-achieved">Benefits Achieved<a class="headerlink" href="#benefits-achieved" title="Permanent link">&para;</a></h2>
+<p>This configuration is <strong>permanent</strong> and requires no additional setup.</p>
+<h2 id="adding-new-documentation-pages">Adding New Documentation Pages<a class="headerlink" href="#adding-new-documentation-pages" title="Permanent link">&para;</a></h2>
+<h3 id="step-1-create-the-markdown-file">Step 1: Create the Markdown file<a class="headerlink" href="#step-1-create-the-markdown-file" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Example: Add a new troubleshooting guide</span>
+cat<span class="w"> </span>&gt;<span class="w"> </span>docs/operations/troubleshooting.md<span class="w"> </span><span class="s">&lt;&lt; &#39;EOF&#39;</span>
+<span class="s"># Troubleshooting Guide</span>
+
+<span class="s">## Common Issues</span>
+
+<span class="s">...</span>
+<span class="s">EOF</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="step-2-update-mkdocsyml-navigation">Step 2: Update mkdocs.yml navigation<a class="headerlink" href="#step-2-update-mkdocsyml-navigation" title="Permanent link">&para;</a></h3>
+<p>Edit <code>mkdocs.yml</code> and add your new page to the appropriate section:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nt">nav</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Operations</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Operations Runbook</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">operations/runbook.md</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Deployment &amp; Sizing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">operations/deployment-sizing-guide.md</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Troubleshooting</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">operations/troubleshooting.md</span><span class="w">  </span><span class="c1"># NEW</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">Operational Scripts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">operations/scripts/README.md</span>
+</code></pre></div></td></tr></table></div>
+<h3 id="step-3-build-the-site">Step 3: Build the site<a class="headerlink" href="#step-3-build-the-site" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>mkdocs<span class="w"> </span>build
+</code></pre></div></td></tr></table></div>
+<p>The updated documentation will be immediately available at <code>http://localhost:8000/mkdocs/operations/troubleshooting/</code></p>
+<h2 id="development-workflow">Development Workflow<a class="headerlink" href="#development-workflow" title="Permanent link">&para;</a></h2>
+<h3 id="local-development-with-live-reload">Local Development with Live Reload<a class="headerlink" href="#local-development-with-live-reload" title="Permanent link">&para;</a></h3>
+<p>For rapid documentation development with live preview:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Option 1: Run MkDocs dev server on separate port</span>
+mkdocs<span class="w"> </span>serve<span class="w"> </span>--dev-addr<span class="o">=</span><span class="m">0</span>.0.0.0:8001
+<span class="c1"># Access at: http://localhost:8001 (with live reload)</span>
+
+<span class="c1"># Option 2: Use the backend mount (requires rebuild)</span>
+mkdocs<span class="w"> </span>build
+<span class="c1"># Access at: http://localhost:8000/mkdocs/ (no live reload)</span>
+</code></pre></div></td></tr></table></div>
+<p><strong>Recommendation:</strong> Use <code>mkdocs serve</code> during active documentation writing, then <code>mkdocs build</code> for final deployment.</p>
+<h3 id="production-deployment">Production Deployment<a class="headerlink" href="#production-deployment" title="Permanent link">&para;</a></h3>
+<p>The production deployment process automatically builds MkDocs:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Included in deployment scripts</span>
+<span class="nb">cd</span><span class="w"> </span>/home/azureuser/esab_recommender-bh
+mkdocs<span class="w"> </span>build
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>esab-recommender.service
+</code></pre></div></td></tr></table></div>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="documentation-not-updating">Documentation not updating<a class="headerlink" href="#documentation-not-updating" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
+<span class="normal"> 2</span>
+<span class="normal"> 3</span>
+<span class="normal"> 4</span>
+<span class="normal"> 5</span>
+<span class="normal"> 6</span>
+<span class="normal"> 7</span>
+<span class="normal"> 8</span>
+<span class="normal"> 9</span>
+<span class="normal">10</span>
+<span class="normal">11</span>
+<span class="normal">12</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># 1. Verify mkdocs.yml syntax</span>
+mkdocs<span class="w"> </span>build<span class="w"> </span>--strict
+
+<span class="c1"># 2. Check for build warnings</span>
+mkdocs<span class="w"> </span>build<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>WARNING
+
+<span class="c1"># 3. Force clean rebuild</span>
+rm<span class="w"> </span>-rf<span class="w"> </span>site/
+mkdocs<span class="w"> </span>build
+
+<span class="c1"># 4. Verify site directory exists</span>
+ls<span class="w"> </span>-la<span class="w"> </span>site/
+</code></pre></div></td></tr></table></div>
+<h3 id="404-errors-for-new-pages">404 errors for new pages<a class="headerlink" href="#404-errors-for-new-pages" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Cause:</strong> Page not added to <code>mkdocs.yml</code> navigation</li>
+<li><strong>Solution:</strong> Add the page to the <code>nav</code> section in <code>mkdocs.yml</code></li>
+</ul>
+<h3 id="missing-dependencies">Missing dependencies<a class="headerlink" href="#missing-dependencies" title="Permanent link">&para;</a></h3>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Install MkDocs and Material theme</span>
+pip<span class="w"> </span>install<span class="w"> </span>mkdocs<span class="w"> </span>mkdocs-material
+
+<span class="c1"># Verify installation</span>
+mkdocs<span class="w"> </span>--version
+</code></pre></div></td></tr></table></div>
+<h2 id="mkdocs-configuration">MkDocs Configuration<a class="headerlink" href="#mkdocs-configuration" title="Permanent link">&para;</a></h2>
+<p><strong>Theme:</strong> Material for MkDocs (modern, responsive)
+<strong>Plugins:</strong> Search, mkdocstrings (API documentation)
+<strong>Extensions:</strong> Admonitions, code highlighting, Mermaid diagrams, tabbed content</p>
+<p>See <code>mkdocs.yml</code> for complete configuration.</p>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Single Source of Truth</strong> - component_types.json is master</li>
-<li><strong>No Duplication</strong> - neo4j_label, category, dependencies in one place</li>
-<li><strong>Easier Maintenance</strong> - Change component settings in ONE file</li>
-<li><strong>Consistent Data</strong> - No risk of configs drifting out of sync</li>
-<li><strong>Validated</strong> - 7 config files now have schema validation (was 3)</li>
+<li><strong>Navigation Organization:</strong> Group related docs logically (Architecture, Operations, etc.)</li>
+<li><strong>File Naming:</strong> Use lowercase with hyphens (<code>deployment-sizing-guide.md</code>)</li>
+<li><strong>Internal Links:</strong> Use relative paths (<code>../deployment/README.md</code>)</li>
+<li><strong>Build Verification:</strong> Always run <code>mkdocs build</code> before committing to catch broken links</li>
+<li><strong>Rebuild Frequency:</strong> Rebuild after any changes to docs or mkdocs.yml</li>
 </ol>
-<h2 id="files-modified">Files Modified<a class="headerlink" href="#files-modified" title="Permanent link">&para;</a></h2>
-<p><strong>Config Files:</strong>
-- ✅ app/config/component_types.json (merged and ready)</p>
-<p><strong>Schema Files Created:</strong>
-- ✅ app/config/schemas/component_config.schema.json
-- ✅ app/config/schemas/state_config.schema.json
-- ✅ app/config/schemas/search_config.schema.json
-- ✅ app/config/schemas/master_parameter_schema.schema.json</p>
-<p><strong>Code Files Updated:</strong>
-- ✅ app/services/config/config_validator.py (added 4 new validations)</p>
-<p><strong>Code Files Remaining (6):</strong>
-- ❌ app/config/schema_loader.py
-- ❌ app/services/search/components/component_service.py
-- ❌ app/services/search/strategies/cypher_strategy.py
-- ❌ app/services/search/strategies/lucene_strategy.py
-- ❌ app/services/search/components/query_builder.py
-- ❌ app/services/config/config_validator.py (remove component_config validation)</p>
-<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
-<ol>
-<li>Complete Phase 2: Update 6 code files</li>
-<li>Complete Phase 3: Archive and cleanup</li>
-<li>Complete Phase 4: Test thoroughly</li>
-<li>(Optional) Phase 5: Rationalize search_config.json</li>
-</ol>
-<p><strong>Estimated Time Remaining:</strong> 20-30 minutes</p>
-<h2 id="contact">Contact<a class="headerlink" href="#contact" title="Permanent link">&para;</a></h2>
-<p>For questions about this consolidation:
-- See: docs/CORRECTED_STATE_FLOW_ARCHITECTURE.md
-- See: docs/PRODUCT_SEARCH_SERVICE.md</p>
+<h2 id="urls">URLs<a class="headerlink" href="#urls" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Local Development:</strong> <a href="http://localhost:8000/mkdocs/">http://localhost:8000/mkdocs/</a></li>
+<li><strong>Production:</strong> <a href="http://your-server:8000/mkdocs/">http://your-server:8000/mkdocs/</a></li>
+<li><strong>Dev Server (optional):</strong> <a href="http://localhost:8001/">http://localhost:8001/</a> (when using <code>mkdocs serve</code>)</li>
+</ul>
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://www.mkdocs.org/">MkDocs Documentation</a></li>
+<li><a href="https://squidfunk.github.io/mkdocs-material/">Material for MkDocs</a></li>
+<li><a href="https://www.markdownguide.org/">Markdown Guide</a></li>
+</ul>
 
 
 
