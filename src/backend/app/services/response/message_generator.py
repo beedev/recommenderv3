@@ -1200,87 +1200,89 @@ or say 'done' finalize configuration."""
     # PRIVATE HELPER METHODS
     # =========================================================================
 
-    def _build_finalize_prompt(
-        self,
-        response_json: Dict[str, Any],
-        state_config: Dict[str, Any]
-    ) -> str:
-        """
-        Simplified finalize prompt.
-        Returns a user-friendly message while the package is being generated.
-        """
-        return (
-            "⏳ Please wait, your package is being generated... "
-            "Once it is ready, you can click on the packages to view or edit them."
-        )
-
+    # SIMPLIFIED VERSION - DISABLED (use detailed version below)
     # def _build_finalize_prompt(
     #     self,
     #     response_json: Dict[str, Any],
     #     state_config: Dict[str, Any]
     # ) -> str:
     #     """
-    #     Build finalize prompt as human-readable text instead of JSON.
-    #     Includes all core and accessory components with skip status and details.
-    #     Uses finalize_header and finalize_footer from state_prompts.json.
+    #     Simplified finalize prompt.
+    #     Returns a user-friendly message while the package is being generated.
     #     """
-    #     lines = []
+    #     return (
+    #         "⏳ Please wait, your package is being generated... "
+    #         "Once it is ready, you can click on the packages to view or edit them."
+    #     )
 
-    #     # Helper for formatting selected items
-    #     def format_item(item: Dict[str, Any], prefix: str = "  - ") -> str:
-    #         name = item.get("name", "Unknown Name")
-    #         gin = item.get("gin", "Unknown GIN")
-    #         # desc = item.get("description")
-    #         # desc_part = f" → {desc}" if desc else ""
-    #         return f"{prefix}{name} ({gin})"
+    # DETAILED VERSION - ENABLED
+    def _build_finalize_prompt(
+        self,
+        response_json: Dict[str, Any],
+        state_config: Dict[str, Any]
+    ) -> str:
+        """
+        Build finalize prompt as human-readable text instead of JSON.
+        Includes all core and accessory components with skip status and details.
+        Uses finalize_header and finalize_footer from state_prompts.json.
+        """
+        lines = []
 
-    #     # Core components
-    #     for component_type in ["PowerSource", "Feeder", "Cooler", "Interconnector", "Torch"]:
-    #         component_data = response_json.get(component_type)
-    #         if component_data is None:
-    #             continue
-    #         elif component_data == "skipped":
-    #             lines.append(f"• {component_type}:  Skipped")
-    #         elif isinstance(component_data, dict):
-    #             name = component_data.get("name", "Unknown")
-    #             gin = component_data.get("gin", "N/A")
-    #             # desc = component_data.get("description")
-    #             lines.append(f"• {component_type}:  {name} ({gin})")
-    #             # if desc:
-    #             #     lines.append(f"    ↳ {desc}")
+        # Helper for formatting selected items
+        def format_item(item: Dict[str, Any], prefix: str = "  - ") -> str:
+            name = item.get("name", "Unknown Name")
+            gin = item.get("gin", "Unknown GIN")
+            # desc = item.get("description")
+            # desc_part = f" → {desc}" if desc else ""
+            return f"{prefix}{name} ({gin})"
 
-    #     # Accessory categories
-    #     accessory_categories = [
-    #         "PowerSourceAccessories",
-    #         "FeederAccessories",
-    #         "FeederConditionalAccessories",
-    #         "InterconnectorAccessories",
-    #         "Remotes",
-    #         "RemoteAccessories",
-    #         "RemoteConditionalAccessories",
-    #         "Connectivity",
-    #         "FeederWears",
-    #         "Accessories",  # Legacy
-    #     ]
+        # Core components
+        for component_type in ["PowerSource", "Feeder", "Cooler", "Interconnector", "Torch"]:
+            component_data = response_json.get(component_type)
+            if component_data is None:
+                continue
+            elif component_data == "skipped":
+                lines.append(f"• {component_type}:  Skipped")
+            elif isinstance(component_data, dict):
+                name = component_data.get("name", "Unknown")
+                gin = component_data.get("gin", "N/A")
+                # desc = component_data.get("description")
+                lines.append(f"• {component_type}:  {name} ({gin})")
+                # if desc:
+                #     lines.append(f"    ↳ {desc}")
 
-    #     for category in accessory_categories:
-    #         category_data = response_json.get(category)
-    #         if not category_data:
-    #             continue
+        # Accessory categories
+        accessory_categories = [
+            "PowerSourceAccessories",
+            "FeederAccessories",
+            "FeederConditionalAccessories",
+            "InterconnectorAccessories",
+            "Remotes",
+            "RemoteAccessories",
+            "RemoteConditionalAccessories",
+            "Connectivity",
+            "FeederWears",
+            "Accessories",  # Legacy
+        ]
 
-    #         if category_data == "skipped":
-    #             lines.append(f"• {category}:  Skipped")
-    #         elif isinstance(category_data, list) and len(category_data) > 0:
-    #             lines.append(f"• {category}:")
-    #             for item in category_data:
-    #                 lines.append(format_item(item))
+        for category in accessory_categories:
+            category_data = response_json.get(category)
+            if not category_data:
+                continue
 
-    #     # Combine header, content, and footer
-    #     header = state_config.get("finalize_header", "📋 **Final Configuration Summary:**")
-    #     footer = state_config.get("finalize_footer", "\n✨ Your configuration is ready!")
+            if category_data == "skipped":
+                lines.append(f"• {category}:  Skipped")
+            elif isinstance(category_data, list) and len(category_data) > 0:
+                lines.append(f"• {category}:")
+                for item in category_data:
+                    lines.append(format_item(item))
 
-    #     body = "\n".join(lines)
-    #     return f"{header}\n\n{body}\n{footer}"
+        # Combine header, content, and footer
+        header = state_config.get("finalize_header", "📋 **Final Configuration Summary:**")
+        footer = state_config.get("finalize_footer", "\n✨ Your configuration is ready!")
+
+        body = "\n".join(lines)
+        return f"{header}\n\n{body}\n{footer}"
 
     def _get_component_name(self, state: str) -> str:
         """

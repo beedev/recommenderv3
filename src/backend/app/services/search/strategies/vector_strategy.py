@@ -5,8 +5,10 @@ Semantic similarity search using OpenAI embeddings and Neo4j vector index.
 
 Architecture:
 1. Generate embedding for user query using OpenAI text-embedding-3-large (3072 dims)
-2. Search Neo4j vector index for semantically similar products
+2. Search Neo4j vector index (embeddings stored directly in Product nodes)
 3. Return ranked results by similarity score
+
+Note: Embeddings are stored directly in Product.embedding property (no separate node/relationship).
 """
 
 import logging
@@ -115,8 +117,7 @@ class VectorSearchStrategy(SearchStrategy):
             async with driver.session() as session:
                 result = await session.run("""
                     CALL db.index.vector.queryNodes('embeddingIndex', $limit, $vector)
-                    YIELD node, score
-                    MATCH (p:Product)-[:HAS_EMBEDDING]->(node)
+                    YIELD node AS p, score
                     WHERE p.category = $category AND score >= $min_score
                     RETURN
                         p.gin as gin,

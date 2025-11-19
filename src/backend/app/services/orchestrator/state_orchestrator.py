@@ -386,7 +386,8 @@ class StateByStateOrchestrator:
                             # 🔍 DEBUG: Track selected_components before next state search
                             ps_gin_search = getattr(conversation_state.response_json.PowerSource, 'gin', None) if conversation_state.response_json.PowerSource else None
                             fe_gin_search = getattr(conversation_state.response_json.Feeder, 'gin', None) if conversation_state.response_json.Feeder else None
-                            logger.debug(f"🔍 CALLING NEXT STATE SEARCH: next_state={next_state}, selected_components.PowerSource={ps_gin_search}, selected_components.Feeder={fe_gin_search}")
+                            co_gin_search = getattr(conversation_state.response_json.Cooler, 'gin', None) if conversation_state.response_json.Cooler else None
+                            logger.debug(f"🔍 CALLING NEXT STATE SEARCH: next_state={next_state}, selected_components.PowerSource={ps_gin_search}, selected_components.Feeder={fe_gin_search}, selected_components.Cooler={co_gin_search}")
 
                             next_search_results = await next_processor.search_products(
                                 user_message="",

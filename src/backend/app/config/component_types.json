@@ -90,43 +90,6 @@
       "lucene_min_score": 0.5,
       "lucene_score_threshold_percent": 40
     },
-    "feeder": {
-      "class_name": "Feeder",
-      "display_name": "Wire Feeder",
-      "display_name_plural": "Wire Feeders",
-      "api_key": "Feeder",
-      "db_key": "feeder",
-      "neo4j_label": "Product",
-      "icon": "\ud83d\udd0c",
-      "is_mandatory": false,
-      "can_skip": true,
-      "selection_type": "single",
-      "state_order": 3,
-      "state_name": "feeder_selection",
-      "default_skip_behavior": "auto_skip",
-      "supports_search": true,
-      "requires_compatibility": true,
-      "proactive_display": true,
-      "search_limit": 10,
-      "preview_limit": 5,
-      "description": "Wire feeding mechanism for continuous welding processes",
-      "typical_features": [
-        "wire_feed_speed",
-        "motor_type",
-        "portability",
-        "cooling_type",
-        "product_name"
-      ],
-      "category": "Feeder",
-      "dependencies": [
-        "power_source"
-      ],
-      "master_param_key": "feeder",
-      "lucene_enabled": true,
-      "fuzzy_matching_enabled": true,
-      "lucene_min_score": 0.5,
-      "lucene_score_threshold_percent": 25
-    },
     "cooler": {
       "class_name": "Cooler",
       "display_name": "Cooling System",
@@ -164,6 +127,45 @@
       "lucene_min_score": 0.5,
       "lucene_score_threshold_percent": 25
     },
+    "feeder": {
+      "class_name": "Feeder",
+      "display_name": "Wire Feeder",
+      "display_name_plural": "Wire Feeders",
+      "api_key": "Feeder",
+      "db_key": "feeder",
+      "neo4j_label": "Product",
+      "icon": "\ud83d\udd0c",
+      "is_mandatory": false,
+      "can_skip": true,
+      "selection_type": "single",
+      "state_order": 3,
+      "state_name": "feeder_selection",
+      "default_skip_behavior": "auto_skip",
+      "supports_search": true,
+      "requires_compatibility": true,
+      "proactive_display": true,
+      "search_limit": 10,
+      "preview_limit": 5,
+      "description": "Wire feeding mechanism for continuous welding processes",
+      "typical_features": [
+        "wire_feed_speed",
+        "motor_type",
+        "portability",
+        "cooling_type",
+        "product_name"
+      ],
+      "category": "Feeder",
+      "dependencies": [
+        "power_source",
+        "cooler"
+      ],
+      "master_param_key": "feeder",
+      "lucene_enabled": true,
+      "fuzzy_matching_enabled": true,
+      "lucene_min_score": 0.5,
+      "lucene_score_threshold_percent": 25
+    },
+  
     "interconnector": {
       "class_name": "Interconnector",
       "display_name": "Interconnector Cable",
