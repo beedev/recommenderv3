@@ -8,13 +8,31 @@ Consolidates search results from multiple strategies:
 - Provides unified sorting by final consolidated score
 """
 
+import json
 import logging
 from typing import List, Dict, Any, Optional
 from collections import defaultdict
+from datetime import datetime, date
+from pydantic import BaseModel
 
 from app.config.schema_loader import load_component_config
 
 logger = logging.getLogger(__name__)
+
+
+class EnhancedJSONEncoder(json.JSONEncoder):
+    """
+    Custom JSON encoder that handles datetime and Pydantic objects.
+
+    Used for logging master_parameters which may contain Pydantic models
+    or datetime fields.
+    """
+    def default(self, obj):
+        if isinstance(obj, (datetime, date)):
+            return obj.isoformat()
+        if isinstance(obj, BaseModel):
+            return obj.model_dump()
+        return super().default(obj)
 
 
 class ConsolidatedResult:
@@ -112,7 +130,8 @@ class ResultConsolidator:
         self,
         strategy_results: List[tuple[str, List[Dict[str, Any]], Optional[Dict[str, float]]]],
         master_parameters: Optional[Dict[str, Any]] = None,
-        component_type: Optional[str] = None
+        component_type: Optional[str] = None,
+        user_message: Optional[str] = None
     ) -> List[ConsolidatedResult]:
         """
         Consolidate results from multiple strategies with optional exact product name boosting.
@@ -126,12 +145,30 @@ class ResultConsolidator:
                 ]
             master_parameters: Optional LLM-extracted parameters containing product_name
             component_type: Optional component type (e.g., "PowerSource", "Feeder")
+            user_message: Optional raw user query message
 
         Returns:
             List of ConsolidatedResult objects sorted by consolidated_score (descending)
         """
         try:
+            # Store for use in _append_scores_to_names
+            self._user_message = user_message
+            self._master_parameters = master_parameters
+            self._component_type = component_type
+
+            # DEBUG: Log what we received
             logger.info(f"Consolidating results from {len(strategy_results)} strategies")
+            logger.info(f"📝 USER MESSAGE: {user_message}")
+            logger.info(f"📊 COMPONENT TYPE: {component_type}")
+            if master_parameters:
+                # Convert to dict if it's a Pydantic model
+                params_to_log = master_parameters
+                if hasattr(master_parameters, 'model_dump'):
+                    params_to_log = master_parameters.model_dump()
+
+                logger.info(f"🔍 MASTER PARAMETERS: {json.dumps(params_to_log, indent=2, cls=EnhancedJSONEncoder)}")
+            else:
+                logger.info("⚠️ MASTER PARAMETERS: None")
 
             # Step 1: Deduplicate and collect all products by GIN
             products_by_gin: Dict[str, ConsolidatedResult] = {}
@@ -170,6 +207,11 @@ class ResultConsolidator:
 
             logger.info(f"Deduplicated to {len(products_by_gin)} unique products")
 
+            # Step 1.5: Normalize scores per strategy (min-max normalization)
+            if len(products_by_gin) > 1:  # Only normalize if multiple products
+                self._normalize_scores(list(products_by_gin.values()))
+                logger.info("Applied min-max score normalization per strategy")
+
             # Step 2: Calculate consolidated scores using weighted average
             for gin, result in products_by_gin.items():
                 result.consolidated_score = self._calculate_weighted_score(result.strategy_scores)
@@ -203,11 +245,12 @@ class ResultConsolidator:
                     f"Strategies: {strategy_scores_str}"
                 )
 
-            # Step 3.5: Apply score threshold filtering
+            # Step 3.5: Apply score threshold filtering (RE-ENABLED)
+            # Filter out products below threshold to maintain quality
             if component_type:
                 sorted_results = self._apply_score_threshold(sorted_results, component_type)
 
-            logger.info(f"Consolidated {len(sorted_results)} results with scores")
+            logger.info(f"Consolidated {len(sorted_results)} results with scores (threshold filtering ENABLED)")
             return sorted_results
 
         except Exception as e:
@@ -240,6 +283,67 @@ class ResultConsolidator:
 
         return weighted_sum / total_weight
 
+    def _normalize_scores(
+        self,
+        products_by_gin: Dict[str, "ConsolidatedResult"]
+    ) -> None:
+        """
+        Apply min-max normalization to scores per strategy before weighted averaging.
+
+        This ensures all strategies contribute fairly to the final score, preventing
+        strategies with naturally higher/lower score ranges from dominating.
+
+        Normalization formula: (score - min) / (max - min)
+        - Normalizes all scores to 0.0-1.0 range per strategy
+        - Preserves relative ranking within each strategy
+        - Handles edge case when min == max (all scores identical)
+
+        Args:
+            products_by_gin: Dict of GIN -> ConsolidatedResult (modified in-place)
+        """
+        # Collect all scores by strategy
+        scores_by_strategy = {}
+        for result in products_by_gin.values():
+            for strategy_name, score in result.strategy_scores.items():
+                if strategy_name not in scores_by_strategy:
+                    scores_by_strategy[strategy_name] = []
+                scores_by_strategy[strategy_name].append(score)
+
+        # Calculate min/max per strategy
+        normalization_params = {}
+        for strategy_name, scores in scores_by_strategy.items():
+            min_score = min(scores)
+            max_score = max(scores)
+            normalization_params[strategy_name] = {
+                "min": min_score,
+                "max": max_score,
+                "range": max_score - min_score
+            }
+
+            logger.debug(
+                f"Score normalization for {strategy_name}: "
+                f"min={min_score:.4f}, max={max_score:.4f}, range={max_score - min_score:.4f}"
+            )
+
+        # Apply normalization to all products
+        for result in products_by_gin.values():
+            for strategy_name, score in result.strategy_scores.items():
+                params = normalization_params[strategy_name]
+
+                # Handle edge case: all scores are identical
+                if params["range"] == 0:
+                    normalized_score = 0.5  # Middle of 0-1 range
+                    logger.debug(
+                        f"All {strategy_name} scores identical ({score:.4f}), "
+                        f"normalizing to {normalized_score}"
+                    )
+                else:
+                    # Min-max normalization
+                    normalized_score = (score - params["min"]) / params["range"]
+
+                # Update with normalized score
+                result.strategy_scores[strategy_name] = normalized_score
+
     def _apply_exact_match_boosting(
         self,
         products_by_gin: Dict[str, ConsolidatedResult],
@@ -247,7 +351,16 @@ class ResultConsolidator:
         component_type: str
     ) -> None:
         """
-        Apply 100x score boosting for exact product name matches.
+        Apply HEAVY additive boosting (+100) for exact product name matches.
+
+        ENHANCED (Phase 4 - Product Name Boosting):
+        - Changed from multiplicative (10x capped at 1.0) to ADDITIVE (+100 points)
+        - No cap applied - allows boosted products to clearly stand out at top
+        - When LLM extracts product_name field, matching products get massive boost
+        - Example: Score 4.1 becomes 104.1, ensuring it appears first
+
+        User Requirement: "whenever a product name field is extracted, that query
+        alone should be boosted" and "should stand out"
 
         This method has been simplified - product matching is now handled
         during Cypher query building via normalized CONTAINS matching.
@@ -267,7 +380,20 @@ class ResultConsolidator:
                 "Cooler": "cooler",
                 "Interconnector": "interconnector",
                 "Torch": "torch",
-                "Accessory": "accessory"
+                "Accessory": "accessory",
+                # Accessory subcategories (all map to "accessory" in master_parameters)
+                "Remote": "accessory",
+                "Connectivity": "accessory",
+                "FeederWear": "accessory",
+                "PowersourceAccessory": "accessory",
+                "FeederAccessory": "accessory",
+                "RemoteAccessory": "accessory",
+                "InterconnAccessory": "accessory",
+                # Common accessory type aliases
+                "Consumable": "accessory",
+                "Cable": "accessory",
+                "SafetyGear": "accessory",
+                "WearPart": "accessory"
             }
 
             component_key = component_key_map.get(component_type)
@@ -298,12 +424,17 @@ class ResultConsolidator:
                 # Exact match or substring match (space-insensitive)
                 if result_name_no_spaces == product_name_no_spaces or product_name_no_spaces in result_name_no_spaces:
                     original_score = result.consolidated_score
-                    result.consolidated_score = original_score * 100.0
+
+                    # HEAVY ADDITIVE BOOST: Add 100 points (no cap)
+                    # This ensures product_name matches ALWAYS appear at top
+                    additive_boost = 100.0
+                    result.consolidated_score = original_score + additive_boost
 
                     logger.info(
-                        f"✨ BOOSTED: '{result.name}' (GIN: {gin}) | "
-                        f"Matched: '{product_name}' (space-insensitive) | "
-                        f"Score: {original_score:.4f} → {result.consolidated_score:.4f} (100x)"
+                        f"🚀 HEAVY BOOST: '{result.name}' (GIN: {gin}) | "
+                        f"Matched product_name: '{product_name}' (space-insensitive) | "
+                        f"Score: {original_score:.4f} → {result.consolidated_score:.4f} "
+                        f"(+{additive_boost:.1f} additive boost - NO CAP)"
                     )
 
         except Exception as e:
@@ -311,29 +442,80 @@ class ResultConsolidator:
 
     def _append_scores_to_names(self, products_by_gin: Dict[str, ConsolidatedResult]) -> None:
         """
-        Append consolidated scores to product names for display.
+        Append consolidated scores, strategy names, AND search query parameters to product names for display.
 
         Args:
             products_by_gin: Dict of GIN -> ConsolidatedResult (modified in-place)
 
         APPENDING LOGIC:
         - Remove any existing score from product name
-        - Append consolidated_score in format: "Product Name (Score: X.X)"
+        - Append consolidated_score in format: "Product Name (Score: X.X | Strategies: cypher, lucene | Query: user_message | Params: {...})"
         - Use configured decimal places from search_config.json
+        - Show which strategies found this product
+        - Show search query and extracted parameters
         """
         try:
             import re
+            import json
 
             for gin, result in products_by_gin.items():
                 # Remove any existing score pattern from name
                 # Pattern matches: "(Score: 11.5)" or "(95.0)" or any number in parentheses at end
-                clean_name = re.sub(r'\s*\((?:Score:\s*)?[\d.]+\)\s*$', '', result.name.strip())
+                clean_name = re.sub(r'\s*\((?:Score:\s*)?[\d.]+(?:\s*\|.*?)?\)\s*$', '', result.name.strip())
 
-                # Append new consolidated score
+                # Get list of strategies that found this product
+                strategy_names = [s for s in result.strategy_scores.keys() if result.strategy_scores[s] > 0]
+                strategies_str = ", ".join(strategy_names) if strategy_names else "none"
+
+                # Build search context string
+                context_parts = []
+                context_parts.append(f"Strategies: {strategies_str}")
+
+                # Add user query if available
+                if self._user_message:
+                    # Truncate long messages
+                    query_display = self._user_message[:50] + "..." if len(self._user_message) > 50 else self._user_message
+                    context_parts.append(f"Query: '{query_display}'")
+
+                # Add extracted parameters if available
+                if self._master_parameters and self._component_type:
+                    # Map component type to master_parameters key
+                    # PowerSource -> power_source, Feeder -> feeder, etc.
+                    component_key_map = {
+                        "powersource": "power_source",
+                        "feeder": "feeder",
+                        "cooler": "cooler",
+                        "interconnector": "interconnector",
+                        "torch": "torch",
+                        "accessory": "accessories"
+                    }
+                    component_key = component_key_map.get(
+                        self._component_type.lower(),
+                        self._component_type.lower()
+                    )
+                    logger.debug(f"🔑 Mapped component_type '{self._component_type}' → '{component_key}'")
+                    if component_key in self._master_parameters:
+                        params = self._master_parameters[component_key]
+                        # Show only non-empty parameters, exclude internal fields
+                        # IMPORTANT: Keep product_name to show what triggered boosting
+                        relevant_params = {
+                            k: v for k, v in params.items()
+                            if v and k not in ['_detected_gin']
+                        }
+                        if relevant_params:
+                            # Compact JSON representation
+                            params_str = json.dumps(relevant_params, separators=(',', ':'))
+                            # Truncate if too long
+                            if len(params_str) > 80:
+                                params_str = params_str[:77] + "..."
+                            context_parts.append(f"Params: {params_str}")
+
+                # Append new consolidated score with context
                 score_str = f"{result.consolidated_score:.{self.score_decimal_places}f}"
-                result.name = f"{clean_name} (Score: {score_str})"
+                context_str = " | ".join(context_parts)
+                result.name = f"{clean_name} (Score: {score_str} | {context_str})"
 
-                logger.debug(f"Appended score to: {result.name}")
+                logger.debug(f"Appended score and context to: {result.name}")
 
         except Exception as e:
             logger.error(f"Error appending scores to names: {e}", exc_info=True)
@@ -349,6 +531,9 @@ class ResultConsolidator:
         Keeps only products within configured percentage of top score.
         Example: score_threshold_percent=20 means keep products with
         score >= top_score * 0.80 (within 20% of top).
+
+        ADAPTIVE THRESHOLD: Detects score disparity (indicating exact match boosting)
+        and uses more lenient threshold to avoid filtering valid results.
 
         Args:
             results: Sorted list of ConsolidatedResult (descending by score)
@@ -382,10 +567,42 @@ class ResultConsolidator:
             component_config = component_types.get(component_key, {})
 
             # Get score_threshold_percent (default to 25 if not configured)
-            threshold_percent = component_config.get("lucene_score_threshold_percent", 25)
+            configured_threshold = component_config.get("lucene_score_threshold_percent", 25)
 
             # Get top score (first result in sorted list)
             top_score = results[0].consolidated_score
+
+            # ADAPTIVE THRESHOLD: Detect score disparity indicating exact match boosting
+            # If top_score is >3x the median score, we likely have boosted results
+            # In this case, use a more lenient threshold to avoid filtering valid products
+            if len(results) >= 3:
+                scores = [r.consolidated_score for r in results]
+                median_score = sorted(scores)[len(scores) // 2]
+
+                # Calculate score disparity ratio
+                disparity_ratio = top_score / median_score if median_score > 0 else 1.0
+
+                if disparity_ratio > 3.0:
+                    # Large score disparity detected - use lenient threshold
+                    # Keep products with score >= 20% of top score (instead of configured threshold)
+                    threshold_percent = 80  # Keep products >= 20% of top (1 - 0.80)
+                    logger.info(
+                        f"⚡ ADAPTIVE THRESHOLD: Score disparity detected "
+                        f"(top/median ratio: {disparity_ratio:.2f}x) - "
+                        f"Using lenient threshold ({100 - threshold_percent}% of top score) "
+                        f"to preserve non-boosted products"
+                    )
+                else:
+                    # Normal score distribution - use configured threshold
+                    threshold_percent = configured_threshold
+                    logger.debug(
+                        f"📊 NORMAL THRESHOLD: Score distribution uniform "
+                        f"(top/median ratio: {disparity_ratio:.2f}x) - "
+                        f"Using configured threshold ({threshold_percent}%)"
+                    )
+            else:
+                # Too few results to calculate disparity - use configured threshold
+                threshold_percent = configured_threshold
 
             # Calculate minimum acceptable score
             # If threshold_percent=20, keep products with score >= top_score * 0.80

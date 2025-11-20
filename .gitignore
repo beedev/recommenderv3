@@ -157,6 +157,7 @@ Thumbs.db
 
 # Documentation (excluded from repo)
 /docs/
+/site/
 
 # Large archive files
 src.zip

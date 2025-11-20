@@ -197,12 +197,14 @@ class LLMSearchStrategy(SearchStrategy):
 
         logger.info(f"Retrieved {len(all_candidates)} unique candidates for LLM re-ranking")
 
-        # Step 2: LLM Re-ranking
+        # Step 2: LLM Re-ranking with user context
         ranked_products, scores = await self._rerank_with_llm(
             user_message=user_message,
             component_type=component_type,
             candidates=all_candidates,
-            limit=limit
+            limit=limit,
+            master_parameters=master_parameters,
+            selected_components=selected_components
         )
 
         # Apply offset and limit (top 5 for combined mode)
@@ -248,7 +250,9 @@ class LLMSearchStrategy(SearchStrategy):
         user_message: str,
         component_type: str,
         candidates: List[Dict[str, Any]],
-        limit: int
+        limit: int,
+        master_parameters: Dict[str, Any] = None,
+        selected_components: Dict[str, Any] = None
     ) -> tuple[List[Dict[str, Any]], Dict[str, float]]:
         """
         Use LLM to re-rank candidate products based on relevance to user intent.
@@ -258,12 +262,20 @@ class LLMSearchStrategy(SearchStrategy):
             component_type: Component type
             candidates: Initial retrieved products
             limit: Number of top results needed
+            master_parameters: Extracted user requirements (MasterParameterJSON)
+            selected_components: Already selected components for compatibility context
 
         Returns:
             Tuple of (ranked_products, scores_dict)
         """
-        # Build prompt with products
-        prompt = self._build_reranking_prompt(user_message, component_type, candidates)
+        # Build prompt with products and user context
+        prompt = self._build_reranking_prompt(
+            user_message,
+            component_type,
+            candidates,
+            master_parameters,
+            selected_components
+        )
 
         logger.debug(f"Sending {len(candidates)} products to LLM for re-ranking")
 
@@ -362,23 +374,101 @@ Also consider:
             scores_dict = {p.get("gin"): 0.5 for p in candidates}
             return candidates, scores_dict
 
+    def _extract_requirements_context(
+        self,
+        master_parameters: Dict[str, Any],
+        component_type: str
+    ) -> str:
+        """
+        Extract user requirements from master_parameters for LLM context.
+
+        Args:
+            master_parameters: Extracted parameters from LLM (MasterParameterJSON)
+            component_type: Component being searched
+
+        Returns:
+            Formatted requirements string for LLM prompt
+        """
+        component_key = component_type.lower()
+        if component_key not in master_parameters:
+            return "No specific requirements provided"
+
+        params = master_parameters[component_key]
+        requirements = []
+
+        for key, value in params.items():
+            if value and key not in ['_detected_gin', 'product_name']:
+                # Format parameter name for readability
+                readable_key = key.replace('_', ' ').title()
+                requirements.append(f"- {readable_key}: {value}")
+
+        return '\n'.join(requirements) if requirements else "No specific requirements provided"
+
+    def _format_selected_components(
+        self,
+        selected_components: Dict[str, Any]
+    ) -> str:
+        """
+        Format selected components for LLM compatibility awareness.
+
+        Args:
+            selected_components: Previously selected components
+
+        Returns:
+            Formatted string of selected components for LLM prompt
+        """
+        if not selected_components:
+            return "No components selected yet"
+
+        components = []
+        for key, value in selected_components.items():
+            if value and key != 'applicability':
+                # Handle both dict and simple values
+                if isinstance(value, dict):
+                    name = value.get('name', 'Unknown')
+                    gin = value.get('gin', 'N/A')
+                    components.append(f"- {key}: {name} (GIN: {gin})")
+                elif isinstance(value, list):
+                    # Handle accessories (list of products)
+                    if value:
+                        components.append(f"- {key}: {len(value)} items selected")
+                else:
+                    components.append(f"- {key}: {value}")
+
+        return '\n'.join(components) if components else "No components selected yet"
+
     def _build_reranking_prompt(
         self,
         user_message: str,
         component_type: str,
-        candidates: List[Dict[str, Any]]
+        candidates: List[Dict[str, Any]],
+        master_parameters: Dict[str, Any] = None,
+        selected_components: Dict[str, Any] = None
     ) -> str:
         """
-        Build prompt for LLM re-ranking.
+        Build enhanced prompt for LLM re-ranking with user context.
 
         Args:
             user_message: User's query
             component_type: Component type
             candidates: Products to rank
+            master_parameters: Extracted user requirements (ENHANCED)
+            selected_components: Previously selected components (ENHANCED)
 
         Returns:
-            Formatted prompt string
+            Formatted prompt string with user context
         """
+        # Extract user requirements context (PHASE 2.2)
+        requirements_text = self._extract_requirements_context(
+            master_parameters=master_parameters or {},
+            component_type=component_type
+        )
+
+        # Format selected components context (PHASE 2.2)
+        selected_text = self._format_selected_components(
+            selected_components=selected_components or {}
+        )
+
         # Format products for LLM (including competitor info for accurate matching)
         products_text = []
         for i, product in enumerate(candidates, 1):
@@ -419,11 +509,35 @@ Also consider:
 
             products_text.append('\n'.join(product_info))
 
+        # PHASE 2.3: Enhanced scoring rubric with detailed guidelines
         prompt = f"""User Request: "{user_message}"
 Component Type: {component_type}
 
-Please rank the following {len(candidates)} welding products based on how well they match the user's requirements:
+USER REQUIREMENTS (Extracted Parameters):
+{requirements_text}
 
+SELECTED COMPONENTS (Compatibility Context):
+{selected_text}
+
+Please rank the following {len(candidates)} welding products based on how well they match the user's requirements.
+
+SCORING GUIDELINES (0-100):
+- 95-100: Perfect match - Meets ALL user requirements, compatible with selected components, exact specifications
+- 85-94: Excellent match - Meets most requirements (≥90%), highly compatible, very close specifications
+- 70-84: Good match - Meets majority of requirements (≥70%), compatible, acceptable specifications
+- 55-69: Fair match - Meets some requirements (≥50%), may have compatibility concerns
+- 40-54: Poor match - Meets few requirements (<50%), compatibility issues likely
+- 0-39: Bad match - Does not meet requirements, incompatible, wrong specifications
+
+CRITICAL SCORING FACTORS:
+1. Exact Match: Does the product name/model match the user's requested product? (if specified)
+2. Specification Alignment: How well do technical specs match user requirements? (cooling type, current output, etc.)
+3. Compatibility: Is the product compatible with already-selected components?
+4. Material Suitability: Does the product support the required welding materials? (if specified)
+5. Process Match: Does the product support the required welding process? (MIG, TIG, Stick, etc.)
+6. Feature Completeness: Does the product have all requested features?
+
+PRODUCTS TO RANK:
 {chr(10).join(products_text)}
 
 Provide your response in JSON format:
@@ -432,12 +546,12 @@ Provide your response in JSON format:
         {{
             "gin": "product_gin",
             "relevance_score": 85,
-            "reasoning": "Brief explanation of why this score was given"
+            "reasoning": "Brief explanation covering: requirement match %, compatibility status, key strengths/weaknesses"
         }},
         ...
     ]
 }}
 
-Rank all products from most relevant to least relevant."""
+Rank all products from most relevant to least relevant. Be strict: reserve 95-100 for perfect matches only."""
 
         return prompt

@@ -44,11 +44,22 @@
     }
   },
   "IMPORTANT_NOTES": {
-    "consolidation_history": "Nov 15, 2024 - Removed search_limits, lucene_search.components, fuzzy_matching.components_enabled (moved to component_types.json)",
+    "consolidation_history": "Nov 15, 2024 - Removed search_limits, lucene_search.components, fuzzy_matching.components_enabled (moved to component_types.json). Nov 19, 2024 (Phase 4) - Changed exact match boosting from multiplicative (10x capped at 1.0) to additive (+100 points, no cap) for product_name matches to ensure they stand out at top.",
     "architecture": "Two-tier system: Global settings here + Component-specific settings in component_types.json",
     "global_vs_component": {
-      "global_in_search_config": ["fuzzy_matching algorithm/thresholds", "strategy weights", "orchestration mode", "consolidation rules"],
-      "component_in_component_types": ["lucene_enabled per component", "fuzzy_matching_enabled per component", "lucene_min_score per component", "lucene_score_threshold_percent per component", "search_limit per component"]
+      "global_in_search_config": [
+        "fuzzy_matching algorithm/thresholds",
+        "strategy weights",
+        "orchestration mode",
+        "consolidation rules"
+      ],
+      "component_in_component_types": [
+        "lucene_enabled per component",
+        "fuzzy_matching_enabled per component",
+        "lucene_min_score per component",
+        "lucene_score_threshold_percent per component",
+        "search_limit per component"
+      ]
     },
     "validation": "Schema validated by search_config.schema.json - run pytest tests/unit/config/test_config_validation.py",
     "performance_tips": [
@@ -119,17 +130,17 @@
       "timeout_seconds": 30
     },
     "vector": {
-      "enabled": false,
-      "weight": 0.5,
-      "min_score": 0.6,
-      "description": "Vector-based semantic search using OpenAI embeddings. Currently disabled - enable in production.",
+      "enabled": true,
+      "weight": 0.6,
+      "min_score": 0.4,
+      "description": "Vector-based semantic search using OpenAI embeddings with context enrichment. ENHANCED: Lower min_score (0.6→0.4) for better recall, higher weight (0.5→0.6) for semantic understanding.",
       "fallback_on_error": true,
       "timeout_seconds": 30
     },
     "llm": {
-      "enabled": false,
-      "weight": 0.3,
-      "description": "LLM-based intelligent product matching. Currently disabled - enable for advanced semantic matching.",
+      "enabled": true,
+      "weight": 0.5,
+      "description": "LLM-based intelligent product re-ranking with user context. ENHANCED: Increased weight (0.3→0.5) for smarter ranking.",
       "fallback_on_error": true,
       "timeout_seconds": 60
     }
@@ -137,11 +148,18 @@
   "context_based_strategies": {
     "description": "Strategy selection based on search context (proactive vs user intent)",
     "proactive_display": {
-      "enabled_strategies": ["cypher"],
-      "description": "Proactive display uses only Cypher for fast compatibility checking when entering a new state"
+      "enabled_strategies": [
+        "cypher"
+      ],
+      "description": "Proactive display uses Cypher + Lucene + Vector for fast compatibility checking with semantic fuzzy matching when entering a new state. ENHANCED: Added vector strategy for better typo tolerance."
     },
     "user_intent": {
-      "enabled_strategies": ["cypher","lucene", "vector", "llm"],
+      "enabled_strategies": [
+        "cypher",
+        "lucene",
+        "vector",
+        "llm"
+      ],
       "description": "User intent uses all strategies for comprehensive semantic matching when user provides search requirements."
     }
   },
@@ -158,7 +176,7 @@
     "description": "Multi-strategy result consolidation configuration",
     "deduplication_strategy": "first_occurrence",
     "score_normalization": "min_max",
-    "apply_normalization": false,
+    "apply_normalization": true,
     "default_score": 0.5,
     "notes": "deduplication_strategy options: 'first_occurrence' (keep first), 'highest_score' (keep best). score_normalization options: 'min_max', 'z_score', 'none'."
   }

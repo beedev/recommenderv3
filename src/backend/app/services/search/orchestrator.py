@@ -111,7 +111,7 @@ class SearchOrchestrator:
             # Detect proactive vs user-intent mode
             command_keywords = ["skip", "done", "next", "finalize", "yes", "no", ""]
             is_proactive_display = user_message.lower().strip() in command_keywords
-
+            logger.info(f"🔍 user_message received: '{user_message}' (is_proactive: {is_proactive_display})")
             # Load context-based strategy configuration
             from app.services.config.configuration_service import get_config_service
             config_service = get_config_service()
@@ -136,6 +136,12 @@ class SearchOrchestrator:
                 s for s in self.strategies
                 if s.is_enabled() and s.get_name() in context_strategies
             ]
+            # Debug: Log which strategies are actually enabled
+            logger.info(f"📊 Total strategies available: {len(self.strategies)}")
+            for s in self.strategies:
+                logger.info(f"  - {s.get_name()}: enabled={s.is_enabled()}, weight={s.get_weight()}")
+
+            logger.info(f"📊 Filtered enabled strategies: {[s.get_name() for s in enabled_strategies]}")
 
             if not enabled_strategies:
                 logger.warning("No enabled search strategies found")
@@ -166,7 +172,14 @@ class SearchOrchestrator:
                     limit,
                     offset
                 )
-
+            # Debug: Log strategy execution results
+            # Debug: Log strategy execution results
+            logger.info(f"📊 Strategy execution results:")
+            for result in strategy_results:
+                if result is not None:
+                    product_count = len(result.products) if result.products else 0
+                    score_count = len(result.scores) if result.scores else 0
+                    logger.info(f"  - {result.strategy_name}: {product_count} products, {score_count} scores")
             # Check if at least one strategy succeeded
             successful_results = [r for r in strategy_results if r is not None]
 
@@ -178,11 +191,15 @@ class SearchOrchestrator:
                     "All search strategies encountered errors"
                 )
 
+            # ENHANCED (Phase 4.2): Log strategy performance metrics
+            self._log_strategy_performance(successful_results)
+
             # Consolidate results with exact product name boosting
             consolidated = self.consolidator.consolidate(
                 [(r.strategy_name, r.products, r.scores) for r in successful_results],
                 master_parameters=master_parameters,
-                component_type=component_type
+                component_type=component_type,
+                user_message=user_message
             )
 
             # Apply pagination to consolidated results
@@ -468,6 +485,63 @@ class SearchOrchestrator:
                     raise
 
         return results
+
+    def _log_strategy_performance(
+        self,
+        successful_results: List[StrategySearchResult]
+    ) -> None:
+        """
+        Log strategy performance metrics for monitoring and optimization.
+
+        ENHANCED (Phase 4.2): Added comprehensive strategy performance logging.
+
+        Logs for each successful strategy:
+        - Number of products returned
+        - Average score across all products
+        - Score distribution (min, max, median)
+
+        Args:
+            successful_results: List of successful strategy results
+        """
+        try:
+            logger.info("=" * 80)
+            logger.info("📊 STRATEGY PERFORMANCE METRICS")
+            logger.info("=" * 80)
+
+            for result in successful_results:
+                strategy_name = result.strategy_name
+                product_count = len(result.products)
+
+                # Calculate score statistics
+                if result.scores:
+                    scores = list(result.scores.values())
+                    avg_score = sum(scores) / len(scores) if scores else 0.0
+                    min_score = min(scores) if scores else 0.0
+                    max_score = max(scores) if scores else 0.0
+
+                    # Calculate median
+                    sorted_scores = sorted(scores)
+                    n = len(sorted_scores)
+                    if n % 2 == 0:
+                        median_score = (sorted_scores[n//2 - 1] + sorted_scores[n//2]) / 2
+                    else:
+                        median_score = sorted_scores[n//2]
+                else:
+                    avg_score = min_score = max_score = median_score = 0.0
+
+                logger.info(
+                    f"🔍 {strategy_name.upper()}: "
+                    f"{product_count} products | "
+                    f"Avg Score: {avg_score:.4f} | "
+                    f"Min: {min_score:.4f} | "
+                    f"Max: {max_score:.4f} | "
+                    f"Median: {median_score:.4f}"
+                )
+
+            logger.info("=" * 80)
+
+        except Exception as e:
+            logger.warning(f"Failed to log strategy performance: {e}")
 
     def _build_zero_results_response(
         self,

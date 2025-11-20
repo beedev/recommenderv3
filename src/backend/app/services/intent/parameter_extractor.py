@@ -156,6 +156,7 @@ class ParameterExtractor:
             with open(config_path, "r") as f:
                 llm_context = json.load(f)
                 all_products = llm_context.get("product_names", {})
+                competitor_products = llm_context.get("competitor_product_names", {})
 
             # Get components enabled for fuzzy matching from component_types.json (rationalized Nov 15, 2025)
             fuzzy_config = self.config_service.get_fuzzy_match_config()
@@ -174,6 +175,10 @@ class ParameterExtractor:
             for component in components_enabled:
                 if component in all_products:
                     limited_products[component] = all_products[component]
+
+            # Also include competitor mapping if available
+            if competitor_products:
+                limited_products["_competitor_mapping"] = competitor_products
 
             logger.info(f"Loaded product names: {sum(len(v) for v in limited_products.values())} total (components: {components_enabled})")
             return limited_products
@@ -209,13 +214,13 @@ class ParameterExtractor:
             logger.info(f"Extracting parameters for state: {current_state}")
 
             # ✨ NEW: Check for selection intent BEFORE LLM call
-            selection_metadata = self._detect_selection_intent(user_message)
-            if selection_metadata and selection_metadata.get("is_selection"):
-                logger.info(f"Selection detected: {selection_metadata}")
-                # Return master parameters with selection metadata
-                result = dict(master_parameters)
-                result["_selection_metadata"] = selection_metadata
-                return result
+          #  selection_metadata = self._detect_selection_intent(user_message)
+          #  if selection_metadata and selection_metadata.get("is_selection"):
+          #      logger.info(f"Selection detected: {selection_metadata}")
+          #      # Return master parameters with selection metadata
+          #      result = dict(master_parameters)
+          #      result["_selection_metadata"] = selection_metadata
+          #      return result
 
             # 🔧 FIX (Nov 15, 2025): Clear current state's component to prevent accumulation
             # User requirement: "Within a state, each new query should REPLACE parameters, not accumulate"
@@ -518,6 +523,7 @@ Look for:
   - Design attributes: "portable", "heavy duty", "robust", "compact", "high power-to-weight"
   - Applications: "shipyard", "industrial", "on-site", "robotic", "field work"
   - Integration: "robot interface", "cloud connectivity", "WeldCloud"
+  - Cooling: "integrated cooling", "integrated water cooling", "built-in cooler"
   - Accessories included: "with cables", "welding and return cables"
 Product Names: Extract specific model names (e.g., "Warrior 400i", "Aristo 500ix", "Renegade ES 300i")
 """,
@@ -533,13 +539,14 @@ Look for:
 Product Names: Extract specific feeder models (e.g., "RobustFeed U6", "Pulse U82")
 """,
             "cooler_selection": """
-FOCUS: Extract requirements for COOLER component
-Look for:
+FOCUS: Extract requirements for STANDALONE COOLER component (NOT integrated cooling)
+⚠️ IMPORTANT: If user mentions "integrated cooling" or "built-in cooler", extract as power_source.cooling_type="integrated", NOT as a separate cooler component.
+Look for STANDALONE coolers only:
   - Duty cycle: "60%", "100%", high duty cycle
   - Application: shipyard, industrial, heavy duty
   - Environment: indoor, outdoor, harsh conditions
-  - Cooling capacity: "integrated cooling unit", cooling power
-  - Type: "water cooled", "liquid cooled"
+  - Cooling capacity: cooling power (for standalone units)
+  - Type: "water cooled", "liquid cooled" (for standalone units)
 Product Names: Extract specific cooler models (e.g., "Cool2", "Cool3")
 """,
             "interconnector_selection": """
@@ -594,8 +601,26 @@ Look for:
                 product_reference += "\n".join([f"  - {name}" for name in self.product_names["cooler"][:10]])
                 if len(self.product_names["cooler"]) > 10:
                     product_reference += f"\n  ... and {len(self.product_names['cooler']) - 10} more"
+#added code to handle competitor data. 
+            if self.product_names.get("_competitor_mapping"):
+                product_reference += "\n\nCOMPETITOR TO ESAB MAPPING:\n"
+                product_reference += "If user mentions a competitor, use the ESAB equivalent:\n\n"
+                
+                # Reverse the mapping: competitor -> ESAB
+                competitor_to_esab = {}
+                for esab_prod, competitors_str in self.product_names["_competitor_mapping"].items():
+                    for competitor in competitors_str.split(','):
+                        competitor = competitor.strip()
+                        competitor_to_esab[competitor] = esab_prod
+                
+                # Show the reversed mapping (limit to 20 for brevity)
+                for i, (competitor, esab) in enumerate(list(competitor_to_esab.items())[:20]):
+                    product_reference += f"  '{competitor}' → '{esab}'\n"
+                
+                if len(competitor_to_esab) > 20:
+                    product_reference += f"  ... and {len(competitor_to_esab) - 20} more mappings\n"
+                product_reference += "\n"
 
-        # Convert Pydantic model to dict before iterating
         master_params_dict = master_parameters.dict() if hasattr(master_parameters, 'dict') else master_parameters
         serializable_params = {
             k: v for k, v in master_params_dict.items()
@@ -658,15 +683,22 @@ COMPREHENSIVE EXTRACTION INSTRUCTIONS:
       - "dual voltage" → {{"voltage": "dual voltage"}}
       - "230-480V" → {{"voltage": "230-480V"}}
       - Extract exact voltage ranges when specified
-   
-   d) ADVANCED FEATURES:
+
+    d) ADVANCED FEATURES:
       - "synergic" → {{"synergic": "true"}}
       - "pulse" → {{"pulse": "true"}}
       - "super pulse" → {{"super_pulse": "true"}}
       - "double pulse" → {{"double_pulse": "true"}}
       - "inverter" or "inverter-based" → {{"inverter": "true"}}
    
-   e) DESIGN ATTRIBUTES:
+   e) COOLING TYPE (POWER SOURCE ONLY):  # ADD THIS SECTION
+      - "integrated cooling" → {{"cooling_type": "integrated"}}
+      - "integrated water cooling" → {{"cooling_type": "integrated"}}
+      - "built-in cooler" → {{"cooling_type": "integrated"}}
+      - "with integrated cooling unit" → {{"cooling_type": "integrated"}}
+      ⚠️ Do NOT extract integrated cooling as a separate cooler component!
+   
+   f) DESIGN ATTRIBUTES:  # This was previously "e", now "f"
       - "portable" → {{"design": "portable"}}
       - "heavy duty" → {{"design": "heavy duty"}}
       - "compact" → {{"design": "compact"}}
@@ -690,24 +722,42 @@ COMPREHENSIVE EXTRACTION INSTRUCTIONS:
    - **ALWAYS infer and match to the CLOSEST product name from the KNOWN PRODUCT NAMES list above**
    - **Your job is to FIND the best match, not copy the user's exact words**
 
-   MATCHING ALGORITHM:
-   1. Look at what the user said (e.g., "Renegade ES30", "Aristo 500", "RobustFeed")
-   2. Find the CLOSEST matching product name from the KNOWN PRODUCT NAMES list
-   3. Use fuzzy matching logic: ignore spacing, case, and minor variations
-   4. Return the FULL product name EXACTLY as it appears in the known list
+    MATCHING ALGORITHM (FOLLOW EXACT ORDER):
+   1. **FIRST - CHECK COMPETITORS**: Look in COMPETITOR PRODUCT MAPPING above
+      - If user mentions ANY competitor brand (Kemppi, Miller, Fronius, Lincoln, etc.)
+      - Find which ESAB product lists that competitor
+      - Extract the EXACT ESAB product name (e.g., "Aristo 500ix CE, (380-460V)")     
+      **IMPORTANT**: Only use competitor mapping if the EXACT competitor product is listed above.
+      If the competitor product is NOT in the mapping, do NOT include "product_name" in the JSON at all.
+      WRONG: {{"product_name": "Kemppi X5 equivalent"}} ❌
+      CORRECT: {{}} (no product_name field) ✅
+      Example: "Kemppi X5" is NOT in mapping → Extract: {{"process": "MIG (GMAW)"}} (no product_name)
+      Example: "Lincoln Electric Powertech i500S" is NOT in mapping → Do NOT map to Aristo
+   2. **SECOND - GENERIC NAMES**: If no number mentioned (e.g., "Warrior", "Aristo")
+      - Return ONLY the family name
+   3. **THIRD - SPECIFIC MODELS**: If has number (e.g., "Warrior 400")
+      - Find CLOSEST match from KNOWN PRODUCT NAMES list
 
-   FUZZY MATCHING EXAMPLES:
-   - User says: "Renegade ES30" → Infer: "Renegade ES 300i Kit w/welding cables" (ES30 ≈ ES 300i)
-   - User says: "Aristo 500" → Infer: "Aristo 500ix CE" (only one Aristo 500 variant)
-   - User says: "Warrior400i" → Infer: "Warrior 400i CC/CV" (400i matches)
-   - User says: "RobustFeed" → Infer: "RobustFeed U6 Water-cooled Euro" (pick most common variant)
-   - User says: "Cool2" → Infer: "Cool2 Cooling Unit" (exact base name match)
+   CRITICAL COMPETITOR EXAMPLES (DO THIS):
+   - User: "Kemppi X3" → Look up in mapping → Extract: {{"product_name": "Aristo 500ix CE, (380-460V)"}}
+   - User: "Miller XMT 350" → Look up in mapping → Extract: {{"product_name": "Warrior 500i CC/CV 380–415V"}}
+   - User: "Fronius Transteel" → Look up in mapping → Extract: {{"product_name": "Aristo 500ix CE, (380-460V)"}}
+   
+   GENERIC NAME EXAMPLES:
+   - User: "Warrior" (no number) → Extract: {{"product_name": "Warrior"}}
+   - User: "Aristo" (no number) → Extract: {{"product_name": "Aristo"}}
+   
+   SPECIFIC MODEL EXAMPLES:
+   - User: "Renegade ES30" → Extract: {{"product_name": "Renegade ES 300i Kit w/welding cables"}}
+   - User: "Warrior 400" → Extract: {{"product_name": "Warrior 400i CC/CV"}}
+   - User: "Cool2" → Extract: {{"product_name": "Cool2 Cooling Unit"}}
 
    PRIORITY ORDER:
-   1. Exact base name match (e.g., "Aristo 500ix" → "Aristo 500ix CE")
-   2. Partial name + number match (e.g., "ES30" → "ES 300i")
-   3. Base product family match (e.g., "RobustFeed" → pick first RobustFeed variant)
-   4. If multiple matches, prefer shortest/simplest variant
+   1. Competitor Product Match (Highest Priority if detected)
+   2. Exact base name match (e.g., "Aristo 500ix" → "Aristo 500ix CE")
+   3. Generic Family Name (e.g., "Warrior" → "Warrior")
+   4. Partial name + number match (e.g., "ES30" → "ES 300i")
+   5. If multiple matches, prefer shortest/simplest variant
 
    EXAMPLES (CORRECT BEHAVIOR):
    Query: "I need Aristo 500ix" → power_source: {{"product_name": "Aristo 500ix CE"}}

@@ -71,7 +71,7 @@
       "default_skip_behavior": "required",
       "supports_search": true,
       "requires_compatibility": false,
-      "proactive_display": true,
+      "proactive_display": false,
       "search_limit": 10,
       "preview_limit": 5,
       "description": "Welding power supply unit - the core of the welding system",
@@ -165,7 +165,6 @@
       "lucene_min_score": 0.5,
       "lucene_score_threshold_percent": 25
     },
-  
     "interconnector": {
       "class_name": "Interconnector",
       "display_name": "Interconnector Cable",
@@ -214,7 +213,7 @@
       "icon": "\ud83d\udd26",
       "is_mandatory": false,
       "can_skip": true,
-      "selection_type": "single",
+      "selection_type": "multi",
       "state_order": 5,
       "state_name": "torch_selection",
       "default_skip_behavior": "auto_skip",

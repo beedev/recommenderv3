@@ -208,7 +208,7 @@ class StateByStateOrchestrator:
             # Check for compound request (multiple components specified)
             if self._is_compound_request(master_parameters, conversation_state):
                 return await self._handle_compound_request(
-                    master_parameters, conversation_state, language
+                    master_parameters, conversation_state, language, user_message
                 )
 
             # Delegate to processor for current state
@@ -329,7 +329,7 @@ class StateByStateOrchestrator:
                 # Re-search for remaining compatible products
                 logger.info(f"🔍 Re-searching for remaining {processor.component_type} products")
                 search_results = await processor.search_products(
-                    user_message="",
+                    user_message="",  # Empty for proactive mode
                     master_parameters=conversation_state.master_parameters,
                     selected_components=conversation_state.response_json,
                     limit=10,  # Regular search limit (not preview limit)
@@ -390,7 +390,7 @@ class StateByStateOrchestrator:
                             logger.debug(f"🔍 CALLING NEXT STATE SEARCH: next_state={next_state}, selected_components.PowerSource={ps_gin_search}, selected_components.Feeder={fe_gin_search}, selected_components.Cooler={co_gin_search}")
 
                             next_search_results = await next_processor.search_products(
-                                user_message="",
+                                user_message="",  # Empty for proactive mode
                                 master_parameters=conversation_state.master_parameters,
                                 selected_components=conversation_state.response_json,
                                 limit=5,  # Preview limit
@@ -409,7 +409,7 @@ class StateByStateOrchestrator:
                                 return await self._auto_skip_to_next_state(
                                     skip_reason=post_search_decision.skip_reason,
                                     skip_message=post_search_decision.skip_message,
-                                    user_message="",
+                                    user_message="",  # Empty for proactive flow
                                     master_parameters=conversation_state.master_parameters,
                                     conversation_state=conversation_state,
                                     language=language,
@@ -470,7 +470,7 @@ class StateByStateOrchestrator:
                 if next_processor and next_processor.should_show_proactive_preview():
                     logger.info(f"🔍 Proactive search for next state: {next_state}")
                     search_results = await next_processor.search_products(
-                        user_message="",
+                        user_message="",  # Empty for proactive mode (cypher only)
                         master_parameters=conversation_state.master_parameters,
                         selected_components=conversation_state.response_json,
                         limit=5,  # Preview limit
@@ -491,7 +491,7 @@ class StateByStateOrchestrator:
                         return await self._auto_skip_to_next_state(
                             skip_reason=post_search_decision.skip_reason,
                             skip_message=post_search_decision.skip_message,
-                            user_message="",  # No user message in proactive flow
+                            user_message="",  # Empty for proactive flow
                             master_parameters=conversation_state.master_parameters,
                             conversation_state=conversation_state,
                             language=language,
@@ -804,7 +804,7 @@ class StateByStateOrchestrator:
                     logger.debug(f"🔍 DONE COMMAND: next_state={next_state}, ResponseJSON.PowerSource={ps_gin_done}, ResponseJSON.Feeder={fe_gin_done}")
 
                     search_results = await next_processor.search_products(
-                        user_message="",
+                        user_message="",  # Empty for proactive mode
                         master_parameters=conversation_state.master_parameters,
                         selected_components=conversation_state.response_json,
                         limit=5,
@@ -824,7 +824,7 @@ class StateByStateOrchestrator:
                         return await self._auto_skip_to_next_state(
                             skip_reason=post_search_decision.skip_reason,
                             skip_message=post_search_decision.skip_message,
-                            user_message="",
+                            user_message="",  # Empty for proactive flow
                             master_parameters=conversation_state.master_parameters,
                             conversation_state=conversation_state,
                             language=language,
@@ -897,6 +897,7 @@ class StateByStateOrchestrator:
         master_parameters: Dict[str, Any],
         conversation_state: ConversationState,
         language: str,
+        user_message: str,
     ) -> Dict[str, Any]:
         """
         Handle compound request (multiple components specified).
@@ -957,7 +958,7 @@ class StateByStateOrchestrator:
 
             # Search for this component
             search_results = await processor.search_products(
-                user_message="",
+                user_message=user_message,
                 master_parameters=master_parameters,
                 selected_components=conversation_state.response_json,
                 limit=10,
@@ -1306,8 +1307,11 @@ class StateByStateOrchestrator:
             response_dict["Cooler"] = conversation_state.response_json.Cooler.dict()
         if conversation_state.response_json.Interconnector:
             response_dict["Interconnector"] = conversation_state.response_json.Interconnector.dict()
-        if conversation_state.response_json.Torch:
-            response_dict["Torch"] = conversation_state.response_json.Torch.dict()
+        # Torch (now multi-select)
+        if conversation_state.response_json.Torch is not None:
+            response_dict["Torch"] = [
+                t.dict() for t in conversation_state.response_json.Torch
+            ]
 
         # Accessory categories (multi-select)
         if conversation_state.response_json.PowerSourceAccessories is not None:

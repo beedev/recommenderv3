@@ -63,6 +63,178 @@ class VectorSearchStrategy(SearchStrategy):
         logger.info(f"Initialized VectorSearchStrategy with {self.embedding_model} ({self.embedding_dims} dims), min_score={self.min_score}")
         logger.info("  Will use centralized neo4j_manager for driver access")
 
+    def _enrich_query_context(
+        self,
+        user_message: str,
+        master_parameters: Dict[str, Any],
+        component_type: str
+    ) -> str:
+        """
+        Enrich user query with extracted parameters for better semantic matching.
+
+        Combines user message with structured extracted parameters to create
+        a richer context for embedding generation. This improves semantic
+        understanding by including technical requirements.
+
+        Args:
+            user_message: Raw user message
+            master_parameters: Extracted parameters from LLM (MasterParameterJSON)
+            component_type: Component being searched (e.g., "Feeder", "PowerSource")
+
+        Returns:
+            Enriched context string combining user intent + extracted features
+
+        Example:
+            Input:  user_message="I need a feeder"
+                    master_parameters={"feeder": {"cooling_type": "water-cooled", "current_output": "500A"}}
+            Output: "I need a feeder | cooling_type: water-cooled | current_output: 500A | Component type: Feeder"
+        """
+        context_parts = [user_message]
+
+        # Add extracted parameters as context (if available)
+        component_key = component_type.lower()
+        if component_key in master_parameters:
+            params = master_parameters[component_key]
+
+            # Add non-empty parameter values
+            for key, value in params.items():
+                if value and key not in ['_detected_gin', 'product_name']:  # Skip internal fields
+                    context_parts.append(f"{key}: {value}")
+
+        # Add component type context for categorical awareness
+        context_parts.append(f"Component type: {component_type}")
+
+        enriched_context = " | ".join(context_parts)
+        logger.debug(f"Enriched query context: {enriched_context[:200]}...")  # Log first 200 chars
+
+        return enriched_context
+
+    def _filter_by_specifications(
+        self,
+        records: List[Dict[str, Any]],
+        master_parameters: Dict[str, Any],
+        component_type: str
+    ) -> List[Dict[str, Any]]:
+        """
+        Post-filter vector search results by matching specifications against extracted parameters.
+
+        Uses fuzzy matching to compare product specifications with user requirements.
+        Keeps products that match ≥70% of specified parameters.
+
+        Args:
+            records: Neo4j records from vector search
+            master_parameters: Extracted parameters from LLM (MasterParameterJSON)
+            component_type: Component being searched
+
+        Returns:
+            Filtered list of records that meet specification threshold
+
+        Example:
+            Input: Records with various cooling types, user wants "water-cooled"
+            Output: Only water-cooled products (or close matches)
+        """
+        from rapidfuzz import fuzz
+
+        component_key = component_type.lower()
+        if component_key not in master_parameters:
+            logger.debug("No master parameters for filtering, returning all records")
+            return records
+
+        params = master_parameters[component_key]
+
+        # Extract relevant parameters (skip internal fields)
+        search_params = {
+            k: v for k, v in params.items()
+            if v and k not in ['_detected_gin', 'product_name']
+        }
+
+        if not search_params:
+            logger.debug("No non-empty parameters for filtering, returning all records")
+            return records
+
+        logger.debug(f"Filtering {len(records)} records using parameters: {search_params}")
+
+        # Match threshold: 70% of specified parameters must match
+        match_threshold = 0.70
+        filtered_records = []
+
+        for record in records:
+            specs = record.get("specifications", {})
+
+            # Convert Neo4j node to dict if needed
+            if hasattr(specs, "__dict__"):
+                specs = dict(specs)
+
+            # Count matches
+            total_params = len(search_params)
+            matched_params = 0
+
+            for param_key, param_value in search_params.items():
+                # Try to find matching spec field
+                # Common mappings: cooling_type → cooling, current_output → current_range
+                possible_keys = [
+                    param_key,
+                    param_key.replace('_', ''),
+                    param_key.replace('_type', ''),
+                    param_key.replace('_output', '_range'),
+                    param_key.split('_')[0]  # First word only
+                ]
+
+                matched = False
+                for spec_key in possible_keys:
+                    if spec_key in specs:
+                        spec_value = str(specs[spec_key])
+                        param_value_str = str(param_value)
+
+                        # Fuzzy string matching (case-insensitive)
+                        similarity = fuzz.ratio(
+                            spec_value.lower(),
+                            param_value_str.lower()
+                        )
+
+                        # 80% similarity threshold for individual parameter
+                        if similarity >= 80:
+                            matched = True
+                            logger.debug(
+                                f"  ✓ Matched {param_key}='{param_value}' with "
+                                f"{spec_key}='{spec_value}' (similarity: {similarity}%)"
+                            )
+                            break
+
+                        # Also check if param_value is substring (e.g., "water" in "water-cooled")
+                        if param_value_str.lower() in spec_value.lower():
+                            matched = True
+                            logger.debug(
+                                f"  ✓ Matched {param_key}='{param_value}' (substring) in "
+                                f"{spec_key}='{spec_value}'"
+                            )
+                            break
+
+                if matched:
+                    matched_params += 1
+
+            # Calculate match percentage
+            match_percentage = matched_params / total_params if total_params > 0 else 0
+
+            if match_percentage >= match_threshold:
+                logger.debug(
+                    f"  ✅ Product {record.get('gin')} matched {matched_params}/{total_params} "
+                    f"parameters ({match_percentage:.1%}) - KEEP"
+                )
+                filtered_records.append(record)
+            else:
+                logger.debug(
+                    f"  ❌ Product {record.get('gin')} matched {matched_params}/{total_params} "
+                    f"parameters ({match_percentage:.1%}) - FILTER OUT"
+                )
+
+        logger.info(
+            f"Specification filtering: {len(filtered_records)}/{len(records)} products "
+            f"matched ≥{match_threshold:.0%} of requirements"
+        )
+
+        return filtered_records
+
     async def search(
         self,
         component_type: str,
@@ -88,12 +260,19 @@ class VectorSearchStrategy(SearchStrategy):
         """
         logger.info(f"Vector search for {component_type}: '{user_message}'")
 
-        # Step 1: Generate embedding for user query
+        # Step 1: Enrich query context with extracted parameters
+        enriched_query = self._enrich_query_context(
+            user_message=user_message,
+            master_parameters=master_parameters,
+            component_type=component_type
+        )
+
+        # Step 2: Generate embedding for enriched query
         logger.debug(f"Generating embedding using {self.embedding_model} ({self.embedding_dims} dims)")
         try:
             response = await self.openai_client.embeddings.create(
                 model=self.embedding_model,
-                input=user_message,
+                input=enriched_query,  # Use enriched context instead of raw user_message
                 dimensions=self.embedding_dims
             )
             embedding = response.data[0].embedding
@@ -107,28 +286,58 @@ class VectorSearchStrategy(SearchStrategy):
                 strategy_name="vector"
             )
 
-        # Step 2: Search Neo4j vector index
+        # Step 3: Build compatibility-aware vector search query
         neo4j_category = self._map_component_to_neo4j_category(component_type)
         logger.debug(f"Searching vector index for category: {neo4j_category}")
+
+        # Build base vector query
+        base_query = """
+            CALL db.index.vector.queryNodes('embeddingIndex', $limit, $vector)
+            YIELD node AS p, score
+            WHERE p.category = $category AND score >= $min_score
+            WITH p, score
+        """
+        
+        params = {
+            "vector": embedding,
+            "limit": limit + offset,
+            "category": neo4j_category,
+            "min_score": self.min_score
+        }
+        
+        # Add compatibility filters using Neo4jQueryBuilder
+        from app.services.search.components.query_builder import Neo4jQueryBuilder
+        from app.config.schema_loader import load_component_config
+        
+        component_config = load_component_config()
+        query_builder = Neo4jQueryBuilder(component_config)
+        
+        # Add compatibility filters (reuses same logic as cypher strategy)
+        query, params, _ = query_builder.add_compatibility_filters(
+            query=base_query,
+            params=params,
+            component_type=component_type.lower(),
+            selected_components=selected_components,
+            node_alias="p"
+        )
+        
+        # Add RETURN clause
+        query += """
+            RETURN
+                p.gin as gin,
+                p.item_name as name,
+                p.category as category,
+                p.description_catalogue as description,
+                p as specifications,
+                score
+            ORDER BY score DESC
+        """
 
         try:
             # Get driver from centralized manager (supports auto-reconnection)
             driver = await neo4j_manager.get_driver()
             async with driver.session() as session:
-                result = await session.run("""
-                    CALL db.index.vector.queryNodes('embeddingIndex', $limit, $vector)
-                    YIELD node AS p, score
-                    WHERE p.category = $category AND score >= $min_score
-                    RETURN
-                        p.gin as gin,
-                        p.item_name as name,
-                        p.category as category,
-                        p.description_catalogue as description,
-                        p as specifications,
-                        score
-                    ORDER BY score DESC
-                """, vector=embedding, limit=limit + offset, category=neo4j_category, min_score=self.min_score)
-
+                result = await session.run(query, params)
                 records = await result.data()
 
         except Exception as e:
@@ -140,7 +349,17 @@ class VectorSearchStrategy(SearchStrategy):
                 strategy_name="vector"
             )
 
-        # Step 3: Convert results to product dictionaries
+        # Step 4: Post-filter by specifications (if parameters extracted)
+        if component_type.lower() in master_parameters:
+            logger.debug(f"Applying specification filtering for {component_type}")
+            records = self._filter_by_specifications(
+                records=records,
+                master_parameters=master_parameters,
+                component_type=component_type
+            )
+            logger.info(f"After specification filtering: {len(records)} products remaining")
+
+        # Step 5: Convert results to product dictionaries
         products = []
         scores_dict = {}
 
@@ -248,7 +467,20 @@ class VectorSearchStrategy(SearchStrategy):
             "cooler": "Cooler",
             "interconnector": "Interconnector",
             "torch": "Torch",
-            "accessory": "Accessory"
+            "accessory": "Accessory",
+            # Accessory subcategories (all map to "Accessory" category in Neo4j)
+            "remote": "Accessory",
+            "connectivity": "Accessory",
+            "feeder_wear": "Accessory",
+            "powersource_accessory": "Accessory",
+            "feeder_accessory": "Accessory",
+            "remote_accessory": "Accessory",
+            "interconn_accessory": "Accessory",
+            # Common accessory type aliases
+            "consumable": "Accessory",
+            "cable": "Accessory",
+            "safety_gear": "Accessory",
+            "wear_part": "Accessory"
         }
         return mapping.get(component_type.lower(), "Powersource")
 

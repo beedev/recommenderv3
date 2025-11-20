@@ -2,98 +2,102 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://esab-configurator.readthedocs.io/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/AGENT1_PARAMETER_EXTRACTOR/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/AGENT2_PRODUCT_SEARCH/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/AGENT3_MESSAGE_GENERATOR/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/API_DOCUMENTATION/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/CODE_ARCHITECTURE_OVERVIEW/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/CONFIGURATION_SYSTEM/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/CONFIG_CONSOLIDATION/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/CONFIG_CONSOLIDATION_STATUS/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/CONTEXT_BASED_STRATEGIES/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/CORRECTED_STATE_FLOW_ARCHITECTURE/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/DATABASE_CONNECTION_ARCHITECTURE/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/LANGGRAPH_INTEGRATION/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/MASTER_PARAMETER_JSON_ARCHITECTURE/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/MKDOCS_UPDATE_GUIDE/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/MULTILINGUAL_FLOW/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/OBSERVABILITY/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/ORCHESTRATOR_ARCHITECTURE/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/PROJECT_CLEANUP_SUMMARY/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/SEARCH_CONFIG_UPDATE_GUIDE/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
+    </url>
+    <url>
+         <loc>https://esab-configurator.readthedocs.io/SEARCH_IMPROVEMENTS_IMPLEMENTATION/</loc>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/SEARCH_STRATEGIES_AND_SCORING/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/THRESHOLD_FILTERING_ANALYSIS/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/operations/deployment-sizing-guide/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
     <url>
          <loc>https://esab-configurator.readthedocs.io/operations/scripts/</loc>
-         <lastmod>2025-11-18</lastmod>
+         <lastmod>2025-11-19</lastmod>
     </url>
 </urlset>

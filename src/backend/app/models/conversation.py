@@ -291,7 +291,7 @@ class ResponseJSON(BaseModel):
     Feeder: Union[SelectedProduct, Literal["skipped"], None] = None
     Cooler: Union[SelectedProduct, Literal["skipped"], None] = None
     Interconnector: Union[SelectedProduct, Literal["skipped"], None] = None
-    Torch: Union[SelectedProduct, Literal["skipped"], None] = None
+    Torch: Union[List[SelectedProduct], Literal["skipped"]] = Field(default_factory=list)
 
     # Accessory Categories (multiple selection - OPTIONAL)
     # Now supports "skipped" literal to track explicitly skipped categories

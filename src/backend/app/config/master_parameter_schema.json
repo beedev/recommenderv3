@@ -84,7 +84,8 @@
         "material",
         "application",
         "environment",
-        "duty_cycle"
+        "duty_cycle",
+        "cooling_type"
       ]
     },
     "feeder": {
